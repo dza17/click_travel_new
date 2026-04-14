@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Click Travel - Выбор дат</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#0B0F1A",
+                        "surface-card": "#0F172A",
+                        "primary": "#3B82F6",
+                        "primary-hover": "#2563EB",
+                        "on-surface": "#FFFFFF",
+                        "on-surface-variant": "#9CA3AF",
+                        "success": "#22C55E"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "card": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"],
+                        "label": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            position: relative;
+        }
+        body {
+            height: 100vh;
+            background: #020617;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+        .bottom-sheet {
+            height: 92vh;
+            background: #0B101E;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+        }
+        .scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            padding-bottom: 140px;
+        }
+        .scroll-content::-webkit-scrollbar {
+            display: none;
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        .glow-button {
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body selection:bg-primary selection:text-white">
+<div class="bottom-sheet max-w-lg mx-auto">
+<!-- Drag Handle -->
+<div class="w-full flex justify-center pt-3 pb-1">
+<div class="w-10 h-1 bg-white/10 rounded-full"></div>
+</div>
+<!-- Seamless Header -->
+<header class="w-full flex items-center justify-between px-6 h-14 bg-transparent shrink-0">
+<button class="flex items-center justify-center p-2 text-on-surface hover:bg-white/10 transition-colors duration-300 rounded-full active:scale-95" onclick="window.location.href='index.html'" style="">
+<span class="material-symbols-outlined text-2xl" style="">close</span>
+</button>
+<h1 class="font-headline text-lg font-bold tracking-tight text-white flex gap-2 items-center" style="">
+                Ташкент <span class="material-symbols-outlined text-xl text-primary" style="">east</span> Москва
+            </h1>
+<div class="w-10"></div>
+</header>
+<div class="scroll-content px-4">
+<!-- Selection Tabs -->
+<section class="mt-2 mb-8">
+<div class="bg-white/5 rounded-full p-1.5 flex gap-1 items-center border border-white/5">
+<button class="flex-1 px-4 rounded-full bg-primary text-white font-headline font-bold text-center transition-all duration-300 py-2 flex-col flex justify-center" style=""><span class="block text-[12px] font-medium text-white/60 leading-tight uppercase tracking-wide">Туда</span><span class="block text-[18px] font-bold text-white leading-tight uppercase">12 окт</span></button>
+<button class="flex-1 px-4 rounded-full text-on-surface-variant font-headline font-bold text-center hover:text-white transition-all duration-300 py-2 flex-col flex justify-center" style=""><span class="block text-[12px] font-medium text-on-surface-variant leading-tight uppercase tracking-wide">Обратно</span><span class="block text-[18px] font-bold text-on-surface-variant leading-tight uppercase">19 окт</span></button>
+</div>
+</section>
+<!-- Calendar Container -->
+<div class="space-y-5">
+<!-- Month Block: October -->
+<section class="mb-0">
+<div class="flex justify-between items-center mb-6 px-2">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-white" style="">Октябрь</h3>
+</div>
+<!-- Days of Week -->
+<div class="calendar-grid mb-4">
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пн</div>
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вт</div>
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Ср</div>
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Чт</div>
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пт</div>
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Сб</div>
+<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вс</div>
+</div>
+<!-- Calendar Days Grid -->
+<div class="calendar-grid">
+<!-- Row 1 -->
+<div class="h-14"></div><div class="h-14"></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">1</span><span class="text-[9px] text-on-surface-variant" style="">1.24 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">2</span><span class="text-[9px] text-on-surface-variant" style="">1.18 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">3</span><span class="text-[9px] text-success font-medium" style="">0.84 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">4</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">5</span><span class="text-[9px] text-on-surface-variant" style="">1.35 м</span></div>
+<!-- Row 2 -->
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">6</span><span class="text-[9px] text-on-surface-variant" style="">1.20 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">7</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">8</span><span class="text-[9px] text-success font-medium" style="">0.81 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">9</span><span class="text-[9px] text-on-surface-variant" style="">1.05 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">10</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
+<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">11</span><span class="text-[9px] text-on-surface-variant" style="">1.42 м</span></div>
+<!-- Start Date (Oct 12) -->
+<div class="flex flex-col items-center justify-center h-14">
+<div class="w-11 h-11 bg-primary rounded-full flex flex-col items-center justify-center glow-primary">
+<span class="font-bold text-base text-white" style="">12</span>
+<span class="text-[8px] text-white/80 uppercase" style="">1.20 м</span>
+</div>
+</div>
+<!-- Dates between (13-18) -->
+<div class="flex flex-col items-center justify-center h-14 p-1">
+<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
+<span class="font-medium text-base text-white" style="">13</span><span class="text-[9px] text-on-surface-variant" style="">1.20 м</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center h-14 p-1">
+<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
+<span class="font-medium text-base text-white" style="">14</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center h-14 p-1">
+<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
+<span class="font-medium text-base text-white" style="">15</span><span class="text-[9px] text-success font-medium" style="">0.89 м</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center h-14 p-1">
+<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
+<span class="font-medium text-base text-white" style="">16</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center h-14 p-1">
+<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
+<span class="font-medium text-base text-white" style="">17</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center h-14 p-1">
+<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
+<span class="font-medium text-base text-white" style="">18</span><span class="text-[9px] text-on-surface-variant" style="">1.25 м</span>
+</div>
+</div>
+<!-- End Date (Oct 19) -->
+<div class="flex flex-col items-center justify-center h-14">
+<div class="w-11 h-11 bg-primary rounded-full flex flex-col items-center justify-center glow-primary">
+<span class="font-bold text-base text-white" style="">19</span>
+<span class="text-[8px] text-white/80 uppercase" style="">1.30 м</span>
+</div>
+</div>
+<!-- Rest of October -->
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">20</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">21</span><span class="text-[9px] text-success font-medium" style="">0.82 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">22</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">23</span><span class="text-[9px] text-on-surface-variant" style="">1.08 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">24</span><span class="text-[9px] text-success font-medium" style="">0.85 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">25</span><span class="text-[9px] text-on-surface-variant" style="">1.12 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">26</span><span class="text-[9px] text-on-surface-variant" style="">1.30 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">27</span><span class="text-[9px] text-on-surface-variant" style="">1.45 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">28</span><span class="text-[9px] text-on-surface-variant" style="">1.20 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">29</span><span class="text-[9px] text-on-surface-variant" style="">1.18 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">30</span><span class="text-[9px] text-success font-medium" style="">0.88 м</span></div>
+<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">31</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
+</div>
+</section>
+<!-- Month Block: November -->
+<section class="opacity-30 mt-0">
+<div class="flex justify-between items-center mb-6 px-2">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-white" style="">Ноябрь</h3>
+</div>
+<div class="calendar-grid mb-4">
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пн</div>
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вт</div>
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Ср</div>
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Чт</div>
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пт</div>
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Сб</div>
+<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вс</div>
+</div>
+<div class="calendar-grid">
+<div class="h-14"></div><div class="h-14"></div><div class="h-14"></div><div class="h-14"></div><div class="h-14"></div>
+<div class="flex flex-col items-center justify-center h-14">
+<span class="font-medium text-base text-white" style="">1</span>
+<span class="text-[9px] text-on-surface-variant" style="">1.37 м</span>
+</div>
+<div class="flex flex-col items-center justify-center h-14">
+<span class="font-medium text-base text-white" style="">2</span>
+<span class="text-[9px] text-on-surface-variant" style="">1.40 м</span>
+</div>
+</div>
+</section>
+<!-- Tip Block -->
+<section class="mt-4 px-2">
+<div class="bg-[#0F172A] rounded-2xl px-4 flex items-center gap-4 h-16 border border-white/5">
+<div class="w-10 h-10 flex items-center justify-center bg-success/15 rounded-full shrink-0">
+<span class="material-symbols-outlined text-success text-xl" style='font-variation-settings: "FILL" 1;'>lightbulb</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h4 class="font-headline text-xs font-bold text-white leading-tight" style="">Умный совет</h4>
+<p class="text-on-surface-variant text-[11px] leading-snug mt-0.5 line-clamp-1" style="">Полеты в середине недели экономят до <span class="text-success font-bold" style="">35%</span>.</p>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Fixed CTA Button Container -->
+<div class="absolute bottom-0 left-0 w-full px-6 pb-10 pt-4 bg-gradient-to-t from-[#0B101E] via-[#0B101E] to-transparent z-50">
+<div class="bg-[#111827] rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/5 mb-4">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-success text-lg" style='font-variation-settings: "FILL" 1;'>lightbulb</span>
+</div>
+<p class="text-[13px] leading-tight text-on-surface-variant font-medium" style="">Полеты в середине недели предлагают <span class="text-success font-bold">лучшую экономию до 35%</span>.</p>
+</div>
+<button class="w-full h-[52px] bg-[#3B82F6] rounded-full font-headline text-[18px] font-[800] text-white transition-all duration-200 ease-in-out active:scale-[0.98] tracking-wide text-center flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.3)]" onclick="window.location.href='index.html'">
+                Выбрать дату
+            </button>
+</div>
+</body></html>

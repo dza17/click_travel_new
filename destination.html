@@ -1,0 +1,252 @@
+<!DOCTYPE html><html class="dark" lang="ru"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Click Travel - Выбор направления</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#8b90a0",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-highest": "#353535",
+                        "primary": "#adc6ff",
+                        "on-secondary-container": "#520049",
+                        "surface-variant": "#353535",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#171c20",
+                        "on-secondary-fixed": "#3a0033",
+                        "on-secondary": "#5e0053",
+                        "surface": "#0B0F1A",
+                        "on-tertiary-container": "#252a2f",
+                        "on-primary-fixed-variant": "#004493",
+                        "background": "#131313",
+                        "primary-fixed-dim": "#adc6ff",
+                        "tertiary-container": "#8c9196",
+                        "surface-container": "#1f1f1f",
+                        "surface-bright": "#393939",
+                        "on-primary": "#002e69",
+                        "surface-container-low": "#1b1b1b",
+                        "secondary-fixed-dim": "#fface8",
+                        "on-tertiary": "#2c3135",
+                        "on-surface-variant": "#c1c6d7",
+                        "tertiary-fixed": "#dee3e8",
+                        "on-background": "#e2e2e2",
+                        "primary-container": "#4b8eff",
+                        "error-container": "#93000a",
+                        "secondary-fixed": "#ffd7f0",
+                        "surface-dim": "#131313",
+                        "surface-tint": "#adc6ff",
+                        "on-surface": "#e2e2e2",
+                        "outline-variant": "#414755",
+                        "inverse-surface": "#e2e2e2",
+                        "tertiary": "#c2c7cc",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed": "#001a41",
+                        "tertiary-fixed-dim": "#c2c7cc",
+                        "secondary-container": "#ff24e4",
+                        "on-secondary-fixed-variant": "#840076",
+                        "on-error": "#690005",
+                        "secondary": "#fface8",
+                        "on-tertiary-fixed-variant": "#42474c",
+                        "on-primary-container": "#00285c",
+                        "inverse-primary": "#005bc1",
+                        "inverse-on-surface": "#303030",
+                        "primary-fixed": "#d8e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        .glass-header {
+            background: rgba(11, 15, 26, 0.6);
+            backdrop-filter: blur(40px);
+        }
+        .bottom-sheet-shadow {
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+        }
+        .custom-radius {
+            border-radius: 16px !important;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col items-center justify-end overflow-hidden">
+<!-- Background Content Layer (Simulated App State) -->
+<div class="absolute inset-0 z-0 opacity-40 p-6 pt-24 pointer-events-none">
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-4 bg-[#131313]/60 backdrop-blur-3xl text-[#ADC6FF] font-['Plus_Jakarta_Sans'] tracking-tight font-bold">
+<span class="text-2xl font-black text-[#ADC6FF] uppercase tracking-widest" style="">Click Travel</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<img alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY6PtXPSJiAQhsymvaLHpxcH3eMfaBaB4gQLylNS2y21c6e5IMQXwzAWR2GfqQ6E7shRfmCg5_1sTYwC3g86iaQFmg0t2uB8Z9laz2wuqkByiGubg5X5id3qEPvSmFXd1lmoDKFygZJNN6AIelmIufqZkrGYf3PCYHPhxDH3MWFs7GwWXR8BX5i_2ExdS80Fjv9JdJpDudlCITsTNg6uxTZnS2IL1mYS6LSi4l_D1ANZhml4zOCR-PJUl73CjtcwL2lFliMfREIIY" class="" style="">
+</div>
+</header>
+<div class="mt-8 space-y-6">
+<div class="h-64 rounded-xl bg-surface-container-low overflow-hidden">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrSEPD8AGU0IGOl2CnNFL0dcHPBlPLb1bqfdeXXC1TPdNC46THYh71WRQKItuO_xFn0CHz77HYrtIKixTgbKNMADOHWaCMtJFL_Zx54jpWOY0mhS5rdN4O59MlkMSMnQ2DFMQiqeIDct0-aHSa9zwBoTru9l7a7X8r39B3tiLtT4tWjz44dUlGPGR-0GdPce9a8EZMzl6QDTigBwz9apygBM-CmrUxjKXcXnYo9fFKBQlSzKRmDWY1vwIpdnUbBI8VkK-Yj2cFjIc" style="">
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="h-40 rounded-xl bg-surface-container"></div>
+<div class="h-40 rounded-xl bg-surface-container"></div>
+</div>
+</div>
+</div>
+<!-- Backdrop Overlay -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"></div>
+<!-- Bottom Sheet Modal -->
+<div class="relative z-50 w-full max-w-2xl bg-surface rounded-t-[28px] bottom-sheet-shadow flex flex-col max-h-[813px]">
+<!-- Drag Handle & Header -->
+<div class="flex flex-col pt-3 pb-2">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full mx-auto mb-4"></div>
+<div class="px-6 flex justify-between items-start">
+<h1 class="text-[32px] font-[800] leading-tight text-white font-headline" style="">Выбор направления</h1>
+<button class="p-2 -mr-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95" onclick="window.location.href='index.html'" style="">
+<span class="material-symbols-outlined text-on-surface-variant" style="">close</span>
+</button>
+</div>
+</div>
+<!-- Search Input -->
+<div class="px-6 py-4">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-primary" style="">search</span>
+<input class="w-full h-[52px] bg-surface-container-lowest border-none rounded-full pl-12 pr-6 text-on-surface placeholder:text-outline focus:ring-1 focus:ring-secondary/50 transition-all text-lg font-medium" placeholder="Куда летим?" type="text">
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-6 pb-12 space-y-6">
+<!-- Recent Searches Section -->
+<section>
+<h3 class="text-xs font-semibold text-outline-variant uppercase tracking-widest mb-3 ml-2" style="">Недавние</h3>
+<div class="space-y-3">
+<!-- List Item 1 -->
+<div class="flex items-center justify-between h-[68px] px-4 bg-surface-container-low custom-radius hover:bg-surface-container-high transition-colors cursor-pointer group" onclick="window.location.href='index.html'">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="">history</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface" style="">Стамбул, Турция</span>
+<span class="text-xs text-on-surface-variant" style="">IST • 12 Окт</span>
+</div>
+</div>
+<span class="text-primary font-bold text-sm" style="">от 2.4 млн</span>
+</div>
+<!-- List Item 2 -->
+<div class="flex items-center justify-between h-[68px] px-4 bg-surface-container-low custom-radius hover:bg-surface-container-high transition-colors cursor-pointer group" onclick="window.location.href='index.html'">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="">history</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface" style="">Дубай, ОАЭ</span>
+<span class="text-xs text-on-surface-variant" style="">DXB • 05 Окт</span>
+</div>
+</div>
+<span class="text-primary font-bold text-sm" style="">от 3.1 млн</span>
+</div>
+</div>
+</section>
+<!-- Popular Destinations Section -->
+<section>
+<h3 class="text-xs font-semibold text-outline-variant uppercase tracking-widest mb-3 ml-2" style="">Популярные направления</h3>
+<div class="space-y-3">
+<!-- Destination Item 1 -->
+<div class="flex items-center justify-between h-[68px] px-4 bg-surface-container-low custom-radius hover:bg-surface-container-high transition-all cursor-pointer border border-transparent hover:border-primary/10" onclick="window.location.href='index.html'">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl overflow-hidden grayscale-[0.3] group-hover:grayscale-0 transition-all">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJQg2Xf0sOmPs54x1A5VrD8DSLLBIYWW3yXiKON3K0uJOf4r7-mUjJ-GULoyNgDSrl2HH56mDgymh4x3TgSBlV3-CdEO9kH_0F62dPhC3slvJahZqZzpwNT4qEP8DAyZL147e04t8P81ca4eVujv39cLFLtm-aKIoKAETOSGRcAzfLjyjQs_oGJwf9UQVJDBECULJ0Am-jUjEV2wvQMYLpHOcw-U56efnyVn0TeongVeMKt-_frJvMiC86pCfHI7kSVmWYwOUnrl8" style="">
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface text-base" style="">Ташкент</span>
+<span class="text-xs text-on-surface-variant" style="">Узбекистан</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-primary font-bold text-sm" style="">от 850 тыс</span>
+<span class="text-[10px] text-outline uppercase tracking-tighter" style="">прямой рейс</span>
+</div>
+</div>
+<!-- Destination Item 2 -->
+<div class="flex items-center justify-between h-[68px] px-4 bg-surface-container-low custom-radius hover:bg-surface-container-high transition-all cursor-pointer border border-transparent hover:border-primary/10" onclick="window.location.href='index.html'">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl overflow-hidden grayscale-[0.3]">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLF3sZ3IxG8gUEdIzVWxFcDEctO5hdjdJ5uLSO9R-0njgZgjTwq_K0Ak-4WdKPXtLc16CgkEJlZwurGkKwb6GwhgXAKilL8DiAEe6aPTrE4AUB_q9noCr9ArrRcWfNneYZQVj8xKvbItOLYEpk66pYF5T8SloPF3CRI8CmP447zG5ws7PNCGlQrSuUFbYMlgObWybHi4PUNCcn8Pk8mP0wFbIIK4WZr82l9hy0Vh7-JZnRmvAen3WXUoZInl4SD6Zruj2h2yWs7DE" style="">
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface text-base" style="">Алматы</span>
+<span class="text-xs text-on-surface-variant" style="">Казахстан</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-primary font-bold text-sm" style="">от 1.2 млн</span>
+<span class="text-[10px] text-outline uppercase tracking-tighter" style="">прямой рейс</span>
+</div>
+</div>
+<!-- Destination Item 3 -->
+<div class="flex items-center justify-between h-[68px] px-4 bg-surface-container-low custom-radius hover:bg-surface-container-high transition-all cursor-pointer border border-transparent hover:border-primary/10" onclick="window.location.href='index.html'">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl overflow-hidden grayscale-[0.3]">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsXGAFEnHM7KO6ysPxfOFP0uFaBIjKyynwU7HT0mgfB-2zhlFqN60hTbAkC2rKArKwZPqFBz7d6CSI5lg9xTYhAKzfEgN4dD5Q0qGJwf9UQVJDBECULJ0Am" style="">
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface text-base" style="">Самарканд</span>
+<span class="text-xs text-on-surface-variant" style="">Узбекистан</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-primary font-bold text-sm" style="">от 0.7 млн</span>
+<span class="text-[10px] text-outline uppercase tracking-tighter" style="">прямой рейс</span>
+</div>
+</div>
+<!-- Destination Item 4 -->
+<div class="flex items-center justify-between h-[68px] px-4 bg-surface-container-low custom-radius hover:bg-surface-container-high transition-all cursor-pointer border border-transparent hover:border-primary/10" onclick="window.location.href='index.html'">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl overflow-hidden grayscale-[0.3]">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUbBV4Pftk4kAlThIY9MR9uHnU608o_Yff-aBuGBn__4jvL-jA1MnpKbRsgF7KWdtW51AhTHhJs5rVY6OgF9QToXDRp6Jao5pyKhnZ04AN4oLOpbdO5zPQeRl9a8q16Mcgxr7bG3TY6HuaNA_08RhN1Xje-GeKWsPh0P4JtBBx3oq3Wy2_6ZmRa_V7umWgohIHo8XcApymEKXDNMLyS5O2mQrVcILg44kvE1js_LmqEKq-q14jNQFuzOh1gjPuU6dz0zPGIsB6Pew" style="">
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-on-surface text-base" style="">Сеул</span>
+<span class="text-xs text-on-surface-variant" style="">Южная Корея</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-primary font-bold text-sm" style="">от 6.8 млн</span>
+<span class="text-[10px] text-outline uppercase tracking-tighter" style="">1 пересадка</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Safe Area Spacer -->
+<div class="h-8 bg-surface"></div>
+</div>
+</body></html>

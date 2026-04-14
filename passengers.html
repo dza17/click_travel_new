@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Click Travel - Пассажиры</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#3B82F6",
+                    "surface": "#111827",
+                    "background-deep": "#0B1220",
+                    "divider": "#1F2937",
+                    "text-muted": "#6B7280",
+                    "text-dim": "#9CA3AF"
+            },
+            "borderRadius": {
+                    "sheet": "24px",
+                    "btn": "24px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #000000; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .modal-container {
+            max-height: 88vh;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="antialiased overflow-hidden">
+<!-- Background Content (Simulating the screen behind the modal) -->
+<div class="fixed inset-0 z-0 bg-[#000000]">
+<div class="p-6 opacity-20">
+<div class="flex justify-between items-center mb-8">
+<div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-white">arrow_back</span>
+</div>
+<div class="h-6 w-24 bg-surface rounded"></div>
+<div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-white">more_vert</span>
+</div>
+</div>
+<div class="space-y-6">
+<div class="h-32 w-full bg-surface rounded-lg"></div>
+<div class="h-64 w-full bg-surface rounded-lg"></div>
+</div>
+</div>
+</div>
+<!-- Bottom Sheet Modal Container -->
+<div class="fixed inset-0 z-50 flex flex-col justify-end">
+<!-- Backdrop Overlay -->
+<div class="absolute inset-0 bg-black/60"></div>
+<!-- The Modal Content -->
+<div class="relative w-full modal-container bg-background-deep rounded-t-sheet flex flex-col shadow-2xl">
+<!-- Modal Handle & Header (Compact) -->
+<div class="flex flex-col items-center pt-3 px-6 shrink-0">
+<div class="w-9 h-1 bg-divider rounded-full mb-3"></div>
+<div class="flex items-center justify-between w-full pb-3">
+<h1 class="text-[1.125rem] font-bold text-white">Пассажиры и класс</h1>
+<button class="w-8 h-8 flex items-center justify-center text-text-dim hover:text-white transition-colors" onclick="window.location.href='index.html'">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Body -->
+<div class="flex-1 overflow-y-auto no-scrollbar px-6">
+<!-- Passenger Rows -->
+<div class="divide-y divide-divider">
+<!-- Adults -->
+<div class="flex items-center justify-between py-4">
+<div class="flex flex-col">
+<span class="text-[16px] font-semibold text-white">Взрослые</span>
+<span class="text-[12px] text-text-muted">От 18 лет</span>
+</div>
+<div class="flex items-center gap-5">
+<button class="w-[40px] h-[40px] flex items-center justify-center bg-[#1F2937] text-white rounded-full opacity-50">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+<span class="text-[18px] font-bold text-white w-6 text-center font-headline">1</span>
+<button class="w-[40px] h-[40px] flex items-center justify-center bg-[#3B82F6] text-white rounded-full">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Children -->
+<div class="flex items-center justify-between py-4">
+<div class="flex flex-col">
+<span class="text-[16px] font-semibold text-white">Дети</span>
+<span class="text-[12px] text-text-muted">От 2 до 12 лет</span>
+</div>
+<div class="flex items-center gap-5">
+<button class="w-[40px] h-[40px] flex items-center justify-center bg-[#1F2937] text-white rounded-full opacity-50">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+<span class="text-[18px] font-bold text-white w-6 text-center font-headline">0</span>
+<button class="w-[40px] h-[40px] flex items-center justify-center bg-[#3B82F6] text-white rounded-full">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Infants -->
+<div class="flex items-center justify-between py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-[16px] font-semibold text-white">Младенцы</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">info</span>
+</div>
+<span class="text-[12px] text-text-muted">До 2 лет, без места</span>
+</div>
+<div class="flex items-center gap-5">
+<button class="w-[40px] h-[40px] flex items-center justify-center bg-[#1F2937] text-white rounded-full opacity-50">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+<span class="text-[18px] font-bold text-white w-6 text-center font-headline">0</span>
+<button class="w-[40px] h-[40px] flex items-center justify-center bg-[#3B82F6] text-white rounded-full">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Class Selector -->
+<div class="mt-6 mb-5"><div class="flex p-1 bg-[#111827] rounded-[24px] gap-1">
+<button class="flex-1 text-white py-2.5 rounded-[20px] text-[14px] font-medium border-[1.5px] border-[#3B82F6] bg-[#3B82F6]/[0.08]">Эконом</button>
+<button class="flex-1 text-[#9CA3AF] py-2.5 rounded-[20px] text-[14px] font-medium bg-transparent">Бизнес</button>
+</div></div>
+</div>
+<!-- Sticky Bottom Button -->
+<div class="p-6 pt-0 bg-background-deep shrink-0">
+<button class="w-full h-[54px] bg-primary text-white rounded-btn font-bold text-[16px] active:scale-[0.98] transition-transform shadow-lg shadow-primary/20" onclick="window.location.href='index.html'">
+                    Готово
+                </button>
+<div class="h-2"></div>
+</div>
+</div>
+</div>
+</body></html>
