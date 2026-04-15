@@ -11,274 +11,219 @@
         darkMode: "class",
         theme: {
             extend: {
-                "colors": {
-                    "background": "#0B0F1A",
-                    "surface-card": "#0F172A",
-                    "primary": "#3B82F6",
-                    "primary-hover": "#2563EB",
-                    "on-surface": "#FFFFFF",
-                    "on-surface-variant": "#9CA3AF",
-                    "success": "#22C55E"
+                colors: {
+                    "background":          "#0B0F1A",
+                    "primary":             "#3B82F6",
+                    "on-surface":          "#FFFFFF",
+                    "on-surface-variant":  "#9CA3AF",
+                    "success":             "#22C55E"
                 },
-                "borderRadius": {
-                    "DEFAULT": "1rem",
-                    "card": "1.5rem",
-                    "full": "9999px"
-                },
-                "fontFamily": {
-                    "headline": ["Manrope", "sans-serif"],
-                    "body": ["Manrope", "sans-serif"],
-                    "label": ["Manrope", "sans-serif"]
+                fontFamily: {
+                    "headline": ["Manrope","sans-serif"],
+                    "body":     ["Manrope","sans-serif"]
                 }
-            },
-        },
+            }
+        }
     }
 </script>
 <style>
+    * { box-sizing: border-box; }
+
     .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-    }
+
     body {
-        height: 100vh;
+        font-family: 'Manrope', sans-serif;
         background: #020617;
+        height: 100dvh;
         overflow: hidden;
         display: flex;
         align-items: flex-end;
+        margin: 0;
     }
-    .bottom-sheet {
-        height: 92vh;
-        background: #0B101E;
-        border-top-left-radius: 32px;
-        border-top-right-radius: 32px;
+
+    /* Bottom sheet fills 92% of dynamic viewport height */
+    .sheet {
         width: 100%;
+        max-width: 512px;
+        height: 92dvh;
+        background: #0B101E;
+        border-radius: 32px 32px 0 0;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
         display: flex;
         flex-direction: column;
-        position: relative;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+        overflow: hidden;
     }
-    .scroll-content {
+
+    /* Scrollable calendar area */
+    .scroll-area {
         flex: 1;
         overflow-y: auto;
         -ms-overflow-style: none;
         scrollbar-width: none;
-        padding-bottom: 140px;
     }
-    .scroll-content::-webkit-scrollbar { display: none; }
-    .glow-primary { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* CTA footer — in normal flex flow, not absolute */
+    .cta-footer {
+        flex-shrink: 0;
+        padding: 12px 24px max(24px, env(safe-area-inset-bottom)) 24px;
+        background: linear-gradient(to top, #0B101E 80%, transparent);
+    }
+
+    /* Calendar grid */
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .glow { box-shadow: 0 0 18px rgba(59,130,246,0.45); }
 </style>
 </head>
-<body class="text-on-surface font-body">
-<div class="bottom-sheet max-w-lg mx-auto">
+<body>
+<div class="sheet mx-auto">
 
-    <!-- Drag Handle -->
-    <div class="w-full flex justify-center pt-3 pb-1">
-        <div class="w-10 h-1 bg-white/10 rounded-full"></div>
+    <!-- ① Drag handle -->
+    <div class="flex justify-center pt-3 pb-1 flex-shrink-0">
+        <div style="width:40px;height:4px;background:rgba(255,255,255,0.1);border-radius:9999px;"></div>
     </div>
 
-    <!-- Header -->
-    <header class="w-full flex items-center justify-between px-6 h-14 bg-transparent shrink-0">
-        <button class="flex items-center justify-center p-2 text-on-surface hover:bg-white/10 transition-colors rounded-full active:scale-95"
-                onclick="window.location.href='index.html'">
-            <span class="material-symbols-outlined text-2xl">close</span>
+    <!-- ② Header row -->
+    <header class="flex items-center justify-between px-6 flex-shrink-0" style="height:56px;">
+        <button onclick="window.location.href='index.html'"
+                class="flex items-center justify-center rounded-full hover:bg-white/10 transition-colors active:scale-95"
+                style="width:40px;height:40px;">
+            <span class="material-symbols-outlined text-white text-2xl">close</span>
         </button>
-        <h1 class="font-headline text-lg font-bold tracking-tight text-white flex gap-2 items-center">
-            Ташкент <span class="material-symbols-outlined text-xl text-primary">east</span> Москва
+        <h1 class="font-headline font-bold text-white flex items-center gap-2" style="font-size:17px;">
+            Ташкент
+            <span class="material-symbols-outlined text-primary" style="font-size:20px;">east</span>
+            Москва
         </h1>
-        <div class="w-10"></div>
+        <div style="width:40px;"></div>
     </header>
 
-    <div class="scroll-content px-4">
-
-        <!-- Selection Tabs -->
-        <section class="mt-2 mb-8">
-            <div class="bg-white/5 rounded-full p-1.5 flex gap-1 items-center border border-white/5">
-                <button id="tab-departure"
-                        class="flex-1 px-4 rounded-full font-headline font-bold text-center transition-all duration-300 py-2 flex-col flex justify-center"
-                        onclick="handleTabTap('departure')">
-                    <span class="block text-[12px] font-medium leading-tight uppercase tracking-wide">Туда</span>
-                    <span id="tab-departure-date" class="block text-[18px] font-bold leading-tight uppercase">—</span>
-                </button>
-                <button id="tab-return"
-                        class="flex-1 px-4 rounded-full font-headline font-bold text-center transition-all duration-300 py-2 flex-col flex justify-center"
-                        onclick="handleTabTap('return')">
-                    <span class="block text-[12px] font-medium leading-tight uppercase tracking-wide">Обратно</span>
-                    <span id="tab-return-date" class="block text-[18px] font-bold leading-tight uppercase">—</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- Calendar months will be rendered here -->
-        <div id="calendar-container" class="space-y-8"></div>
-
+    <!-- ③ Tab selector — FIXED inside sheet, NOT inside scroll area -->
+    <div class="px-4 pb-3 flex-shrink-0">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.05);border-radius:9999px;padding:6px;display:flex;gap:4px;">
+            <button id="tab-dep"
+                    onclick="handleTabTap('departure')"
+                    style="flex:1;border:none;border-radius:9999px;padding:10px 16px;cursor:pointer;transition:all 0.25s;">
+                <span style="display:block;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">Туда</span>
+                <span id="tab-dep-date" style="display:block;font-size:18px;font-weight:800;text-transform:uppercase;line-height:1.2;">—</span>
+            </button>
+            <button id="tab-ret"
+                    onclick="handleTabTap('return')"
+                    style="flex:1;border:none;border-radius:9999px;padding:10px 16px;cursor:pointer;transition:all 0.25s;">
+                <span style="display:block;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;line-height:1.2;">Обратно</span>
+                <span id="tab-ret-date" style="display:block;font-size:18px;font-weight:800;text-transform:uppercase;line-height:1.2;">—</span>
+            </button>
+        </div>
     </div>
 
-    <!-- Fixed CTA -->
-    <div class="absolute bottom-0 left-0 w-full px-6 pb-10 pt-4 bg-gradient-to-t from-[#0B101E] via-[#0B101E] to-transparent z-50">
-        <div class="bg-[#111827] rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/5 mb-4">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
-                <span class="material-symbols-outlined text-success text-lg" style='font-variation-settings: "FILL" 1;'>lightbulb</span>
+    <!-- ④ Scrollable calendar -->
+    <div class="scroll-area px-4" id="calendar-wrap"></div>
+
+    <!-- ⑤ CTA footer -->
+    <div class="cta-footer">
+
+        <!-- Tip block (dismissible) -->
+        <div id="tip-block" style="background:#111827;border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;background:rgba(34,197,94,0.1);border-radius:9999px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span class="material-symbols-outlined text-success" style="font-size:18px;font-variation-settings:'FILL' 1;">lightbulb</span>
             </div>
-            <p class="text-[13px] leading-tight text-on-surface-variant font-medium">
-                Полеты в середине недели предлагают <span class="text-success font-bold">лучшую экономию до 35%</span>.
+            <p style="font-size:12px;line-height:1.4;color:#9CA3AF;flex:1;margin:0;">
+                Полёты в середине недели предлагают <span style="color:#22C55E;font-weight:700;">лучшую экономию до 35%</span>.
             </p>
+            <button onclick="dismissTip()"
+                    style="width:28px;height:28px;background:rgba(255,255,255,0.06);border:none;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+                <span class="material-symbols-outlined" style="font-size:16px;color:#9CA3AF;">close</span>
+            </button>
         </div>
-        <button id="cta-button"
-                class="w-full h-[52px] rounded-full font-headline text-[18px] font-[800] text-white transition-all duration-200 ease-in-out active:scale-[0.98] tracking-wide text-center flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.3)]"
-                onclick="handleCTA()">
-            Выбрать дату
+
+        <button id="cta-btn"
+                onclick="handleCTA()"
+                class="font-headline"
+                style="width:100%;height:52px;border:none;border-radius:9999px;font-size:17px;font-weight:800;color:white;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;">
+            Выберите дату вылета
         </button>
     </div>
 
 </div>
 
 <script>
-// ─── PRICE DATA (demo) ───────────────────────────────────────────────────────
-const PRICES = {
-    '2025-10-01': { price: '1.24 м', low: false },
-    '2025-10-02': { price: '1.18 м', low: false },
-    '2025-10-03': { price: '0.84 м', low: true  },
-    '2025-10-04': { price: '1.10 м', low: false },
-    '2025-10-05': { price: '1.35 м', low: false },
-    '2025-10-06': { price: '1.20 м', low: false },
-    '2025-10-07': { price: '1.15 м', low: false },
-    '2025-10-08': { price: '0.81 м', low: true  },
-    '2025-10-09': { price: '1.05 м', low: false },
-    '2025-10-10': { price: '1.10 м', low: false },
-    '2025-10-11': { price: '1.42 м', low: false },
-    '2025-10-12': { price: '1.20 м', low: false },
-    '2025-10-13': { price: '1.20 м', low: false },
-    '2025-10-14': { price: '1.10 м', low: false },
-    '2025-10-15': { price: '0.89 м', low: true  },
-    '2025-10-16': { price: '1.15 м', low: false },
-    '2025-10-17': { price: '1.15 м', low: false },
-    '2025-10-18': { price: '1.25 м', low: false },
-    '2025-10-19': { price: '1.30 м', low: false },
-    '2025-10-20': { price: '1.10 м', low: false },
-    '2025-10-21': { price: '0.82 м', low: true  },
-    '2025-10-22': { price: '1.15 м', low: false },
-    '2025-10-23': { price: '1.08 м', low: false },
-    '2025-10-24': { price: '0.85 м', low: true  },
-    '2025-10-25': { price: '1.12 м', low: false },
-    '2025-10-26': { price: '1.30 м', low: false },
-    '2025-10-27': { price: '1.45 м', low: false },
-    '2025-10-28': { price: '1.20 м', low: false },
-    '2025-10-29': { price: '1.18 м', low: false },
-    '2025-10-30': { price: '0.88 м', low: true  },
-    '2025-10-31': { price: '1.10 м', low: false },
-    '2025-11-01': { price: '1.37 м', low: false },
-    '2025-11-02': { price: '1.40 м', low: false },
-    '2025-11-03': { price: '0.92 м', low: true  },
-    '2025-11-04': { price: '1.22 м', low: false },
-    '2025-11-05': { price: '0.87 м', low: true  },
-    '2025-11-06': { price: '1.18 м', low: false },
-    '2025-11-07': { price: '1.35 м', low: false },
-    '2025-11-08': { price: '1.10 м', low: false },
-    '2025-11-09': { price: '0.95 м', low: true  },
-    '2025-11-10': { price: '1.28 м', low: false },
-    '2025-11-11': { price: '1.15 м', low: false },
-    '2025-11-12': { price: '1.42 м', low: false },
-    '2025-11-13': { price: '1.20 м', low: false },
-    '2025-11-14': { price: '0.88 м', low: true  },
-    '2025-11-15': { price: '1.30 м', low: false },
-};
-
-const MONTH_NAMES = [
-    'Январь','Февраль','Март','Апрель','Май','Июнь',
-    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'
-];
-const MONTH_SHORT = [
-    'ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН',
-    'ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'
-];
-
-// ─── STATE ───────────────────────────────────────────────────────────────────
-const state = {
-    departureDate: null,   // Date | null
-    returnDate:    null,   // Date | null
-    activeField:   'departure' // 'departure' | 'return'
-};
-
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
-// Convert Date to "YYYY-MM-DD" key
-function toKey(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+const MONTH_NAMES  = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTH_SHORT  = ['ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'];
+const DAY_NAMES    = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+function toKey(d)   { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function fromKey(k) { const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d); }
+function pad(n)     { return String(n).padStart(2,'0'); }
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function isAfterEq(a,b){ return a >= b || sameDay(a,b); } // a >= b calendar-wise
+function isBetween(d,s,e){ return d > s && d < e && !sameDay(d,s) && !sameDay(d,e); }
+function isPast(d)  { return d < TODAY && !sameDay(d, TODAY); }
+
+function formatShort(d) {
+    if (!d) return '—';
+    return `${d.getDate()} ${MONTH_SHORT[d.getMonth()]}`;
 }
 
-// Parse "YYYY-MM-DD" to Date (local, no timezone shift)
-function fromKey(key) {
-    const [y, m, d] = key.split('-').map(Number);
-    return new Date(y, m - 1, d);
+// Pseudo-random price based on date (for demo)
+function getPrice(date) {
+    const dow  = date.getDay(); // 0=Sun … 6=Sat
+    const mid  = dow >= 2 && dow <= 4; // Tue/Wed/Thu cheaper
+    const seed = (date.getDate() * 7 + date.getMonth() * 13) % 25;
+    const base = mid ? 0.80 : 1.15;
+    const val  = +(base + seed / 100).toFixed(2);
+    return { price: `${val} м`, low: val < 1.0 };
 }
 
-// Format Date to "12 ОКТ"
-function formatShort(date) {
-    if (!date) return '—';
-    return `${date.getDate()} ${MONTH_SHORT[date.getMonth()]}`;
-}
+// ─── STATE ───────────────────────────────────────────────────────────────────
 
-// Compare dates by calendar day only (ignore time)
-function sameDay(a, b) {
-    return a.getFullYear() === b.getFullYear() &&
-           a.getMonth()    === b.getMonth()    &&
-           a.getDate()     === b.getDate();
-}
-
-function isBefore(a, b) {
-    return a < b && !sameDay(a, b);
-}
-
-function isAfter(a, b) {
-    return a > b && !sameDay(a, b);
-}
-
-function isBetween(date, start, end) {
-    return isAfter(date, start) && isBefore(date, end);
-}
+const state = {
+    departureDate: null,
+    returnDate:    null,
+    activeField:   'departure'  // 'departure' | 'return'
+};
 
 // ─── SELECTION LOGIC ─────────────────────────────────────────────────────────
 
 function handleDateTap(key) {
     const tapped = fromKey(key);
+    if (isPast(tapped)) return; // block past dates
+
     const { departureDate, returnDate, activeField } = state;
 
     if (activeField === 'departure') {
-        // Tapping Туда field — set departure, clear return if now invalid
         state.departureDate = tapped;
-        if (returnDate && !isAfter(returnDate, tapped)) {
-            state.returnDate = null;
-        }
+        // invalidate return if it's no longer after departure
+        if (returnDate && !isAfterEq(returnDate, tapped)) state.returnDate = null;
         state.activeField = 'return';
 
     } else {
         // activeField === 'return'
-
         if (!departureDate) {
-            // No departure yet — treat as departure
             state.departureDate = tapped;
-            state.activeField = 'return';
-
+            state.activeField   = 'return';
         } else if (returnDate) {
-            // Case C: both dates already set → start new cycle
+            // Both already set → start new cycle
             state.departureDate = tapped;
             state.returnDate    = null;
             state.activeField   = 'return';
-
         } else {
-            // Case B: departure set, return empty
-            if (!isBefore(tapped, departureDate)) {
-                // Valid return (same day or later)
+            // Departure set, return empty
+            if (!isPast(tapped) && isAfterEq(tapped, departureDate)) {
                 state.returnDate  = tapped;
-                state.activeField = 'return'; // stays in case user wants to change
+                // stay on 'return' so user can change if needed
             } else {
-                // Tapped earlier than departure → become new departure
+                // Tapped earlier → become new departure
                 state.departureDate = tapped;
                 state.returnDate    = null;
                 state.activeField   = 'return';
@@ -295,192 +240,181 @@ function handleTabTap(field) {
 }
 
 function handleCTA() {
-    if (state.departureDate) {
-        window.location.href = 'index.html';
-    }
+    if (state.departureDate) window.location.href = 'index.html';
+}
+
+function dismissTip() {
+    const el = document.getElementById('tip-block');
+    if (el) el.style.display = 'none';
 }
 
 // ─── RENDER ──────────────────────────────────────────────────────────────────
 
 function render() {
-    updateTabs();
-    updateCTA();
+    renderTabs();
+    renderCTA();
     renderCalendar();
 }
 
-function updateTabs() {
+function renderTabs() {
     const { departureDate, returnDate, activeField } = state;
 
-    const depBtn  = document.getElementById('tab-departure');
-    const retBtn  = document.getElementById('tab-return');
-    const depDate = document.getElementById('tab-departure-date');
-    const retDate = document.getElementById('tab-return-date');
+    const tabDep    = document.getElementById('tab-dep');
+    const tabRet    = document.getElementById('tab-ret');
+    const depDateEl = document.getElementById('tab-dep-date');
+    const retDateEl = document.getElementById('tab-ret-date');
 
-    // Active tab = filled blue; inactive = ghost
-    const activeClass   = 'bg-primary text-white';
-    const inactiveClass = 'text-on-surface-variant';
+    // Active = blue pill; inactive = transparent
+    [tabDep, tabRet].forEach(btn => {
+        btn.style.background = 'transparent';
+        btn.style.color      = '#9CA3AF';
+    });
 
-    depBtn.className = depBtn.className
-        .replace(activeClass, '').replace(inactiveClass, '').trim();
-    retBtn.className = retBtn.className
-        .replace(activeClass, '').replace(inactiveClass, '').trim();
+    const active = activeField === 'departure' ? tabDep : tabRet;
+    active.style.background = '#3B82F6';
+    active.style.color      = '#FFFFFF';
 
-    if (activeField === 'departure') {
-        depBtn.classList.add(...activeClass.split(' '));
-        retBtn.classList.add(...inactiveClass.split(' '));
-    } else {
-        retBtn.classList.add(...activeClass.split(' '));
-        depBtn.classList.add(...inactiveClass.split(' '));
-    }
+    depDateEl.textContent   = departureDate ? formatShort(departureDate) : '—';
+    depDateEl.style.opacity = departureDate ? '1' : '0.4';
 
-    // Tab date labels
-    depDate.textContent = departureDate ? formatShort(departureDate) : '—';
-    retDate.textContent = returnDate    ? formatShort(returnDate)    : '—';
-
-    // Label color: muted when empty
-    depDate.className = `block text-[18px] font-bold leading-tight uppercase ${departureDate ? '' : 'opacity-40'}`;
-    retDate.className = `block text-[18px] font-bold leading-tight uppercase ${returnDate    ? '' : 'opacity-40'}`;
+    retDateEl.textContent   = returnDate    ? formatShort(returnDate)    : '—';
+    retDateEl.style.opacity = returnDate    ? '1' : '0.4';
 }
 
-function updateCTA() {
-    const btn = document.getElementById('cta-button');
+function renderCTA() {
+    const btn = document.getElementById('cta-btn');
     const { departureDate, returnDate } = state;
 
     if (!departureDate) {
-        btn.style.background = '#1F2937';
-        btn.style.boxShadow  = 'none';
-        btn.textContent = 'Выберите дату вылета';
+        btn.style.background  = '#1F2937';
+        btn.style.boxShadow   = 'none';
+        btn.textContent       = 'Выберите дату вылета';
     } else if (!returnDate) {
-        btn.style.background = '#3B82F6';
-        btn.style.boxShadow  = '0 4px 20px rgba(59,130,246,0.3)';
-        btn.textContent = `Туда: ${formatShort(departureDate)} · выберите обратно`;
+        btn.style.background  = '#3B82F6';
+        btn.style.boxShadow   = '0 4px 20px rgba(59,130,246,0.35)';
+        btn.textContent       = `Туда: ${formatShort(departureDate)} · укажите обратно`;
     } else {
-        btn.style.background = '#3B82F6';
-        btn.style.boxShadow  = '0 4px 20px rgba(59,130,246,0.3)';
-        btn.textContent = `${formatShort(departureDate)} — ${formatShort(returnDate)}`;
+        btn.style.background  = '#3B82F6';
+        btn.style.boxShadow   = '0 4px 20px rgba(59,130,246,0.35)';
+        btn.textContent       = `${formatShort(departureDate)} — ${formatShort(returnDate)}`;
     }
 }
 
-// ─── CALENDAR RENDERING ──────────────────────────────────────────────────────
+// ─── CALENDAR RENDER ─────────────────────────────────────────────────────────
 
-const MONTHS_TO_RENDER = [
-    { year: 2025, month: 9  }, // October  (0-indexed)
-    { year: 2025, month: 10 }, // November
-];
-
-function getDaysInMonth(year, month) {
-    return new Date(year, month + 1, 0).getDate();
+// Build 4 months from today's month
+function getMonthsToRender() {
+    const months = [];
+    const base   = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+    for (let i = 0; i < 4; i++) {
+        const d = new Date(base.getFullYear(), base.getMonth() + i, 1);
+        months.push({ year: d.getFullYear(), month: d.getMonth() });
+    }
+    return months;
 }
 
-// Monday-based offset (Mon=0 … Sun=6)
-function getStartOffset(year, month) {
-    const jsDay = new Date(year, month, 1).getDay(); // 0=Sun … 6=Sat
-    return (jsDay + 6) % 7;
-}
+function getDaysInMonth(y, m) { return new Date(y, m+1, 0).getDate(); }
+function getOffset(y, m)      { return (new Date(y, m, 1).getDay() + 6) % 7; } // Mon=0
 
 function getDayState(date) {
     const { departureDate, returnDate } = state;
-    if (!departureDate) return 'default';
-    if (sameDay(date, departureDate)) return 'departure';
-    if (returnDate && sameDay(date, returnDate)) return 'return';
+    if (!departureDate)                                     return 'default';
+    if (sameDay(date, departureDate))                       return 'departure';
+    if (returnDate && sameDay(date, returnDate))            return 'return';
     if (returnDate && isBetween(date, departureDate, returnDate)) return 'range';
     return 'default';
 }
 
 function buildDayCell(year, month, day) {
-    const date = new Date(year, month, day);
-    const key  = toKey(date);
-    const info = PRICES[key];
-    const ds   = getDayState(date);
+    const date   = new Date(year, month, day);
+    const key    = toKey(date);
+    const past   = isPast(date);
+    const ds     = past ? 'past' : getDayState(date);
+    const info   = getPrice(date);
 
-    const outer = document.createElement('div');
-    outer.className = 'flex flex-col items-center justify-center h-14 cursor-pointer select-none';
-    outer.onclick   = () => handleDateTap(key);
+    const outer  = document.createElement('div');
+    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;cursor:pointer;user-select:none;';
+    if (!past) outer.onclick = () => handleDateTap(key);
 
     if (ds === 'departure' || ds === 'return') {
-        // Blue circle
-        const inner = document.createElement('div');
-        inner.className = 'w-11 h-11 bg-primary rounded-full flex flex-col items-center justify-center glow-primary';
-        inner.innerHTML = `
-            <span class="font-bold text-base text-white">${day}</span>
-            ${info ? `<span class="text-[8px] text-white/80 uppercase">${info.price}</span>` : ''}
-        `;
-        outer.appendChild(inner);
+        outer.innerHTML = `
+            <div class="glow" style="width:44px;height:44px;background:#3B82F6;border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span style="font-size:16px;font-weight:700;color:white;line-height:1.1;">${day}</span>
+                <span style="font-size:8px;color:rgba(255,255,255,0.75);text-transform:uppercase;">${info.price}</span>
+            </div>`;
 
     } else if (ds === 'range') {
-        // In-range highlight
-        outer.classList.add('p-1');
-        const inner = document.createElement('div');
-        inner.className = 'w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center';
-        inner.innerHTML = `
-            <span class="font-medium text-base text-white">${day}</span>
-            ${info ? `<span class="text-[9px] ${info.low ? 'text-success font-medium' : 'text-on-surface-variant'}">${info.price}</span>` : ''}
-        `;
-        outer.appendChild(inner);
+        outer.style.padding = '2px';
+        outer.innerHTML = `
+            <div style="width:100%;height:100%;background:rgba(59,130,246,0.2);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
+                <span style="font-size:9px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}">${info.price}</span>
+            </div>`;
+
+    } else if (ds === 'past') {
+        outer.style.cursor = 'default';
+        outer.innerHTML = `
+            <span style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.2);line-height:1.1;">${day}</span>
+            <span style="font-size:9px;color:rgba(156,163,175,0.2);">${info.price}</span>`;
 
     } else {
-        // Default — low prices get subtle bg highlight
-        const hasBg = info && info.low;
-        if (hasBg) outer.classList.add('p-1');
-        const inner = document.createElement('div');
-        inner.className = hasBg
-            ? 'w-full h-full bg-success/10 rounded-full flex flex-col items-center justify-center'
-            : 'flex flex-col items-center justify-center w-full h-full';
-        inner.innerHTML = `
-            <span class="font-medium text-base text-white">${day}</span>
-            ${info ? `<span class="text-[9px] ${info.low ? 'text-success font-medium' : 'text-on-surface-variant'}">${info.price}</span>` : ''}
-        `;
-        outer.appendChild(inner);
+        // Default: low-price dates get subtle green bg
+        if (info.low) outer.style.padding = '2px';
+        outer.innerHTML = info.low
+            ? `<div style="width:100%;height:100%;background:rgba(34,197,94,0.08);border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                   <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
+                   <span style="font-size:9px;color:#22C55E;font-weight:600;">${info.price}</span>
+               </div>`
+            : `<span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
+               <span style="font-size:9px;color:#9CA3AF;">${info.price}</span>`;
     }
 
     return outer;
 }
 
 function renderCalendar() {
-    const container = document.getElementById('calendar-container');
-    container.innerHTML = '';
+    const wrap = document.getElementById('calendar-wrap');
+    wrap.innerHTML = '';
 
-    MONTHS_TO_RENDER.forEach(({ year, month }) => {
-        const section   = document.createElement('section');
-        const daysCount = getDaysInMonth(year, month);
-        const offset    = getStartOffset(year, month);
+    getMonthsToRender().forEach(({ year, month }) => {
+        const section    = document.createElement('div');
+        section.style.marginBottom = '32px';
 
-        // Month header
-        section.innerHTML = `
-            <div class="flex items-center mb-6 px-2">
-                <h3 class="font-headline text-2xl font-bold tracking-tight text-white">${MONTH_NAMES[month]}</h3>
-            </div>
-        `;
+        // Month title
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:22px;font-weight:700;color:white;padding:0 8px 20px 8px;';
+        title.textContent   = `${MONTH_NAMES[month]} ${year}`;
+        section.appendChild(title);
 
-        // Weekday header row
+        // Weekday header
         const weekRow = document.createElement('div');
-        weekRow.className = 'calendar-grid mb-4';
-        ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+        weekRow.className = 'cal-grid';
+        weekRow.style.marginBottom = '4px';
+        DAY_NAMES.forEach(d => {
             const cell = document.createElement('div');
-            cell.className = 'text-center text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2';
-            cell.textContent = d;
+            cell.style.cssText = 'text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#9CA3AF;opacity:0.4;padding:8px 0;';
+            cell.textContent   = d;
             weekRow.appendChild(cell);
         });
         section.appendChild(weekRow);
 
         // Days grid
-        const grid = document.createElement('div');
-        grid.className = 'calendar-grid';
+        const grid   = document.createElement('div');
+        grid.className = 'cal-grid';
+        const offset = getOffset(year, month);
+        const days   = getDaysInMonth(year, month);
 
-        // Empty offset cells
         for (let i = 0; i < offset; i++) {
             const empty = document.createElement('div');
-            empty.className = 'h-14';
+            empty.style.height = '56px';
             grid.appendChild(empty);
         }
-
-        // Day cells
-        for (let day = 1; day <= daysCount; day++) {
+        for (let day = 1; day <= days; day++) {
             grid.appendChild(buildDayCell(year, month, day));
         }
 
         section.appendChild(grid);
-        container.appendChild(section);
+        wrap.appendChild(section);
     });
 }
 
