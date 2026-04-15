@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html class="dark" lang="ru"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -8,234 +7,484 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "background": "#0B0F1A",
-                        "surface-card": "#0F172A",
-                        "primary": "#3B82F6",
-                        "primary-hover": "#2563EB",
-                        "on-surface": "#FFFFFF",
-                        "on-surface-variant": "#9CA3AF",
-                        "success": "#22C55E"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "1rem",
-                        "card": "1.5rem",
-                        "full": "9999px"
-                    },
-                    "fontFamily": {
-                        "headline": ["Manrope", "sans-serif"],
-                        "body": ["Manrope", "sans-serif"],
-                        "label": ["Manrope", "sans-serif"]
-                    }
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                "colors": {
+                    "background": "#0B0F1A",
+                    "surface-card": "#0F172A",
+                    "primary": "#3B82F6",
+                    "primary-hover": "#2563EB",
+                    "on-surface": "#FFFFFF",
+                    "on-surface-variant": "#9CA3AF",
+                    "success": "#22C55E"
                 },
+                "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "card": "1.5rem",
+                    "full": "9999px"
+                },
+                "fontFamily": {
+                    "headline": ["Manrope", "sans-serif"],
+                    "body": ["Manrope", "sans-serif"],
+                    "label": ["Manrope", "sans-serif"]
+                }
             },
-        }
-    </script>
+        },
+    }
+</script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            position: relative;
-        }
-        body {
-            height: 100vh;
-            background: #020617;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-        }
-        .bottom-sheet {
-            height: 92vh;
-            background: #0B101E;
-            border-top-left-radius: 32px;
-            border-top-right-radius: 32px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
-        }
-        .scroll-content {
-            flex: 1;
-            overflow-y: auto;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            padding-bottom: 140px;
-        }
-        .scroll-content::-webkit-scrollbar {
-            display: none;
-        }
-        .glow-primary {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-        }
-        .glow-button {
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-        }
-    </style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+    body {
+        height: 100vh;
+        background: #020617;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+    }
+    .bottom-sheet {
+        height: 92vh;
+        background: #0B101E;
+        border-top-left-radius: 32px;
+        border-top-right-radius: 32px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+    }
+    .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding-bottom: 140px;
+    }
+    .scroll-content::-webkit-scrollbar { display: none; }
+    .glow-primary { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+</style>
 </head>
-<body class="text-on-surface font-body selection:bg-primary selection:text-white">
+<body class="text-on-surface font-body">
 <div class="bottom-sheet max-w-lg mx-auto">
-<!-- Drag Handle -->
-<div class="w-full flex justify-center pt-3 pb-1">
-<div class="w-10 h-1 bg-white/10 rounded-full"></div>
+
+    <!-- Drag Handle -->
+    <div class="w-full flex justify-center pt-3 pb-1">
+        <div class="w-10 h-1 bg-white/10 rounded-full"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full flex items-center justify-between px-6 h-14 bg-transparent shrink-0">
+        <button class="flex items-center justify-center p-2 text-on-surface hover:bg-white/10 transition-colors rounded-full active:scale-95"
+                onclick="window.location.href='index.html'">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+        <h1 class="font-headline text-lg font-bold tracking-tight text-white flex gap-2 items-center">
+            Ташкент <span class="material-symbols-outlined text-xl text-primary">east</span> Москва
+        </h1>
+        <div class="w-10"></div>
+    </header>
+
+    <div class="scroll-content px-4">
+
+        <!-- Selection Tabs -->
+        <section class="mt-2 mb-8">
+            <div class="bg-white/5 rounded-full p-1.5 flex gap-1 items-center border border-white/5">
+                <button id="tab-departure"
+                        class="flex-1 px-4 rounded-full font-headline font-bold text-center transition-all duration-300 py-2 flex-col flex justify-center"
+                        onclick="handleTabTap('departure')">
+                    <span class="block text-[12px] font-medium leading-tight uppercase tracking-wide">Туда</span>
+                    <span id="tab-departure-date" class="block text-[18px] font-bold leading-tight uppercase">—</span>
+                </button>
+                <button id="tab-return"
+                        class="flex-1 px-4 rounded-full font-headline font-bold text-center transition-all duration-300 py-2 flex-col flex justify-center"
+                        onclick="handleTabTap('return')">
+                    <span class="block text-[12px] font-medium leading-tight uppercase tracking-wide">Обратно</span>
+                    <span id="tab-return-date" class="block text-[18px] font-bold leading-tight uppercase">—</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Calendar months will be rendered here -->
+        <div id="calendar-container" class="space-y-8"></div>
+
+    </div>
+
+    <!-- Fixed CTA -->
+    <div class="absolute bottom-0 left-0 w-full px-6 pb-10 pt-4 bg-gradient-to-t from-[#0B101E] via-[#0B101E] to-transparent z-50">
+        <div class="bg-[#111827] rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/5 mb-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-success text-lg" style='font-variation-settings: "FILL" 1;'>lightbulb</span>
+            </div>
+            <p class="text-[13px] leading-tight text-on-surface-variant font-medium">
+                Полеты в середине недели предлагают <span class="text-success font-bold">лучшую экономию до 35%</span>.
+            </p>
+        </div>
+        <button id="cta-button"
+                class="w-full h-[52px] rounded-full font-headline text-[18px] font-[800] text-white transition-all duration-200 ease-in-out active:scale-[0.98] tracking-wide text-center flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.3)]"
+                onclick="handleCTA()">
+            Выбрать дату
+        </button>
+    </div>
+
 </div>
-<!-- Seamless Header -->
-<header class="w-full flex items-center justify-between px-6 h-14 bg-transparent shrink-0">
-<button class="flex items-center justify-center p-2 text-on-surface hover:bg-white/10 transition-colors duration-300 rounded-full active:scale-95" onclick="window.location.href='index.html'" style="">
-<span class="material-symbols-outlined text-2xl" style="">close</span>
-</button>
-<h1 class="font-headline text-lg font-bold tracking-tight text-white flex gap-2 items-center" style="">
-                Ташкент <span class="material-symbols-outlined text-xl text-primary" style="">east</span> Москва
-            </h1>
-<div class="w-10"></div>
-</header>
-<div class="scroll-content px-4">
-<!-- Selection Tabs -->
-<section class="mt-2 mb-8">
-<div class="bg-white/5 rounded-full p-1.5 flex gap-1 items-center border border-white/5">
-<button class="flex-1 px-4 rounded-full bg-primary text-white font-headline font-bold text-center transition-all duration-300 py-2 flex-col flex justify-center" style=""><span class="block text-[12px] font-medium text-white/60 leading-tight uppercase tracking-wide">Туда</span><span class="block text-[18px] font-bold text-white leading-tight uppercase">12 окт</span></button>
-<button class="flex-1 px-4 rounded-full text-on-surface-variant font-headline font-bold text-center hover:text-white transition-all duration-300 py-2 flex-col flex justify-center" style=""><span class="block text-[12px] font-medium text-on-surface-variant leading-tight uppercase tracking-wide">Обратно</span><span class="block text-[18px] font-bold text-on-surface-variant leading-tight uppercase">19 окт</span></button>
-</div>
-</section>
-<!-- Calendar Container -->
-<div class="space-y-5">
-<!-- Month Block: October -->
-<section class="mb-0">
-<div class="flex justify-between items-center mb-6 px-2">
-<h3 class="font-headline text-2xl font-bold tracking-tight text-white" style="">Октябрь</h3>
-</div>
-<!-- Days of Week -->
-<div class="calendar-grid mb-4">
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пн</div>
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вт</div>
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Ср</div>
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Чт</div>
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пт</div>
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Сб</div>
-<div class="text-center font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вс</div>
-</div>
-<!-- Calendar Days Grid -->
-<div class="calendar-grid">
-<!-- Row 1 -->
-<div class="h-14"></div><div class="h-14"></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">1</span><span class="text-[9px] text-on-surface-variant" style="">1.24 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">2</span><span class="text-[9px] text-on-surface-variant" style="">1.18 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">3</span><span class="text-[9px] text-success font-medium" style="">0.84 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">4</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">5</span><span class="text-[9px] text-on-surface-variant" style="">1.35 м</span></div>
-<!-- Row 2 -->
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">6</span><span class="text-[9px] text-on-surface-variant" style="">1.20 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">7</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">8</span><span class="text-[9px] text-success font-medium" style="">0.81 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">9</span><span class="text-[9px] text-on-surface-variant" style="">1.05 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">10</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
-<div class="flex flex-col items-center justify-center h-14"><span class="font-medium text-base text-white" style="">11</span><span class="text-[9px] text-on-surface-variant" style="">1.42 м</span></div>
-<!-- Start Date (Oct 12) -->
-<div class="flex flex-col items-center justify-center h-14">
-<div class="w-11 h-11 bg-primary rounded-full flex flex-col items-center justify-center glow-primary">
-<span class="font-bold text-base text-white" style="">12</span>
-<span class="text-[8px] text-white/80 uppercase" style="">1.20 м</span>
-</div>
-</div>
-<!-- Dates between (13-18) -->
-<div class="flex flex-col items-center justify-center h-14 p-1">
-<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
-<span class="font-medium text-base text-white" style="">13</span><span class="text-[9px] text-on-surface-variant" style="">1.20 м</span>
-</div>
-</div>
-<div class="flex flex-col items-center justify-center h-14 p-1">
-<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
-<span class="font-medium text-base text-white" style="">14</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span>
-</div>
-</div>
-<div class="flex flex-col items-center justify-center h-14 p-1">
-<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
-<span class="font-medium text-base text-white" style="">15</span><span class="text-[9px] text-success font-medium" style="">0.89 м</span>
-</div>
-</div>
-<div class="flex flex-col items-center justify-center h-14 p-1">
-<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
-<span class="font-medium text-base text-white" style="">16</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span>
-</div>
-</div>
-<div class="flex flex-col items-center justify-center h-14 p-1">
-<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
-<span class="font-medium text-base text-white" style="">17</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span>
-</div>
-</div>
-<div class="flex flex-col items-center justify-center h-14 p-1">
-<div class="w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center">
-<span class="font-medium text-base text-white" style="">18</span><span class="text-[9px] text-on-surface-variant" style="">1.25 м</span>
-</div>
-</div>
-<!-- End Date (Oct 19) -->
-<div class="flex flex-col items-center justify-center h-14">
-<div class="w-11 h-11 bg-primary rounded-full flex flex-col items-center justify-center glow-primary">
-<span class="font-bold text-base text-white" style="">19</span>
-<span class="text-[8px] text-white/80 uppercase" style="">1.30 м</span>
-</div>
-</div>
-<!-- Rest of October -->
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">20</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">21</span><span class="text-[9px] text-success font-medium" style="">0.82 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">22</span><span class="text-[9px] text-on-surface-variant" style="">1.15 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">23</span><span class="text-[9px] text-on-surface-variant" style="">1.08 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">24</span><span class="text-[9px] text-success font-medium" style="">0.85 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">25</span><span class="text-[9px] text-on-surface-variant" style="">1.12 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">26</span><span class="text-[9px] text-on-surface-variant" style="">1.30 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">27</span><span class="text-[9px] text-on-surface-variant" style="">1.45 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">28</span><span class="text-[9px] text-on-surface-variant" style="">1.20 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">29</span><span class="text-[9px] text-on-surface-variant" style="">1.18 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">30</span><span class="text-[9px] text-success font-medium" style="">0.88 м</span></div>
-<div class="flex flex-col items-center justify-center h-14 cursor-pointer"><span class="font-medium text-base text-white" style="">31</span><span class="text-[9px] text-on-surface-variant" style="">1.10 м</span></div>
-</div>
-</section>
-<!-- Month Block: November -->
-<section class="opacity-30 mt-0">
-<div class="flex justify-between items-center mb-6 px-2">
-<h3 class="font-headline text-2xl font-bold tracking-tight text-white" style="">Ноябрь</h3>
-</div>
-<div class="calendar-grid mb-4">
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пн</div>
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вт</div>
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Ср</div>
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Чт</div>
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Пт</div>
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Сб</div>
-<div class="text-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 py-2" style="">Вс</div>
-</div>
-<div class="calendar-grid">
-<div class="h-14"></div><div class="h-14"></div><div class="h-14"></div><div class="h-14"></div><div class="h-14"></div>
-<div class="flex flex-col items-center justify-center h-14">
-<span class="font-medium text-base text-white" style="">1</span>
-<span class="text-[9px] text-on-surface-variant" style="">1.37 м</span>
-</div>
-<div class="flex flex-col items-center justify-center h-14">
-<span class="font-medium text-base text-white" style="">2</span>
-<span class="text-[9px] text-on-surface-variant" style="">1.40 м</span>
-</div>
-</div>
-</section>
-</div>
-</div>
-</div>
-<!-- Fixed CTA Button Container -->
-<div class="absolute bottom-0 left-0 w-full px-6 pb-10 pt-4 bg-gradient-to-t from-[#0B101E] via-[#0B101E] to-transparent z-50">
-<div class="bg-[#111827] rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/5 mb-4">
-<div class="flex-shrink-0 w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
-<span class="material-symbols-outlined text-success text-lg" style='font-variation-settings: "FILL" 1;'>lightbulb</span>
-</div>
-<p class="text-[13px] leading-tight text-on-surface-variant font-medium" style="">Полеты в середине недели предлагают <span class="text-success font-bold">лучшую экономию до 35%</span>.</p>
-</div>
-<button class="w-full h-[52px] bg-[#3B82F6] rounded-full font-headline text-[18px] font-[800] text-white transition-all duration-200 ease-in-out active:scale-[0.98] tracking-wide text-center flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.3)]" onclick="window.location.href='index.html'">
-                Выбрать дату
-            </button>
-</div>
+
+<script>
+// ─── PRICE DATA (demo) ───────────────────────────────────────────────────────
+const PRICES = {
+    '2025-10-01': { price: '1.24 м', low: false },
+    '2025-10-02': { price: '1.18 м', low: false },
+    '2025-10-03': { price: '0.84 м', low: true  },
+    '2025-10-04': { price: '1.10 м', low: false },
+    '2025-10-05': { price: '1.35 м', low: false },
+    '2025-10-06': { price: '1.20 м', low: false },
+    '2025-10-07': { price: '1.15 м', low: false },
+    '2025-10-08': { price: '0.81 м', low: true  },
+    '2025-10-09': { price: '1.05 м', low: false },
+    '2025-10-10': { price: '1.10 м', low: false },
+    '2025-10-11': { price: '1.42 м', low: false },
+    '2025-10-12': { price: '1.20 м', low: false },
+    '2025-10-13': { price: '1.20 м', low: false },
+    '2025-10-14': { price: '1.10 м', low: false },
+    '2025-10-15': { price: '0.89 м', low: true  },
+    '2025-10-16': { price: '1.15 м', low: false },
+    '2025-10-17': { price: '1.15 м', low: false },
+    '2025-10-18': { price: '1.25 м', low: false },
+    '2025-10-19': { price: '1.30 м', low: false },
+    '2025-10-20': { price: '1.10 м', low: false },
+    '2025-10-21': { price: '0.82 м', low: true  },
+    '2025-10-22': { price: '1.15 м', low: false },
+    '2025-10-23': { price: '1.08 м', low: false },
+    '2025-10-24': { price: '0.85 м', low: true  },
+    '2025-10-25': { price: '1.12 м', low: false },
+    '2025-10-26': { price: '1.30 м', low: false },
+    '2025-10-27': { price: '1.45 м', low: false },
+    '2025-10-28': { price: '1.20 м', low: false },
+    '2025-10-29': { price: '1.18 м', low: false },
+    '2025-10-30': { price: '0.88 м', low: true  },
+    '2025-10-31': { price: '1.10 м', low: false },
+    '2025-11-01': { price: '1.37 м', low: false },
+    '2025-11-02': { price: '1.40 м', low: false },
+    '2025-11-03': { price: '0.92 м', low: true  },
+    '2025-11-04': { price: '1.22 м', low: false },
+    '2025-11-05': { price: '0.87 м', low: true  },
+    '2025-11-06': { price: '1.18 м', low: false },
+    '2025-11-07': { price: '1.35 м', low: false },
+    '2025-11-08': { price: '1.10 м', low: false },
+    '2025-11-09': { price: '0.95 м', low: true  },
+    '2025-11-10': { price: '1.28 м', low: false },
+    '2025-11-11': { price: '1.15 м', low: false },
+    '2025-11-12': { price: '1.42 м', low: false },
+    '2025-11-13': { price: '1.20 м', low: false },
+    '2025-11-14': { price: '0.88 м', low: true  },
+    '2025-11-15': { price: '1.30 м', low: false },
+};
+
+const MONTH_NAMES = [
+    'Январь','Февраль','Март','Апрель','Май','Июнь',
+    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'
+];
+const MONTH_SHORT = [
+    'ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН',
+    'ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const state = {
+    departureDate: null,   // Date | null
+    returnDate:    null,   // Date | null
+    activeField:   'departure' // 'departure' | 'return'
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+
+// Convert Date to "YYYY-MM-DD" key
+function toKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+// Parse "YYYY-MM-DD" to Date (local, no timezone shift)
+function fromKey(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
+// Format Date to "12 ОКТ"
+function formatShort(date) {
+    if (!date) return '—';
+    return `${date.getDate()} ${MONTH_SHORT[date.getMonth()]}`;
+}
+
+// Compare dates by calendar day only (ignore time)
+function sameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() &&
+           a.getMonth()    === b.getMonth()    &&
+           a.getDate()     === b.getDate();
+}
+
+function isBefore(a, b) {
+    return a < b && !sameDay(a, b);
+}
+
+function isAfter(a, b) {
+    return a > b && !sameDay(a, b);
+}
+
+function isBetween(date, start, end) {
+    return isAfter(date, start) && isBefore(date, end);
+}
+
+// ─── SELECTION LOGIC ─────────────────────────────────────────────────────────
+
+function handleDateTap(key) {
+    const tapped = fromKey(key);
+    const { departureDate, returnDate, activeField } = state;
+
+    if (activeField === 'departure') {
+        // Tapping Туда field — set departure, clear return if now invalid
+        state.departureDate = tapped;
+        if (returnDate && !isAfter(returnDate, tapped)) {
+            state.returnDate = null;
+        }
+        state.activeField = 'return';
+
+    } else {
+        // activeField === 'return'
+
+        if (!departureDate) {
+            // No departure yet — treat as departure
+            state.departureDate = tapped;
+            state.activeField = 'return';
+
+        } else if (returnDate) {
+            // Case C: both dates already set → start new cycle
+            state.departureDate = tapped;
+            state.returnDate    = null;
+            state.activeField   = 'return';
+
+        } else {
+            // Case B: departure set, return empty
+            if (!isBefore(tapped, departureDate)) {
+                // Valid return (same day or later)
+                state.returnDate  = tapped;
+                state.activeField = 'return'; // stays in case user wants to change
+            } else {
+                // Tapped earlier than departure → become new departure
+                state.departureDate = tapped;
+                state.returnDate    = null;
+                state.activeField   = 'return';
+            }
+        }
+    }
+
+    render();
+}
+
+function handleTabTap(field) {
+    state.activeField = field;
+    render();
+}
+
+function handleCTA() {
+    if (state.departureDate) {
+        window.location.href = 'index.html';
+    }
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+function render() {
+    updateTabs();
+    updateCTA();
+    renderCalendar();
+}
+
+function updateTabs() {
+    const { departureDate, returnDate, activeField } = state;
+
+    const depBtn  = document.getElementById('tab-departure');
+    const retBtn  = document.getElementById('tab-return');
+    const depDate = document.getElementById('tab-departure-date');
+    const retDate = document.getElementById('tab-return-date');
+
+    // Active tab = filled blue; inactive = ghost
+    const activeClass   = 'bg-primary text-white';
+    const inactiveClass = 'text-on-surface-variant';
+
+    depBtn.className = depBtn.className
+        .replace(activeClass, '').replace(inactiveClass, '').trim();
+    retBtn.className = retBtn.className
+        .replace(activeClass, '').replace(inactiveClass, '').trim();
+
+    if (activeField === 'departure') {
+        depBtn.classList.add(...activeClass.split(' '));
+        retBtn.classList.add(...inactiveClass.split(' '));
+    } else {
+        retBtn.classList.add(...activeClass.split(' '));
+        depBtn.classList.add(...inactiveClass.split(' '));
+    }
+
+    // Tab date labels
+    depDate.textContent = departureDate ? formatShort(departureDate) : '—';
+    retDate.textContent = returnDate    ? formatShort(returnDate)    : '—';
+
+    // Label color: muted when empty
+    depDate.className = `block text-[18px] font-bold leading-tight uppercase ${departureDate ? '' : 'opacity-40'}`;
+    retDate.className = `block text-[18px] font-bold leading-tight uppercase ${returnDate    ? '' : 'opacity-40'}`;
+}
+
+function updateCTA() {
+    const btn = document.getElementById('cta-button');
+    const { departureDate, returnDate } = state;
+
+    if (!departureDate) {
+        btn.style.background = '#1F2937';
+        btn.style.boxShadow  = 'none';
+        btn.textContent = 'Выберите дату вылета';
+    } else if (!returnDate) {
+        btn.style.background = '#3B82F6';
+        btn.style.boxShadow  = '0 4px 20px rgba(59,130,246,0.3)';
+        btn.textContent = `Туда: ${formatShort(departureDate)} · выберите обратно`;
+    } else {
+        btn.style.background = '#3B82F6';
+        btn.style.boxShadow  = '0 4px 20px rgba(59,130,246,0.3)';
+        btn.textContent = `${formatShort(departureDate)} — ${formatShort(returnDate)}`;
+    }
+}
+
+// ─── CALENDAR RENDERING ──────────────────────────────────────────────────────
+
+const MONTHS_TO_RENDER = [
+    { year: 2025, month: 9  }, // October  (0-indexed)
+    { year: 2025, month: 10 }, // November
+];
+
+function getDaysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+}
+
+// Monday-based offset (Mon=0 … Sun=6)
+function getStartOffset(year, month) {
+    const jsDay = new Date(year, month, 1).getDay(); // 0=Sun … 6=Sat
+    return (jsDay + 6) % 7;
+}
+
+function getDayState(date) {
+    const { departureDate, returnDate } = state;
+    if (!departureDate) return 'default';
+    if (sameDay(date, departureDate)) return 'departure';
+    if (returnDate && sameDay(date, returnDate)) return 'return';
+    if (returnDate && isBetween(date, departureDate, returnDate)) return 'range';
+    return 'default';
+}
+
+function buildDayCell(year, month, day) {
+    const date = new Date(year, month, day);
+    const key  = toKey(date);
+    const info = PRICES[key];
+    const ds   = getDayState(date);
+
+    const outer = document.createElement('div');
+    outer.className = 'flex flex-col items-center justify-center h-14 cursor-pointer select-none';
+    outer.onclick   = () => handleDateTap(key);
+
+    if (ds === 'departure' || ds === 'return') {
+        // Blue circle
+        const inner = document.createElement('div');
+        inner.className = 'w-11 h-11 bg-primary rounded-full flex flex-col items-center justify-center glow-primary';
+        inner.innerHTML = `
+            <span class="font-bold text-base text-white">${day}</span>
+            ${info ? `<span class="text-[8px] text-white/80 uppercase">${info.price}</span>` : ''}
+        `;
+        outer.appendChild(inner);
+
+    } else if (ds === 'range') {
+        // In-range highlight
+        outer.classList.add('p-1');
+        const inner = document.createElement('div');
+        inner.className = 'w-full h-full bg-primary/20 rounded-[10px] flex flex-col items-center justify-center';
+        inner.innerHTML = `
+            <span class="font-medium text-base text-white">${day}</span>
+            ${info ? `<span class="text-[9px] ${info.low ? 'text-success font-medium' : 'text-on-surface-variant'}">${info.price}</span>` : ''}
+        `;
+        outer.appendChild(inner);
+
+    } else {
+        // Default — low prices get subtle bg highlight
+        const hasBg = info && info.low;
+        if (hasBg) outer.classList.add('p-1');
+        const inner = document.createElement('div');
+        inner.className = hasBg
+            ? 'w-full h-full bg-success/10 rounded-full flex flex-col items-center justify-center'
+            : 'flex flex-col items-center justify-center w-full h-full';
+        inner.innerHTML = `
+            <span class="font-medium text-base text-white">${day}</span>
+            ${info ? `<span class="text-[9px] ${info.low ? 'text-success font-medium' : 'text-on-surface-variant'}">${info.price}</span>` : ''}
+        `;
+        outer.appendChild(inner);
+    }
+
+    return outer;
+}
+
+function renderCalendar() {
+    const container = document.getElementById('calendar-container');
+    container.innerHTML = '';
+
+    MONTHS_TO_RENDER.forEach(({ year, month }) => {
+        const section   = document.createElement('section');
+        const daysCount = getDaysInMonth(year, month);
+        const offset    = getStartOffset(year, month);
+
+        // Month header
+        section.innerHTML = `
+            <div class="flex items-center mb-6 px-2">
+                <h3 class="font-headline text-2xl font-bold tracking-tight text-white">${MONTH_NAMES[month]}</h3>
+            </div>
+        `;
+
+        // Weekday header row
+        const weekRow = document.createElement('div');
+        weekRow.className = 'calendar-grid mb-4';
+        ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+            const cell = document.createElement('div');
+            cell.className = 'text-center text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 py-2';
+            cell.textContent = d;
+            weekRow.appendChild(cell);
+        });
+        section.appendChild(weekRow);
+
+        // Days grid
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+
+        // Empty offset cells
+        for (let i = 0; i < offset; i++) {
+            const empty = document.createElement('div');
+            empty.className = 'h-14';
+            grid.appendChild(empty);
+        }
+
+        // Day cells
+        for (let day = 1; day <= daysCount; day++) {
+            grid.appendChild(buildDayCell(year, month, day));
+        }
+
+        section.appendChild(grid);
+        container.appendChild(section);
+    });
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+render();
+</script>
 </body></html>
