@@ -256,11 +256,18 @@
   window.selectDestination = function (code, name) {
     if (state._dirField === 'from') {
       state.from = { name, code };
-      state._dirField = 'to';
-      renderDirTabs();
-      const input = document.getElementById('dir-search-input');
-      if (input) { input.value = ''; input.focus(); }
-      renderDirList('');
+      if (state.to) {
+        // Направление «куда» уже выбрано — просто обновляем «откуда» и закрываем
+        updateMainUI();
+        if (dirSheet) dirSheet.close();
+      } else {
+        // «Куда» ещё не выбрано — переключаемся на таб «Куда»
+        state._dirField = 'to';
+        renderDirTabs();
+        const input = document.getElementById('dir-search-input');
+        if (input) { input.value = ''; input.focus(); }
+        renderDirList('');
+      }
     } else {
       state.to = { name, code };
       updateMainUI();
