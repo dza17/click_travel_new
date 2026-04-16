@@ -659,9 +659,7 @@ window.handlePayment = function() {
           ts:      Date.now(),
         }));
       } catch(e) {}
-      // Placeholder: confirmation screen
-      alert('Оплата прошла! Следующий экран: Подтверждение бронирования');
-      // window.location.href = 'confirmation.html';
+      window.location.href = 'confirmation.html';
     } else {
       errorEl.classList.add('visible');
     }
