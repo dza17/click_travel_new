@@ -175,8 +175,8 @@
       <!-- View All -->
       <button id="view-all-btn"
               style="flex:1;height:44px;background:#3B82F6;border:none;border-radius:999px;
-                     font-family:Manrope,sans-serif;font-size:13px;font-weight:800;
-                     color:#fff;cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;
+                     font-family:Manrope,sans-serif;font-size:15px;font-weight:800;
+                     color:#fff;cursor:pointer;
                      box-shadow:0 4px 20px rgba(59,130,246,0.3);
                      -webkit-tap-highlight-color:transparent;transition:transform 0.15s;"
               onpointerdown="this.style.transform='scale(0.97)'"
@@ -454,17 +454,7 @@ function buildFlightCards(flights, fromCode, toCode) {
   };
 
   document.getElementById('view-all-btn').addEventListener('click', () => {
-    const t = document.createElement('div');
-    t.textContent = 'Полная выдача — скоро';
-    Object.assign(t.style, {
-      position:'fixed', bottom:'160px', left:'50%', transform:'translateX(-50%)',
-      background:'#1a2035', color:'#fff', padding:'10px 20px', borderRadius:'999px',
-      fontSize:'13px', fontWeight:'700', zIndex:'999', opacity:'1',
-      transition:'opacity 0.4s', whiteSpace:'nowrap', pointerEvents:'none',
-    });
-    document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity='0'; }, 1800);
-    setTimeout(() => t.remove(), 2200);
+    window.location.href = 'all_results.html';
   });
 })();
 </script>

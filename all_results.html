@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Click Travel — Все рейсы</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background":             "#0b0f1a",
+          "surface-container":      "#121826",
+          "surface-container-high": "#1a2035",
+          "on-surface":             "#dfe2f2",
+          "on-surface-variant":     "#9CA3AF",
+          "outline-variant":        "#2e3547",
+          "brand-blue":             "#3B82F6",
+          "success":                "#22C55E",
+        },
+        fontFamily: { "body": ["Manrope","sans-serif"] }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: #0b0f1a;
+    color: #dfe2f2;
+    min-height: 100dvh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .glass { background: rgba(11,15,26,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  input, select, textarea { font-size: 16px; }
+
+  #main-area { padding: 0 12px; }
+  #flight-list { display: flex; flex-direction: column; gap: 8px; padding-bottom: 4px; }
+
+  .flight-card {
+    background: #121826;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.04);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .flight-card:active { background: #1a2035; }
+  .flight-card * { pointer-events: none; }
+
+  .flight-line { display: flex; align-items: center; }
+  .flight-line .dot { width:6px;height:6px;border-radius:50%;border:1.5px solid #424754;flex-shrink:0; }
+  .flight-line .line { flex:1;height:1px;background:linear-gradient(to right,#424754,#3B82F6 50%,#424754); }
+  .flight-line .plane-icon { font-size:14px!important;color:#3B82F6;flex-shrink:0;transform:rotate(90deg);margin:0 2px; }
+
+  .sort-chip {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    font-family: Manrope, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+    background: #121826;
+    color: #9CA3AF;
+  }
+  .sort-chip.active {
+    background: #3B82F6;
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
+  }
+</style>
+</head>
+
+<body>
+<div id="app">
+
+  <!-- ── HEADER ── -->
+  <header class="glass border-b border-white/[0.04]"
+          style="height:56px;display:flex;align-items:center;padding:0 12px;">
+    <button onclick="history.length > 1 ? history.back() : window.location.href='results.html'"
+            style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+                   border:none;background:none;cursor:pointer;border-radius:50%;flex-shrink:0;
+                   -webkit-tap-highlight-color:transparent;"
+            onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
+            onpointerup="this.style.background='none'"
+            onpointercancel="this.style.background='none'">
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">arrow_back</span>
+    </button>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;padding:0 8px;">
+      <div id="hdr-route"
+           style="font-size:15px;font-weight:800;color:#fff;white-space:nowrap;
+                  overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.1;">
+        Ташкент → Москва
+      </div>
+      <div id="hdr-meta"
+           style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;
+                  letter-spacing:0.08em;margin-top:2px;white-space:nowrap;">
+        23 Апр · 1 пасс · эконом
+      </div>
+    </div>
+    <div id="hdr-count"
+         style="font-size:11px;font-weight:800;letter-spacing:0.02em;
+                color:#3B82F6;background:rgba(59,130,246,0.12);
+                padding:4px 10px;border-radius:999px;flex-shrink:0;white-space:nowrap;">
+      9 рейсов
+    </div>
+  </header>
+
+  <!-- ── MAIN AREA ── -->
+  <div id="main-area">
+
+    <!-- Date Carousel -->
+    <div id="date-carousel" class="no-scrollbar"
+         style="display:flex;gap:8px;overflow-x:auto;padding:10px 0 8px;">
+    </div>
+
+    <!-- Sort chips -->
+    <div id="sort-row" class="no-scrollbar"
+         style="display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;">
+      <button class="sort-chip active" data-sort="recommended">Рекомендуемые</button>
+      <button class="sort-chip" data-sort="cheapest">Сначала дешёвые</button>
+      <button class="sort-chip" data-sort="fastest">Быстрее всего</button>
+    </div>
+
+    <!-- Section label -->
+    <div style="padding:2px 2px 8px;">
+      <span id="section-label"
+            style="font-size:10px;font-weight:700;text-transform:uppercase;
+                   letter-spacing:0.1em;color:#374151;">все варианты · 9 рейсов</span>
+    </div>
+
+    <!-- Flight list -->
+    <div id="flight-list"></div>
+
+  </div>
+
+  <div style="height:80px;"></div>
+
+</div><!-- /app -->
+
+<!-- ── BOTTOM ACTION BAR ── -->
+<div class="glass border-t border-white/[0.04]"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:200;
+            padding:10px 12px max(12px, env(safe-area-inset-bottom));">
+  <div style="max-width:640px;margin:0 auto;">
+    <button id="filter-btn" onclick="openFilters()"
+            style="width:100%;height:52px;background:#1a2035;border:none;border-radius:999px;
+                   display:flex;align-items:center;justify-content:center;gap:8px;
+                   font-family:Manrope,sans-serif;font-size:15px;font-weight:700;
+                   color:#9CA3AF;cursor:pointer;
+                   border:1px solid rgba(255,255,255,0.06);
+                   -webkit-tap-highlight-color:transparent;transition:all 0.15s;"
+            onpointerdown="this.style.background='#242d42'"
+            onpointerup="this.style.background='#1a2035'"
+            onpointercancel="this.style.background='#1a2035'">
+      <span id="filter-icon" class="material-symbols-outlined" style="font-size:20px;">tune</span>
+      <span id="filter-label">Фильтры</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// ─── Constants ────────────────────────────────────────────────────────────────
+const MONTH_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+
+const AIRLINES = [
+  { name: 'Uzbekistan Airways', code: 'UZ', color: '#1E6AE1' },
+  { name: 'Аэрофлот',           code: 'SU', color: '#C62828' },
+  { name: 'Turkish Airlines',   code: 'TK', color: '#CC0000' },
+  { name: 'FlyDubai',           code: 'FZ', color: '#E75B10' },
+  { name: 'S7 Airlines',        code: 'S7', color: '#008A00' },
+  { name: 'Air Arabia',         code: 'G9', color: '#D4A017' },
+];
+
+const LABELS = [
+  { text: 'Дешевле',   color: '#3B82F6', bg: 'rgba(59,130,246,0.14)' },
+  { text: 'Быстрее',   color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
+  { text: 'Лучший',    color: '#22C55E', bg: 'rgba(34,197,94,0.12)'  },
+  { text: 'С багажом', color: '#A78BFA', bg: 'rgba(167,139,250,0.12)' },
+];
+
+function generateAllFlights(fc, tc) {
+  const seed = ((fc.charCodeAt(0)||84) + (tc.charCodeAt(0)||77)) % 7;
+  const s = seed * 1000;
+  return [
+    { dep:'06:00', arr:'10:25', dur:'4ч 25м', durationMins:265, stops:null,
+      airline:AIRLINES[0], price:1280000+s, chips:[0] },
+    { dep:'08:00', arr:'12:15', dur:'4ч 15м', durationMins:255, stops:null,
+      airline:AIRLINES[0], price:1420000+s*2, chips:[2] },
+    { dep:'09:30', arr:'18:10', dur:'8ч 40м', durationMins:520,
+      stops:{count:1,city:'Баку',layover:'2ч 05м'},
+      airline:AIRLINES[5], price:970000+s, chips:[] },
+    { dep:'10:45', arr:'15:05', dur:'4ч 20м', durationMins:260, stops:null,
+      airline:AIRLINES[4], price:1560000+s*3, chips:[] },
+    { dep:'11:00', arr:'15:30', dur:'4ч 30м', durationMins:270, stops:null,
+      airline:AIRLINES[3], price:2100000+s, chips:[3] },
+    { dep:'13:20', arr:'22:45', dur:'9ч 25м', durationMins:565,
+      stops:{count:1,city:'Дубай',layover:'2ч 10м'},
+      airline:AIRLINES[3], price:1120000+s*2, chips:[] },
+    { dep:'14:30', arr:'18:30', dur:'4ч 00м', durationMins:240, stops:null,
+      airline:AIRLINES[1], price:1890000+s*3, chips:[1,3] },
+    { dep:'19:40', arr:'23:55', dur:'4ч 15м', durationMins:255, stops:null,
+      airline:AIRLINES[0], price:1740000+s*2, chips:[] },
+    { dep:'23:55', arr:'09:00', dur:'9ч 05м', durationMins:545,
+      stops:{count:1,city:'Стамбул',layover:'2ч 30м'},
+      airline:AIRLINES[2], price:1650000+s, chips:[3] },
+  ];
+}
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let currentSort = 'recommended';
+let baseFlights  = [];
+let _fromCode    = 'TAS';
+let _toCode      = 'MOW';
+
+function sortedFlights(mode) {
+  const arr = [...baseFlights];
+  if (mode === 'cheapest') arr.sort((a,b) => a.price - b.price);
+  if (mode === 'fastest')  arr.sort((a,b) => a.durationMins - b.durationMins);
+  return arr;
+}
+
+// ─── Date Carousel ─────────────────────────────────────────────────────────────
+function buildCarousel(depDate) {
+  const base   = depDate ? new Date(depDate) : new Date();
+  const el     = document.getElementById('date-carousel');
+  const prices = [1.42, 1.31, 1.56, 1.48, 1.42, 1.79, 1.38];
+  const offs   = [-3,-2,-1,0,1,2,3];
+  el.innerHTML = offs.map((off, i) => {
+    const d = new Date(base);
+    d.setDate(d.getDate() + off);
+    const active = off === 0;
+    const lbl = `${d.getDate()} ${MONTH_SHORT[d.getMonth()]}`;
+    return `
+      <button onclick="selectDateBtn(this)"
+              style="flex-shrink:0;padding:6px 14px;border-radius:999px;border:none;
+                     cursor:pointer;min-width:68px;text-align:center;
+                     transition:all 0.2s;-webkit-tap-highlight-color:transparent;
+                     background:${active ? '#3B82F6' : '#121826'};
+                     ${active ? 'box-shadow:0 0 0 2px rgba(59,130,246,0.3);' : 'border:1px solid rgba(255,255,255,0.06);'}">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
+                    line-height:1.2;color:${active ? 'rgba(255,255,255,0.8)' : '#9CA3AF'};">${lbl}</div>
+        <div style="font-size:13px;font-weight:800;line-height:1.2;color:#fff;margin-top:1px;">
+          ${prices[i].toFixed(2)}м
+        </div>
+      </button>`;
+  }).join('');
+}
+
+function selectDateBtn(btn) {
+  document.querySelectorAll('#date-carousel button').forEach(b => {
+    const on = b === btn;
+    b.style.background = on ? '#3B82F6' : '#121826';
+    b.style.boxShadow  = on ? '0 0 0 2px rgba(59,130,246,0.3)' : 'none';
+    b.style.border     = on ? 'none' : '1px solid rgba(255,255,255,0.06)';
+    b.querySelector('div').style.color = on ? 'rgba(255,255,255,0.8)' : '#9CA3AF';
+  });
+}
+
+// ─── Render Flight Cards ───────────────────────────────────────────────────────
+function buildFlightCards(flights) {
+  const el = document.getElementById('flight-list');
+  const lbl = document.getElementById('section-label');
+  const cnt = document.getElementById('hdr-count');
+  const n = flights.length;
+  if (lbl) lbl.textContent = `все варианты · ${n} рейсов`;
+  if (cnt) cnt.textContent = `${n} рейсов`;
+
+  el.innerHTML = flights.map(f => {
+    const isDirect = !f.stops;
+    const stopsHtml = isDirect
+      ? `<span style="color:#22C55E;">Прямой</span>`
+      : `<span style="color:#F59E0B;">${f.stops.count} пересадка · ${f.stops.city}</span>
+         <span style="color:#6B7280;margin-left:4px;">· ${f.stops.layover}</span>`;
+
+    const chipsHtml = f.chips.length
+      ? `<div style="display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:5px;">
+           ${f.chips.map(i => `
+             <span style="display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.07em;
+                          text-transform:uppercase;padding:2px 7px;border-radius:999px;
+                          color:${LABELS[i].color};background:${LABELS[i].bg};white-space:nowrap;">
+               ${LABELS[i].text}
+             </span>`).join('')}
+         </div>`
+      : `<div style="height:5px;margin-bottom:5px;"></div>`;
+
+    return `
+    <div class="flight-card" onclick="openTicket(${JSON.stringify(f).replace(/"/g,'&quot;')})">
+
+      <!-- Row 1: airline + price -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:11px;font-weight:800;letter-spacing:0.02em;
+                      color:${f.airline.color};background:${f.airline.color}18;
+                      border:1px solid ${f.airline.color}40;">
+            ${f.airline.code}
+          </div>
+          <span style="font-size:16px;font-weight:700;color:#fff;
+                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            ${f.airline.name}
+          </span>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          ${chipsHtml}
+          <div style="line-height:1;">
+            <span style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.5px;">
+              ${f.price.toLocaleString('ru-RU').replace(/\u00A0/g,' ')}
+            </span>
+            <span style="font-size:11px;font-weight:600;color:#9CA3AF;margin-left:2px;">сум</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: flight time -->
+      <div style="display:flex;align-items:center;gap:10px;padding:2px 0;">
+        <div style="text-align:left;flex-shrink:0;">
+          <div style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">
+            ${f.dep}
+          </div>
+          <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;
+                      letter-spacing:0.06em;margin-top:2px;">${_fromCode}</div>
+        </div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.04em;">${f.dur}</div>
+          <div class="flight-line" style="width:100%;">
+            <div class="dot"></div>
+            <div class="line"></div>
+            <span class="material-symbols-outlined plane-icon">flight</span>
+            <div class="line"></div>
+            <div class="dot"></div>
+          </div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.02em;">${stopsHtml}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">
+            ${f.arr}
+          </div>
+          <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;
+                      letter-spacing:0.06em;margin-top:2px;">${_toCode}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Sort chips ────────────────────────────────────────────────────────────────
+document.getElementById('sort-row').addEventListener('click', e => {
+  const btn = e.target.closest('[data-sort]');
+  if (!btn || btn.dataset.sort === currentSort) return;
+  currentSort = btn.dataset.sort;
+  document.querySelectorAll('.sort-chip').forEach(b => {
+    b.classList.toggle('active', b.dataset.sort === currentSort);
+  });
+  buildFlightCards(sortedFlights(currentSort));
+});
+
+// ─── Init ──────────────────────────────────────────────────────────────────────
+(function init() {
+  let from = { name: 'Ташкент', code: 'TAS' };
+  let to   = { name: 'Москва',  code: 'MOW' };
+  let depDate = null, retDate = null, pax = 1, cls = 'economy';
+
+  try {
+    const s = JSON.parse(sessionStorage.getItem('ct_search') || '{}');
+    if (s.from)    from    = s.from;
+    if (s.to)      to      = s.to;
+    if (s.depDate) depDate = new Date(s.depDate);
+    if (s.retDate) retDate = new Date(s.retDate);
+    if (s.pax)     pax     = s.pax.adults + s.pax.children + s.pax.infants;
+    if (s.cls)     cls     = s.cls;
+  } catch(e) {}
+
+  _fromCode = from ? from.code : 'TAS';
+  _toCode   = to   ? to.code   : 'MOW';
+
+  document.getElementById('hdr-route').textContent =
+    `${from ? from.name : '?'} → ${to ? to.name : '?'}`;
+
+  const datePart = depDate
+    ? `${depDate.getDate()} ${MONTH_SHORT[depDate.getMonth()]}${retDate ? ' — ' + retDate.getDate() + ' ' + MONTH_SHORT[retDate.getMonth()] : ''}`
+    : 'Любая дата';
+  const paxLbl = pax === 1 ? '1 пасс' : `${pax} пасс`;
+  const clsLbl = cls === 'business' ? 'бизнес' : 'эконом';
+  document.getElementById('hdr-meta').textContent = `${datePart} · ${paxLbl} · ${clsLbl}`;
+
+  buildCarousel(depDate);
+  baseFlights = generateAllFlights(_fromCode, _toCode);
+  buildFlightCards(baseFlights);
+
+  window.openTicket = function(f) {
+    try {
+      const search = JSON.parse(sessionStorage.getItem('ct_search') || '{}');
+      sessionStorage.setItem('ct_flight', JSON.stringify({
+        price:        f.price,
+        dep:          f.dep,
+        arr:          f.arr,
+        duration:     f.dur,
+        stops:        f.stops,
+        airlineName:  f.airline.name,
+        airlineCode:  f.airline.code,
+        airlineColor: f.airline.color,
+        from:         search.from || { name:'Ташкент', code:'TAS' },
+        to:           search.to   || { name:'Москва',  code:'MOW' },
+      }));
+    } catch(e) {}
+    window.location.href = 'ticket.html';
+  };
+})();
+</script>
+
+<!-- ── FILTERS SHEET ── -->
+<div id="sheet-filters"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:300;
+            display:none;flex-direction:column;
+            background:#0d1120;border-radius:28px 28px 0 0;
+            box-shadow:0 -12px 48px rgba(0,0,0,0.75);
+            max-height:90dvh;overflow:hidden;will-change:transform;">
+
+  <div class="sheet-handle" style="display:flex;justify-content:center;padding:12px 0 0;cursor:grab;flex-shrink:0;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.12);border-radius:999px;"></div>
+  </div>
+  <header style="display:flex;align-items:center;justify-content:space-between;
+                 padding:10px 20px 14px;flex-shrink:0;">
+    <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:#fff;margin:0;">
+      Фильтры
+    </h2>
+    <button id="filters-close-btn"
+            style="width:36px;height:36px;background:rgba(255,255,255,0.08);border:none;
+                   border-radius:50%;cursor:pointer;display:flex;align-items:center;
+                   justify-content:center;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;">close</span>
+    </button>
+  </header>
+
+  <div class="no-scrollbar" id="filters-body"
+       style="flex:1;overflow-y:auto;padding:0 16px 8px;">
+
+    <!-- Сортировка -->
+    <div style="margin-bottom:24px;">
+      <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                color:#374151;margin:0 0 10px;">Сортировка</p>
+      <div style="display:flex;flex-direction:column;gap:6px;" id="sort-group">
+        <label data-sort="recommended"
+               style="display:flex;align-items:center;justify-content:space-between;
+                      padding:14px 16px;background:#121826;border-radius:14px;cursor:pointer;
+                      border:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;">
+          <span style="font-size:14px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Рекомендуемые</span>
+          <div class="sort-radio" style="width:22px;height:22px;border-radius:50%;border:2px solid #3B82F6;
+               display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;"></div>
+          </div>
+        </label>
+        <label data-sort="cheapest"
+               style="display:flex;align-items:center;justify-content:space-between;
+                      padding:14px 16px;background:#121826;border-radius:14px;cursor:pointer;
+                      border:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;">
+          <span style="font-size:14px;font-weight:600;color:#9CA3AF;font-family:Manrope,sans-serif;">Сначала дешёвые</span>
+          <div class="sort-radio" style="width:22px;height:22px;border-radius:50%;border:2px solid #424754;
+               display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+        </label>
+        <label data-sort="fastest"
+               style="display:flex;align-items:center;justify-content:space-between;
+                      padding:14px 16px;background:#121826;border-radius:14px;cursor:pointer;
+                      border:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;">
+          <span style="font-size:14px;font-weight:600;color:#9CA3AF;font-family:Manrope,sans-serif;">По времени в пути</span>
+          <div class="sort-radio" style="width:22px;height:22px;border-radius:50%;border:2px solid #424754;
+               display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Пересадки -->
+    <div style="margin-bottom:24px;">
+      <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                color:#374151;margin:0 0 10px;">Пересадки</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button data-stops="direct"
+                style="padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.06);
+                       cursor:pointer;font-family:Manrope,sans-serif;font-size:13px;font-weight:700;
+                       -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                       background:#121826;color:#9CA3AF;">Прямой</button>
+        <button data-stops="1stop"
+                style="padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.06);
+                       cursor:pointer;font-family:Manrope,sans-serif;font-size:13px;font-weight:700;
+                       -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                       background:#121826;color:#9CA3AF;">1 пересадка</button>
+        <button data-stops="2plus"
+                style="padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.06);
+                       cursor:pointer;font-family:Manrope,sans-serif;font-size:13px;font-weight:700;
+                       -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                       background:#121826;color:#9CA3AF;">2+ пересадки</button>
+      </div>
+    </div>
+
+    <!-- Время вылета -->
+    <div style="margin-bottom:24px;">
+      <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                color:#374151;margin:0 0 10px;">Время вылета</p>
+      <div class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;">
+        <button data-dep="00-06" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">🌙 00–06</button>
+        <button data-dep="06-12" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">🌅 06–12</button>
+        <button data-dep="12-18" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">☀️ 12–18</button>
+        <button data-dep="18-24" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">🌆 18–24</button>
+      </div>
+    </div>
+
+    <!-- Время прилёта -->
+    <div style="margin-bottom:24px;">
+      <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                color:#374151;margin:0 0 10px;">Время прилёта</p>
+      <div class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;">
+        <button data-arr="00-06" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">🌙 00–06</button>
+        <button data-arr="06-12" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">🌅 06–12</button>
+        <button data-arr="12-18" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">☀️ 12–18</button>
+        <button data-arr="18-24" style="flex-shrink:0;padding:9px 16px;border-radius:999px;
+                border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+                font-family:Manrope,sans-serif;font-size:12px;font-weight:700;white-space:nowrap;
+                -webkit-tap-highlight-color:transparent;transition:all 0.15s;
+                background:#121826;color:#9CA3AF;">🌆 18–24</button>
+      </div>
+    </div>
+
+    <!-- Багаж включён -->
+    <div style="display:flex;align-items:center;justify-content:space-between;
+                padding:16px;background:#121826;border-radius:14px;margin-bottom:24px;
+                border:1px solid rgba(255,255,255,0.05);">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">luggage</span>
+        <span style="font-size:14px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Багаж включён</span>
+      </div>
+      <div id="baggage-toggle" onclick="toggleBaggage()"
+           style="width:48px;height:28px;border-radius:999px;background:#2e3547;
+                  position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;">
+        <div id="baggage-thumb"
+             style="width:22px;height:22px;border-radius:50%;background:#fff;
+                    position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
+      </div>
+    </div>
+
+    <!-- Авиакомпании -->
+    <div style="display:flex;align-items:center;justify-content:space-between;
+                padding:16px;background:#121826;border-radius:14px;margin-bottom:8px;
+                border:1px solid rgba(255,255,255,0.05);cursor:pointer;
+                -webkit-tap-highlight-color:transparent;"
+         onpointerdown="this.style.background='#1a2035'"
+         onpointerup="this.style.background='#121826'"
+         onpointercancel="this.style.background='#121826'">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="material-symbols-outlined" style="color:#6B7280;font-size:22px;">flight_takeoff</span>
+        <span style="font-size:14px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Авиакомпании</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span id="airlines-label"
+              style="font-size:11px;font-weight:700;text-transform:uppercase;
+                     letter-spacing:0.06em;color:#6B7280;">Все</span>
+        <span class="material-symbols-outlined" style="color:#6B7280;font-size:20px;">chevron_right</span>
+      </div>
+    </div>
+
+  </div><!-- /filters-body -->
+
+  <!-- Footer -->
+  <div style="padding:12px 16px max(20px,env(safe-area-inset-bottom));flex-shrink:0;
+              background:#0d1120;border-top:1px solid rgba(255,255,255,0.05);">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button id="filters-reset-btn"
+              style="display:flex;align-items:center;gap:6px;padding:0 20px;height:52px;
+                     background:transparent;border:none;cursor:pointer;flex-shrink:0;
+                     font-family:Manrope,sans-serif;font-size:13px;font-weight:700;
+                     color:#6B7280;-webkit-tap-highlight-color:transparent;">
+        <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
+        Сбросить
+      </button>
+      <button id="filters-apply-btn"
+              style="flex:1;height:52px;background:#3B82F6;border:none;border-radius:999px;
+                     font-family:Manrope,sans-serif;font-size:15px;font-weight:800;color:#fff;
+                     cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);
+                     -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
+              onpointerdown="this.style.transform='scale(0.98)'"
+              onpointerup="this.style.transform='scale(1)'"
+              onpointercancel="this.style.transform='scale(1)'">
+        Применить фильтры
+      </button>
+    </div>
+  </div>
+</div><!-- /sheet-filters -->
+
+<script src="js/bottom-sheet.js"></script>
+<script>
+(function() {
+  const filterSheet = new BottomSheet({
+    el: document.getElementById('sheet-filters'),
+    scrollEl: document.getElementById('filters-body'),
+  });
+
+  window.openFilters = function() { filterSheet.open(); };
+  document.getElementById('filters-close-btn').addEventListener('click', () => filterSheet.close());
+
+  const fs = {
+    sort:    'recommended',
+    depTime: new Set(),
+    arrTime: new Set(),
+    stops:   new Set(),
+    baggage: false,
+  };
+
+  function isActive() {
+    return fs.sort !== 'recommended'
+      || fs.depTime.size > 0
+      || fs.arrTime.size > 0
+      || fs.stops.size > 0
+      || fs.baggage;
+  }
+
+  function updateFilterBtn() {
+    const btn  = document.getElementById('filter-btn');
+    const icon = document.getElementById('filter-icon');
+    const lbl  = document.getElementById('filter-label');
+    if (!btn) return;
+    const active = isActive();
+    btn.style.background   = active ? '#3B82F6' : '#1a2035';
+    btn.style.borderColor  = active ? 'transparent' : 'rgba(255,255,255,0.06)';
+    if (icon) icon.style.color = active ? '#fff' : '#9CA3AF';
+    if (lbl)  lbl.style.color  = active ? '#fff' : '#9CA3AF';
+  }
+
+  function chipToggle(btn, set, key) {
+    if (set.has(key)) {
+      set.delete(key);
+      btn.style.background = '#121826';
+      btn.style.color      = '#9CA3AF';
+      btn.style.border     = '1px solid rgba(255,255,255,0.06)';
+    } else {
+      set.add(key);
+      btn.style.background = '#3B82F6';
+      btn.style.color      = '#fff';
+      btn.style.border     = '1px solid transparent';
+    }
+  }
+
+  // Sort in sheet — synced with inline sort chips
+  document.getElementById('sort-group').addEventListener('click', e => {
+    const lbl = e.target.closest('[data-sort]');
+    if (!lbl) return;
+    fs.sort = lbl.dataset.sort;
+    document.querySelectorAll('#sort-group [data-sort]').forEach(l => {
+      const active = l.dataset.sort === fs.sort;
+      const radio  = l.querySelector('.sort-radio');
+      const text   = l.querySelector('span');
+      radio.style.borderColor = active ? '#3B82F6' : '#424754';
+      radio.innerHTML = active
+        ? '<div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;"></div>'
+        : '';
+      if (text) text.style.color = active ? '#fff' : '#9CA3AF';
+    });
+  });
+
+  document.querySelectorAll('[data-stops]').forEach(btn => {
+    btn.addEventListener('click', () => chipToggle(btn, fs.stops, btn.dataset.stops));
+  });
+  document.querySelectorAll('[data-dep]').forEach(btn => {
+    btn.addEventListener('click', () => chipToggle(btn, fs.depTime, btn.dataset.dep));
+  });
+  document.querySelectorAll('[data-arr]').forEach(btn => {
+    btn.addEventListener('click', () => chipToggle(btn, fs.arrTime, btn.dataset.arr));
+  });
+
+  window.toggleBaggage = function() {
+    fs.baggage = !fs.baggage;
+    document.getElementById('baggage-toggle').style.background = fs.baggage ? '#3B82F6' : '#2e3547';
+    document.getElementById('baggage-thumb').style.transform   = fs.baggage ? 'translateX(20px)' : 'translateX(0)';
+  };
+
+  document.getElementById('filters-reset-btn').addEventListener('click', () => {
+    fs.sort = 'recommended';
+    fs.depTime.clear(); fs.arrTime.clear(); fs.stops.clear();
+    fs.baggage = false;
+    document.querySelectorAll('#sort-group [data-sort]').forEach(l => {
+      const active = l.dataset.sort === 'recommended';
+      const radio  = l.querySelector('.sort-radio');
+      const text   = l.querySelector('span');
+      radio.style.borderColor = active ? '#3B82F6' : '#424754';
+      radio.innerHTML = active
+        ? '<div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;"></div>'
+        : '';
+      if (text) text.style.color = active ? '#fff' : '#9CA3AF';
+    });
+    [...document.querySelectorAll('[data-stops],[data-dep],[data-arr]')].forEach(btn => {
+      btn.style.background = '#121826';
+      btn.style.color      = '#9CA3AF';
+      btn.style.border     = '1px solid rgba(255,255,255,0.06)';
+    });
+    document.getElementById('baggage-toggle').style.background = '#2e3547';
+    document.getElementById('baggage-thumb').style.transform   = 'translateX(0)';
+    updateFilterBtn();
+  });
+
+  document.getElementById('filters-apply-btn').addEventListener('click', () => {
+    // Sync sort to inline chips
+    currentSort = fs.sort;
+    document.querySelectorAll('.sort-chip').forEach(b => {
+      b.classList.toggle('active', b.dataset.sort === currentSort);
+    });
+    buildFlightCards(sortedFlights(currentSort));
+    updateFilterBtn();
+    filterSheet.close();
+  });
+})();
+</script>
+</body>
+</html>
