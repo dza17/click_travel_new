@@ -566,14 +566,30 @@
       outer.setAttribute('onclick', `handleCalTap('${key}')`);
     }
 
-    // Полоса диапазона: gradient 40px высотой, центрирован вертикально в ячейке 52px
-    // background-size ограничивает высоту → нет цветных прямоугольников выше/ниже кружка
+    // День недели: 0=Пн, 6=Вс
+    const dow = (date.getDay() + 6) % 7;
+
+    // Полоса диапазона через clip-path: inset(5px 0 5px 0) = 42px высотой, совпадает с кружком.
+    // round на концах строки недели создаёт скруглённые пилюли без доп. DOM-элементов.
     const BAND_COLOR = 'rgba(59,130,246,0.2)';
-    const BAND_SIZE  = '0 50% / 100% 40px no-repeat';
+    // clip helper: inset(5px top/bottom) + опциональное скругление
+    function bandClip(roundLeft, roundRight) {
+      const r = 20;
+      const tl = roundLeft  ? r : 0;
+      const bl = roundLeft  ? r : 0;
+      const tr = roundRight ? r : 0;
+      const br = roundRight ? r : 0;
+      const hasRound = roundLeft || roundRight;
+      return hasRound
+        ? `inset(5px 0 5px 0 round ${tl}px ${tr}px ${br}px ${bl}px)`
+        : 'inset(5px 0 5px 0)';
+    }
 
     if (ds === 'departure') {
       if (ret) {
-        outer.style.background = `linear-gradient(to right, transparent 50%, ${BAND_COLOR} 50%) ${BAND_SIZE}`;
+        outer.style.background = `linear-gradient(to right, transparent 50%, ${BAND_COLOR} 50%)`;
+        // конец строки → скруглить правый край полосы
+        outer.style.clipPath = bandClip(false, dow === 6);
       }
       outer.innerHTML = `
         <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
@@ -584,7 +600,9 @@
         </div>`;
 
     } else if (ds === 'return') {
-      outer.style.background = `linear-gradient(to right, ${BAND_COLOR} 50%, transparent 50%) ${BAND_SIZE}`;
+      outer.style.background = `linear-gradient(to right, ${BAND_COLOR} 50%, transparent 50%)`;
+      // начало строки → скруглить левый край полосы
+      outer.style.clipPath = bandClip(dow === 0, false);
       outer.innerHTML = `
         <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -594,7 +612,8 @@
         </div>`;
 
     } else if (ds === 'range') {
-      outer.style.background = `linear-gradient(${BAND_COLOR},${BAND_COLOR}) ${BAND_SIZE}`;
+      outer.style.background = BAND_COLOR;
+      outer.style.clipPath = bandClip(dow === 0, dow === 6);
       outer.innerHTML = `
           <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
           <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>`;
