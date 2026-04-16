@@ -120,7 +120,18 @@
     dirSheet = new BottomSheet({
       el,
       scrollEl: el.querySelector('.sheet-scroll'),
-      onClose: () => { updateMainUI(); if (window._afterSheetClose) window._afterSheetClose('direction'); },
+      onClose: () => {
+        updateMainUI();
+        if (window._afterSheetClose) window._afterSheetClose('direction');
+        if (_pendingSearch) {
+          if (state.to) {
+            if (!state.depDate) { window.openCalendarSheet(); }
+            else { doNavigateToResults(); }
+          } else {
+            _pendingSearch = false; // закрыл без выбора
+          }
+        }
+      },
     });
 
     const input = el.querySelector('#dir-search-input');
@@ -293,7 +304,13 @@
     calSheet = new BottomSheet({
       el,
       scrollEl: el.querySelector('.sheet-scroll'),
-      onClose: () => { if (window._afterSheetClose) window._afterSheetClose('calendar'); },
+      onClose: () => {
+        if (window._afterSheetClose) window._afterSheetClose('calendar');
+        if (_pendingSearch) {
+          if (state.depDate) { doNavigateToResults(); }
+          else { _pendingSearch = false; } // закрыл без даты
+        }
+      },
     });
 
     el.querySelectorAll('[data-cal-tab]').forEach(btn => {
@@ -325,8 +342,11 @@
     });
   }
 
-  // Chip tap: set destination + open calendar immediately
-  window.openSearchResults = function () {
+  // ─── Pending search flag ─────────────────────────────────────────────────────
+  let _pendingSearch = false;
+
+  function doNavigateToResults() {
+    _pendingSearch = false;
     try {
       sessionStorage.setItem('ct_search', JSON.stringify({
         from:    state.from,
@@ -338,6 +358,21 @@
       }));
     } catch(e) {}
     window.location.href = 'results.html';
+  }
+
+  // «Найти билеты»: валидируем, при необходимости открываем нужный шит
+  window.openSearchResults = function () {
+    if (!state.to) {
+      _pendingSearch = true;
+      window.openDirectionSheet('to');
+      return;
+    }
+    if (!state.depDate) {
+      _pendingSearch = true;
+      window.openCalendarSheet();
+      return;
+    }
+    doNavigateToResults();
   };
 
   window.swapDirections = function () {
@@ -672,6 +707,18 @@
     initDirectionSheet();
     initCalendarSheet();
     initPassengersSheet();
+    // Восстанавливаем последний поиск (когда вернулись с results.html)
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('ct_search') || 'null');
+      if (saved) {
+        if (saved.from)    state.from    = saved.from;
+        if (saved.to)      state.to      = saved.to;
+        if (saved.depDate) state.depDate = new Date(saved.depDate);
+        if (saved.retDate) state.retDate = new Date(saved.retDate);
+        if (saved.pax)     Object.assign(state.pax, saved.pax);
+        if (saved.cls)     state.cls     = saved.cls;
+      }
+    } catch(e) {}
     updateMainUI();
   }
 
