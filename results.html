@@ -46,6 +46,8 @@
   .glass { background: rgba(11,15,26,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  /* Prevent iOS Safari auto-zoom on input focus */
+  input, select, textarea { font-size: 16px; }
 
   #app { display: block; }
   #main-area { padding: 0 12px; }

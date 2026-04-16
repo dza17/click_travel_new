@@ -9,6 +9,8 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  /* Prevent iOS Safari auto-zoom on input focus (requires font-size >= 16px) */
+  input, select, textarea { font-size: 16px; }
   body {
     font-family: 'Manrope', sans-serif;
     background: #0b0f1a;
@@ -55,7 +57,7 @@
     padding: 0 16px;
     color: #fff;
     font-family: 'Manrope', sans-serif;
-    font-size: 15px;
+    font-size: 16px; /* 16px+ prevents iOS Safari auto-zoom on focus */
     font-weight: 600;
     appearance: none;
     -webkit-appearance: none;
@@ -138,7 +140,7 @@
     padding: 0 16px;
     color: #fff;
     font-family: 'Manrope', sans-serif;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     outline: none;
   }
