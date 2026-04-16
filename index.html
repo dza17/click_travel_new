@@ -89,6 +89,8 @@
         /* Sheet scroll areas */
         .sheet-scroll::-webkit-scrollbar { display: none; }
         .sheet-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        /* iOS tap fix: prevent children absorbing taps on onclick-div containers */
+        div[onclick] > *, div[onclick] > * > * { pointer-events: none; }
     </style>
 </head>
 <body class="text-on-background min-h-screen pb-24">
