@@ -559,22 +559,20 @@
 
     const info  = getPrice(date);
     const outer = document.createElement('div');
-    outer.style.cssText = 'position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;';
+    // Базовый стиль — без position:relative, чтобы не нарушать обработку тапов на iOS
+    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;';
     if (!past) {
       outer.style.cursor = 'pointer';
       outer.setAttribute('onclick', `handleCalTap('${key}')`);
     }
 
-    // Сплошная полоса диапазона: departure — правая половина, range — полная, return — левая
-    const BAND = 'position:absolute;top:6px;bottom:6px;background:rgba(59,130,246,0.15);pointer-events:none;';
-
+    // Сплошная полоса диапазона через CSS-градиент фона (без доп. DOM-элементов)
     if (ds === 'departure') {
-      const bandHtml = ret
-        ? `<div style="${BAND}left:50%;right:0;"></div>`
-        : '';
+      if (ret) {
+        outer.style.background = 'linear-gradient(to right, transparent 50%, rgba(59,130,246,0.15) 50%)';
+      }
       outer.innerHTML = `
-        ${bandHtml}
-        <div style="position:relative;width:42px;height:42px;background:#3B82F6;border-radius:50%;
+        <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
                     box-shadow:0 0 16px rgba(59,130,246,0.5);pointer-events:none;">
           <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
@@ -582,9 +580,9 @@
         </div>`;
 
     } else if (ds === 'return') {
+      outer.style.background = 'linear-gradient(to right, rgba(59,130,246,0.15) 50%, transparent 50%)';
       outer.innerHTML = `
-        <div style="${BAND}left:0;right:50%;"></div>
-        <div style="position:relative;width:42px;height:42px;background:#3B82F6;border-radius:50%;
+        <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
                     box-shadow:0 0 16px rgba(59,130,246,0.5);pointer-events:none;">
           <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
@@ -592,12 +590,10 @@
         </div>`;
 
     } else if (ds === 'range') {
+      outer.style.background = 'rgba(59,130,246,0.15)';
       outer.innerHTML = `
-        <div style="${BAND}left:0;right:0;"></div>
-        <div style="position:relative;display:flex;flex-direction:column;align-items:center;pointer-events:none;">
           <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
-          <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>
-        </div>`;
+          <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>`;
 
     } else if (ds === 'past') {
       outer.style.cursor = 'default';
