@@ -262,7 +262,8 @@
       <div id="bar-sub"
            style="font-size:11px;color:#9CA3AF;margin-top:2px;">за 1 пассажира</div>
     </div>
-    <button style="flex:1;height:52px;background:#3B82F6;border:none;border-radius:999px;
+    <button onclick="goToPassengers()"
+            style="flex:1;height:52px;background:#3B82F6;border:none;border-radius:999px;
                    font-family:Manrope,sans-serif;font-size:16px;font-weight:800;color:#fff;
                    cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);
                    -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
@@ -345,6 +346,18 @@ function renderPrices() {
     : numPax < 5 ? `за ${numPax} пассажира`
     :              `за ${numPax} пассажиров`;
 }
+
+// ─── Go to passengers ─────────────────────────────────────────────────────────
+window.goToPassengers = function() {
+  try {
+    sessionStorage.setItem('ct_fare', JSON.stringify({
+      name:   selFare,
+      price:  total(),
+      perPax: perPax(),
+    }));
+  } catch(e) {}
+  window.location.href = 'passenger_details.html';
+};
 
 // ─── Fare select ──────────────────────────────────────────────────────────────
 window.selectFare = function(key) {
