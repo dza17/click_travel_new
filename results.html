@@ -556,33 +556,22 @@ function buildFlightCards(flights, fromCode, toCode) {
     </div>
 
     <!-- Passengers -->
-    <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;
+    <div onclick="editNavTo('pax')"
+         style="display:flex;align-items:center;gap:14px;padding:15px 16px;
                 background:#121826;border-radius:16px;margin-bottom:20px;
-                border:1px solid rgba(255,255,255,0.05);">
-      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:20px;flex-shrink:0;">person</span>
-      <div style="flex:1;min-width:0;">
+                border:1px solid rgba(255,255,255,0.05);
+                cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.15s;"
+         onpointerdown="this.style.background='#1a2035'"
+         onpointerup="this.style.background='#121826'"
+         onpointercancel="this.style.background='#121826'">
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:20px;flex-shrink:0;pointer-events:none;">person</span>
+      <div style="flex:1;min-width:0;pointer-events:none;">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
                     color:#4B5563;margin-bottom:2px;">Пассажиры</div>
         <div id="edit-pax-val" style="font-size:16px;font-weight:700;color:#fff;">1 пассажир</div>
         <div id="edit-pax-sub" style="font-size:11px;color:#6B7280;margin-top:1px;">эконом</div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
-        <button id="edit-pax-dec"
-                style="width:36px;height:36px;background:#1a2035;border:none;border-radius:50%;
-                       cursor:pointer;display:flex;align-items:center;justify-content:center;
-                       transition:opacity 0.15s;-webkit-tap-highlight-color:transparent;">
-          <span class="material-symbols-outlined" style="font-size:18px;color:#fff;">remove</span>
-        </button>
-        <span id="edit-pax-count"
-              style="font-size:18px;font-weight:700;color:#fff;width:20px;
-                     text-align:center;font-family:Manrope,sans-serif;">1</span>
-        <button id="edit-pax-inc"
-                style="width:36px;height:36px;background:#3B82F6;border:none;border-radius:50%;
-                       cursor:pointer;display:flex;align-items:center;justify-content:center;
-                       -webkit-tap-highlight-color:transparent;">
-          <span class="material-symbols-outlined" style="font-size:18px;color:#fff;">add</span>
-        </button>
-      </div>
+      <span class="material-symbols-outlined" style="color:#4B5563;font-size:18px;flex-shrink:0;pointer-events:none;">chevron_right</span>
     </div>
 
   </div>
@@ -1033,12 +1022,25 @@ function buildFlightCards(flights, fromCode, toCode) {
 
     const paxValEl = document.getElementById('edit-pax-val');
     const paxSubEl = document.getElementById('edit-pax-sub');
-    const paxCntEl = document.getElementById('edit-pax-count');
     if (s.pax) {
-      const total = s.pax.adults + (s.pax.children||0) + (s.pax.infants||0);
+      const adults   = s.pax.adults   || 1;
+      const children = s.pax.children || 0;
+      const infants  = s.pax.infants  || 0;
+      const total    = adults + children + infants;
       if (paxValEl) paxValEl.textContent = total === 1 ? '1 пассажир' : total < 5 ? `${total} пассажира` : `${total} пассажиров`;
-      if (paxCntEl) paxCntEl.textContent = total;
-      if (paxSubEl) paxSubEl.textContent = s.cls === 'business' ? 'бизнес' : 'эконом';
+      if (paxSubEl) {
+        const parts = [];
+        const clsLabel = s.cls === 'business' ? 'бизнес' : 'эконом';
+        if (children > 0 || infants > 0) {
+          parts.push(`${adults} взрoсл${adults === 1 ? 'ый' : adults < 5 ? 'ых' : 'ых'}`);
+          if (children > 0) parts.push(`${children} реб${children === 1 ? 'ёнок' : 'ёнка'}`);
+          if (infants  > 0) parts.push(`${infants} младенец`);
+          parts.push(clsLabel);
+        } else {
+          parts.push(clsLabel);
+        }
+        paxSubEl.textContent = parts.join(' · ');
+      }
     }
   }
 
