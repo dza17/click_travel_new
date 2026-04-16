@@ -84,7 +84,8 @@
         .glass-header { background: rgba(11, 15, 26, 0.8); backdrop-filter: blur(20px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        body { min-height: max(884px, 100dvh); }
+        html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        body { min-height: max(884px, 100dvh); overflow-y: visible; }
         /* Sheet scroll areas */
         .sheet-scroll::-webkit-scrollbar { display: none; }
         .sheet-scroll { -ms-overflow-style: none; scrollbar-width: none; }
