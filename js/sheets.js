@@ -566,10 +566,14 @@
       outer.setAttribute('onclick', `handleCalTap('${key}')`);
     }
 
-    // Сплошная полоса диапазона через CSS-градиент фона (без доп. DOM-элементов)
+    // Полоса диапазона: gradient 40px высотой, центрирован вертикально в ячейке 52px
+    // background-size ограничивает высоту → нет цветных прямоугольников выше/ниже кружка
+    const BAND_COLOR = 'rgba(59,130,246,0.2)';
+    const BAND_SIZE  = '0 50% / 100% 40px no-repeat';
+
     if (ds === 'departure') {
       if (ret) {
-        outer.style.background = 'linear-gradient(to right, transparent 50%, rgba(59,130,246,0.15) 50%)';
+        outer.style.background = `linear-gradient(to right, transparent 50%, ${BAND_COLOR} 50%) ${BAND_SIZE}`;
       }
       outer.innerHTML = `
         <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
@@ -580,7 +584,7 @@
         </div>`;
 
     } else if (ds === 'return') {
-      outer.style.background = 'linear-gradient(to right, rgba(59,130,246,0.15) 50%, transparent 50%)';
+      outer.style.background = `linear-gradient(to right, ${BAND_COLOR} 50%, transparent 50%) ${BAND_SIZE}`;
       outer.innerHTML = `
         <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -590,7 +594,7 @@
         </div>`;
 
     } else if (ds === 'range') {
-      outer.style.background = 'rgba(59,130,246,0.15)';
+      outer.style.background = `linear-gradient(${BAND_COLOR},${BAND_COLOR}) ${BAND_SIZE}`;
       outer.innerHTML = `
           <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
           <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>`;
