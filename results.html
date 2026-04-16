@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Click Travel — Результаты</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background":             "#0b0f1a",
+          "surface-container":      "#121826",
+          "surface-container-high": "#1a2035",
+          "on-surface":             "#dfe2f2",
+          "on-surface-variant":     "#9CA3AF",
+          "outline-variant":        "#2e3547",
+          "brand-blue":             "#3B82F6",
+          "success":                "#22C55E",
+        },
+        fontFamily: { "body": ["Manrope","sans-serif"] }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100dvh;
+    overflow: hidden;
+    font-family: 'Manrope', sans-serif;
+    background: #0b0f1a;
+    color: #dfe2f2;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .glass { background: rgba(11,15,26,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Full-screen flex shell */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  #main-area {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0 12px;
+  }
+  #flight-list {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+  .flight-card {
+    background: #121826;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.04);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .flight-card:active { background: #1a2035; }
+  /* Stretch only when showing 4 cards */
+  #flight-list.stretch .flight-card {
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+    justify-content: space-between;
+  }
+
+  /* Flight line */
+  .flight-line {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .flight-line .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    border: 1.5px solid #424754;
+    flex-shrink: 0;
+  }
+  .flight-line .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #424754, #3B82F6 50%, #424754);
+  }
+  .flight-line .plane-icon {
+    font-size: 14px !important;
+    color: #3B82F6;
+    flex-shrink: 0;
+    transform: rotate(90deg);
+    margin: 0 2px;
+  }
+</style>
+</head>
+
+<body>
+<div id="app">
+
+  <!-- ── HEADER ── -->
+  <header class="glass border-b border-white/[0.04] flex-shrink-0"
+          style="height:56px;display:flex;align-items:center;padding:0 12px;">
+    <button onclick="history.back()"
+            style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+                   border:none;background:none;cursor:pointer;border-radius:50%;flex-shrink:0;
+                   -webkit-tap-highlight-color:transparent;"
+            onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
+            onpointerup="this.style.background='none'"
+            onpointercancel="this.style.background='none'">
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">arrow_back</span>
+    </button>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;padding:0 8px;">
+      <div id="hdr-route"
+           style="font-size:15px;font-weight:800;color:#fff;white-space:nowrap;
+                  overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.1;">
+        Ташкент → Москва
+      </div>
+      <div id="hdr-meta"
+           style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;
+                  letter-spacing:0.08em;margin-top:2px;white-space:nowrap;">
+        23 Апр · 1 пассажир
+      </div>
+    </div>
+    <div style="width:36px;flex-shrink:0;"></div>
+  </header>
+
+  <!-- ── MAIN AREA ── -->
+  <div id="main-area">
+
+    <!-- Date Carousel -->
+    <div id="date-carousel"
+         class="no-scrollbar"
+         style="display:flex;gap:8px;overflow-x:auto;padding:10px 0 8px;flex-shrink:0;">
+    </div>
+
+    <!-- Section label -->
+    <div style="padding:2px 2px 8px;flex-shrink:0;">
+      <span id="section-label" style="font-size:10px;font-weight:700;text-transform:uppercase;
+                   letter-spacing:0.1em;color:#374151;">подобрали 4 лучших варианта</span>
+    </div>
+
+    <!-- Flight cards — flex:1, each card grows equally -->
+    <div id="flight-list"></div>
+
+  </div>
+
+  <!-- ── BOTTOM ACTION BAR ── -->
+  <div class="glass border-t border-white/[0.04] flex-shrink-0"
+       style="padding: 10px 12px max(12px, env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:10px;
+                background:rgba(255,255,255,0.03);border-radius:999px;
+                padding:6px;border:1px solid rgba(255,255,255,0.05);">
+      <!-- Edit -->
+      <button onclick="window.location.href='index.html'"
+              style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+                     background:#1a2035;border:none;border-radius:50%;cursor:pointer;flex-shrink:0;
+                     -webkit-tap-highlight-color:transparent;transition:transform 0.15s;"
+              onpointerdown="this.style.transform='scale(0.9)'"
+              onpointerup="this.style.transform='scale(1)'"
+              onpointercancel="this.style.transform='scale(1)'">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#9CA3AF;">edit</span>
+      </button>
+      <!-- View All -->
+      <button id="view-all-btn"
+              style="flex:1;height:44px;background:#3B82F6;border:none;border-radius:999px;
+                     font-family:Manrope,sans-serif;font-size:13px;font-weight:800;
+                     color:#fff;cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;
+                     box-shadow:0 4px 20px rgba(59,130,246,0.3);
+                     -webkit-tap-highlight-color:transparent;transition:transform 0.15s;"
+              onpointerdown="this.style.transform='scale(0.97)'"
+              onpointerup="this.style.transform='scale(1)'"
+              onpointercancel="this.style.transform='scale(1)'">
+        Смотреть все
+      </button>
+      <!-- Filters -->
+      <button style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+                     background:#1a2035;border:none;border-radius:50%;cursor:pointer;flex-shrink:0;
+                     -webkit-tap-highlight-color:transparent;transition:transform 0.15s;"
+              onpointerdown="this.style.transform='scale(0.9)'"
+              onpointerup="this.style.transform='scale(1)'"
+              onpointercancel="this.style.transform='scale(1)'">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#9CA3AF;">tune</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="glass border-t border-white/[0.04] flex-shrink-0"
+       style="display:flex;justify-content:space-around;align-items:center;
+              padding: 8px 16px max(12px, env(safe-area-inset-bottom));">
+    <a href="index.html"
+       style="display:flex;flex-direction:column;align-items:center;color:#3B82F6;
+              text-decoration:none;padding:4px 8px;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;">search</span>
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Поиск</span>
+    </a>
+    <a href="#"
+       style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+              text-decoration:none;padding:4px 8px;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="font-size:22px;">confirmation_number</span>
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Брони</span>
+    </a>
+    <a href="#"
+       style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+              text-decoration:none;padding:4px 8px;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="font-size:22px;">explore</span>
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Обзор</span>
+    </a>
+    <a href="#"
+       style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+              text-decoration:none;padding:4px 8px;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="font-size:22px;">person</span>
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Профиль</span>
+    </a>
+  </nav>
+
+</div><!-- /app -->
+
+<script>
+// ─── Constants ────────────────────────────────────────────────────────────────
+const MONTH_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+
+const AIRLINES = [
+  { name: 'Uzbekistan Airways', code: 'UZ', color: '#1E6AE1' },
+  { name: 'Аэрофлот',           code: 'SU', color: '#C62828' },
+  { name: 'Turkish Airlines',   code: 'TK', color: '#CC0000' },
+  { name: 'FlyDubai',           code: 'FZ', color: '#E75B10' },
+];
+
+const LABELS = [
+  { text: 'Дешевле',   color: '#3B82F6', bg: 'rgba(59,130,246,0.14)' },
+  { text: 'Быстрее',   color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
+  { text: 'Лучший',    color: '#22C55E', bg: 'rgba(34,197,94,0.12)'  },
+  { text: 'С багажом', color: '#A78BFA', bg: 'rgba(167,139,250,0.12)' },
+];
+
+function generateFlights(fromCode, toCode) {
+  const seed = ((fromCode.charCodeAt(0) || 84) + (toCode.charCodeAt(0) || 77)) % 7;
+  return [
+    {
+      labels:[0], airline:AIRLINES[0],
+      dep:'08:00', arr:'10:15', duration:'3ч 15м',
+      stops:null,
+      price:1420000+seed*10000,
+    },
+    {
+      labels:[1,3], airline:AIRLINES[1],
+      dep:'14:30', arr:'16:30', duration:'3ч 00м',
+      stops:null,
+      price:1890000+seed*15000,
+    },
+    {
+      labels:[2,3], airline:AIRLINES[2],
+      dep:'23:55', arr:'05:10', duration:'6ч 15м',
+      stops:{ count:1, city:'Стамбул', layover:'2ч 30м' },
+      price:1650000+seed*12000,
+    },
+    {
+      labels:[1,2], airline:AIRLINES[3],
+      dep:'11:00', arr:'13:30', duration:'3ч 30м',
+      stops:null,
+      price:2100000+seed*8000,
+    },
+  ];
+}
+
+// Сколько карточек показывать: если хоть одна имеет 2+ чипса → 3, иначе 4
+function visibleCount(flights) {
+  return flights.some(f => f.labels.length >= 2) ? 3 : 4;
+}
+
+function fmtPrice(n) {
+  return n.toLocaleString('ru-RU').replace(/\u00A0/g,' ') + ' сум';
+}
+
+// ─── Date Carousel ─────────────────────────────────────────────────────────────
+function buildCarousel(depDate) {
+  const base    = depDate ? new Date(depDate) : new Date();
+  const el      = document.getElementById('date-carousel');
+  const mockPrx = [1.42, 1.31, 1.56, 1.48, 1.42, 1.79, 1.38];
+  const offsets = [-3,-2,-1,0,1,2,3];
+  el.innerHTML  = offsets.map((off, i) => {
+    const d = new Date(base);
+    d.setDate(d.getDate() + off);
+    const active = off === 0;
+    const lbl    = `${d.getDate()} ${MONTH_SHORT[d.getMonth()]}`;
+    return `
+      <button onclick="selectDateBtn(this)"
+              style="flex-shrink:0;padding:6px 14px;border-radius:999px;border:none;
+                     cursor:pointer;min-width:68px;text-align:center;
+                     transition:all 0.2s;-webkit-tap-highlight-color:transparent;
+                     background:${active ? '#3B82F6' : '#121826'};
+                     ${active ? 'box-shadow:0 0 0 2px rgba(59,130,246,0.3);' : 'border:1px solid rgba(255,255,255,0.06);'}">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
+                    line-height:1.2;color:${active ? 'rgba(255,255,255,0.8)' : '#9CA3AF'};">${lbl}</div>
+        <div style="font-size:13px;font-weight:800;line-height:1.2;color:#fff;margin-top:1px;">
+          ${mockPrx[i].toFixed(2)}м
+        </div>
+      </button>`;
+  }).join('');
+}
+
+function selectDateBtn(btn) {
+  document.querySelectorAll('#date-carousel button').forEach(b => {
+    const isMe = b === btn;
+    b.style.background  = isMe ? '#3B82F6' : '#121826';
+    b.style.boxShadow   = isMe ? '0 0 0 2px rgba(59,130,246,0.3)' : 'none';
+    b.style.border      = isMe ? 'none' : '1px solid rgba(255,255,255,0.06)';
+    b.querySelector('div').style.color = isMe ? 'rgba(255,255,255,0.8)' : '#9CA3AF';
+  });
+}
+
+// ─── Flight Cards ──────────────────────────────────────────────────────────────
+function buildFlightCards(flights, fromCode, toCode) {
+  const el    = document.getElementById('flight-list');
+  const count = visibleCount(flights);
+  const shown = flights.slice(0, count);
+  // Stretch cards to fill screen only when all 4 are shown
+  el.classList.toggle('stretch', count === 4);
+
+  // Update section label
+  const lbl = document.getElementById('section-label');
+  if (lbl) lbl.textContent = `подобрали ${count} лучших варианта`;
+
+  el.innerHTML = shown.map(f => {
+    const isDirect   = !f.stops;
+    const stopsColor = isDirect ? '#22C55E' : '#F59E0B';
+
+    // Stops line content
+    const stopsHtml = isDirect
+      ? `<span style="color:#22C55E;">Прямой</span>`
+      : `<span style="color:#F59E0B;">
+           ${f.stops.count} пересадка · ${f.stops.city}
+         </span>
+         <span style="color:#6B7280;margin-left:4px;">· ${f.stops.layover}</span>`;
+
+    return `
+    <div class="flight-card">
+
+      <!-- Row 1: airline + price -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <!-- Airline badge -->
+          <div style="width:40px;height:40px;border-radius:50%;flex-shrink:0;
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:11px;font-weight:800;letter-spacing:0.02em;
+                      color:${f.airline.color};
+                      background:${f.airline.color}18;
+                      border:1px solid ${f.airline.color}40;">
+            ${f.airline.code}
+          </div>
+          <span style="font-size:16px;font-weight:700;color:#fff;
+                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            ${f.airline.name}
+          </span>
+        </div>
+        <!-- Labels + price -->
+        <div style="text-align:right;flex-shrink:0;">
+          <!-- Chips above price -->
+          <div style="display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:5px;">
+            ${f.labels.map(i => `
+              <span style="display:inline-block;
+                           font-size:9px;font-weight:800;letter-spacing:0.07em;
+                           text-transform:uppercase;padding:2px 7px;border-radius:999px;
+                           color:${LABELS[i].color};background:${LABELS[i].bg};
+                           white-space:nowrap;">
+                ${LABELS[i].text}
+              </span>`).join('')}
+          </div>
+          <!-- Price -->
+          <div style="line-height:1;">
+            <span style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.5px;">
+              ${f.price.toLocaleString('ru-RU').replace(/\u00A0/g,' ')}
+            </span>
+            <span style="font-size:11px;font-weight:600;color:#9CA3AF;margin-left:2px;">сум</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: flight time visualization -->
+      <div style="display:flex;align-items:center;gap:10px;padding:2px 0;">
+
+        <!-- Departure -->
+        <div style="text-align:left;flex-shrink:0;">
+          <div style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">
+            ${f.dep}
+          </div>
+          <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;
+                      letter-spacing:0.06em;margin-top:2px;">${fromCode}</div>
+        </div>
+
+        <!-- Middle: line + duration + stops -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.04em;">
+            ${f.duration}
+          </div>
+          <div class="flight-line" style="width:100%;">
+            <div class="dot"></div>
+            <div class="line"></div>
+            <span class="material-symbols-outlined plane-icon">flight</span>
+            <div class="line"></div>
+            <div class="dot"></div>
+          </div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.02em;">${stopsHtml}</div>
+        </div>
+
+        <!-- Arrival -->
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">
+            ${f.arr}
+          </div>
+          <div style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;
+                      letter-spacing:0.06em;margin-top:2px;">${toCode}</div>
+        </div>
+
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────────
+(function init() {
+  let from = { name: 'Ташкент', code: 'TAS' };
+  let to   = { name: 'Москва',  code: 'MOW' };
+  let depDate = null, retDate = null, pax = 1, cls = 'economy';
+
+  try {
+    const s = JSON.parse(sessionStorage.getItem('ct_search') || '{}');
+    if (s.from)    from    = s.from;
+    if (s.to)      to      = s.to;
+    if (s.depDate) depDate = new Date(s.depDate);
+    if (s.retDate) retDate = new Date(s.retDate);
+    if (s.pax)     pax     = s.pax.adults + s.pax.children + s.pax.infants;
+    if (s.cls)     cls     = s.cls;
+  } catch(e) {}
+
+  // Header
+  document.getElementById('hdr-route').textContent =
+    `${from ? from.name : 'Откуда'} → ${to ? to.name : '?'}`;
+
+  const datePart = depDate
+    ? `${depDate.getDate()} ${MONTH_SHORT[depDate.getMonth()]}${retDate ? ' — ' + retDate.getDate() + ' ' + MONTH_SHORT[retDate.getMonth()] : ''}`
+    : 'Любая дата';
+  const paxLabel = pax === 1 ? '1 пасс' : pax < 5 ? `${pax} пасс` : `${pax} пасс`;
+  const clsLabel = cls === 'business' ? 'бизнес' : 'эконом';
+  document.getElementById('hdr-meta').textContent = `${datePart} · ${paxLabel} · ${clsLabel}`;
+
+  const fromCode = from ? from.code : 'TAS';
+  const toCode   = to   ? to.code   : 'MOW';
+
+  buildCarousel(depDate);
+  buildFlightCards(generateFlights(fromCode, toCode), fromCode, toCode);
+
+  document.getElementById('view-all-btn').addEventListener('click', () => {
+    const t = document.createElement('div');
+    t.textContent = 'Полная выдача — скоро';
+    Object.assign(t.style, {
+      position:'fixed', bottom:'160px', left:'50%', transform:'translateX(-50%)',
+      background:'#1a2035', color:'#fff', padding:'10px 20px', borderRadius:'999px',
+      fontSize:'13px', fontWeight:'700', zIndex:'999', opacity:'1',
+      transition:'opacity 0.4s', whiteSpace:'nowrap', pointerEvents:'none',
+    });
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; }, 1800);
+    setTimeout(() => t.remove(), 2200);
+  });
+})();
+</script>
+
+<!-- ── EDIT SEARCH SHEET ── -->
+<div id="sheet-edit"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:300;
+            display:none;flex-direction:column;
+            background:#0d1120;border-radius:24px 24px 0 0;
+            box-shadow:0 -12px 48px rgba(0,0,0,0.75);
+            max-height:90dvh;overflow:hidden;will-change:transform;">
+
+  <!-- Drag handle -->
+  <div class="sheet-handle"
+       style="display:flex;justify-content:center;padding:12px 0 6px;cursor:grab;flex-shrink:0;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.12);border-radius:999px;"></div>
+  </div>
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;
+              padding:4px 20px 14px;flex-shrink:0;">
+    <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:#fff;margin:0;">
+      Изменить поиск
+    </h2>
+    <button id="edit-close-btn"
+            style="width:34px;height:34px;background:rgba(255,255,255,0.07);border:none;
+                   border-radius:50%;cursor:pointer;display:flex;align-items:center;
+                   justify-content:center;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:18px;">close</span>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <div style="flex:1;overflow-y:auto;padding:0 16px;">
+
+    <!-- From / To -->
+    <div style="background:#121826;border-radius:16px;overflow:hidden;margin-bottom:10px;
+                border:1px solid rgba(255,255,255,0.05);">
+      <div onclick="editNavTo('from')" id="edit-from-row"
+           style="display:flex;align-items:center;gap:14px;padding:15px 16px;
+                  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.15s;"
+           onpointerdown="this.style.background='#1a2035'"
+           onpointerup="this.style.background=''"
+           onpointercancel="this.style.background=''">
+        <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;flex-shrink:0;">flight_takeoff</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+                      color:#4B5563;margin-bottom:2px;">Откуда</div>
+          <div id="edit-from-val"
+               style="font-size:16px;font-weight:700;color:#fff;
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:#4B5563;font-size:18px;flex-shrink:0;">chevron_right</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 16px;"></div>
+      <div onclick="editNavTo('to')"
+           style="display:flex;align-items:center;gap:14px;padding:15px 16px;
+                  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.15s;"
+           onpointerdown="this.style.background='#1a2035'"
+           onpointerup="this.style.background=''"
+           onpointercancel="this.style.background=''">
+        <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;flex-shrink:0;">flight_land</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+                      color:#4B5563;margin-bottom:2px;">Куда</div>
+          <div id="edit-to-val"
+               style="font-size:16px;font-weight:700;
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:#4B5563;font-size:18px;flex-shrink:0;">chevron_right</span>
+      </div>
+    </div>
+
+    <!-- Date -->
+    <div onclick="editNavTo('date')"
+         style="display:flex;align-items:center;gap:14px;padding:15px 16px;
+                background:#121826;border-radius:16px;margin-bottom:10px;
+                border:1px solid rgba(255,255,255,0.05);
+                cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.15s;"
+         onpointerdown="this.style.background='#1a2035'"
+         onpointerup="this.style.background='#121826'"
+         onpointercancel="this.style.background='#121826'">
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:20px;flex-shrink:0;">calendar_today</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+                    color:#4B5563;margin-bottom:2px;">Дата</div>
+        <div id="edit-date-val" style="font-size:16px;font-weight:700;color:#fff;">Выбрать</div>
+        <div id="edit-date-sub" style="font-size:11px;color:#6B7280;margin-top:1px;min-height:14px;"></div>
+      </div>
+      <span class="material-symbols-outlined" style="color:#4B5563;font-size:18px;flex-shrink:0;">chevron_right</span>
+    </div>
+
+    <!-- Passengers -->
+    <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;
+                background:#121826;border-radius:16px;margin-bottom:20px;
+                border:1px solid rgba(255,255,255,0.05);">
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:20px;flex-shrink:0;">person</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+                    color:#4B5563;margin-bottom:2px;">Пассажиры</div>
+        <div id="edit-pax-val" style="font-size:16px;font-weight:700;color:#fff;">1 пассажир</div>
+        <div id="edit-pax-sub" style="font-size:11px;color:#6B7280;margin-top:1px;">эконом</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+        <button id="edit-pax-dec"
+                style="width:36px;height:36px;background:#1a2035;border:none;border-radius:50%;
+                       cursor:pointer;display:flex;align-items:center;justify-content:center;
+                       transition:opacity 0.15s;-webkit-tap-highlight-color:transparent;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#fff;">remove</span>
+        </button>
+        <span id="edit-pax-count"
+              style="font-size:18px;font-weight:700;color:#fff;width:20px;
+                     text-align:center;font-family:Manrope,sans-serif;">1</span>
+        <button id="edit-pax-inc"
+                style="width:36px;height:36px;background:#3B82F6;border:none;border-radius:50%;
+                       cursor:pointer;display:flex;align-items:center;justify-content:center;
+                       -webkit-tap-highlight-color:transparent;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#fff;">add</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div style="padding:12px 16px max(20px,env(safe-area-inset-bottom));flex-shrink:0;">
+    <button id="edit-search-btn"
+            style="width:100%;height:52px;background:#3B82F6;border:none;border-radius:999px;
+                   font-family:Manrope,sans-serif;font-size:16px;font-weight:800;color:#fff;
+                   cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);
+                   -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
+            onpointerdown="this.style.transform='scale(0.98)'"
+            onpointerup="this.style.transform='scale(1)'"
+            onpointercancel="this.style.transform='scale(1)'">
+      Найти билеты
+    </button>
+  </div>
+</div>
+
+<!-- ── 3 SHARED SHEETS (direction / calendar / passengers) ── -->
+<!-- Direction Sheet -->
+<div id="sheet-direction" role="dialog" aria-modal="true" aria-label="Выбор направления"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:400;
+            flex-direction:column;background:#0d1120;border-radius:24px 24px 0 0;
+            box-shadow:0 -12px 48px rgba(0,0,0,0.75);max-height:90dvh;overflow:hidden;">
+  <div class="sheet-handle" style="display:flex;justify-content:center;padding:12px 0 8px;cursor:grab;flex-shrink:0;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.12);border-radius:999px;"></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px;flex-shrink:0;">
+    <h2 style="font-family:Manrope,sans-serif;font-size:22px;font-weight:800;color:#fff;margin:0;">Выбор направления</h2>
+    <button id="dir-close-btn" style="width:36px;height:36px;background:rgba(255,255,255,0.07);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;">close</span>
+    </button>
+  </div>
+  <div style="padding:0 20px 12px;flex-shrink:0;">
+    <div style="display:flex;background:#121826;border-radius:9999px;padding:4px;">
+      <button data-dir-tab="from" style="flex:1;border:none;border-radius:9999px;padding:8px 16px;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;transition:background 0.2s,color 0.2s;background:transparent;color:#9CA3AF;">Откуда</button>
+      <button data-dir-tab="to"   style="flex:1;border:none;border-radius:9999px;padding:8px 16px;cursor:pointer;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;transition:background 0.2s,color 0.2s;background:#3B82F6;color:#fff;">Куда</button>
+    </div>
+  </div>
+  <div style="padding:0 20px 10px;flex-shrink:0;">
+    <div style="position:relative;display:flex;align-items:center;">
+      <span class="material-symbols-outlined" style="position:absolute;left:14px;color:#3B82F6;font-size:20px;pointer-events:none;">search</span>
+      <input id="dir-search-input" type="text" placeholder="Аэропорт или город"
+             style="width:100%;height:48px;background:#080d18;border:1px solid rgba(255,255,255,0.07);border-radius:999px;padding:0 16px 0 46px;color:#fff;font-family:Manrope,sans-serif;font-size:15px;outline:none;caret-color:#3B82F6;"
+             autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+  </div>
+  <div style="padding:2px 20px 8px;flex-shrink:0;">
+    <span id="dir-list-label" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#374151;">Популярные направления</span>
+  </div>
+  <div class="sheet-scroll" id="dir-list" style="flex:1;overflow-y:auto;padding:0 20px;padding-bottom:max(28px,env(safe-area-inset-bottom));"></div>
+</div>
+
+<!-- Calendar Sheet -->
+<div id="sheet-calendar" role="dialog" aria-modal="true" aria-label="Выбор дат"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:400;
+            flex-direction:column;background:#0b101e;border-radius:32px 32px 0 0;
+            box-shadow:0 -12px 48px rgba(0,0,0,0.75);max-height:92dvh;overflow:hidden;">
+  <div class="sheet-handle" style="display:flex;justify-content:center;padding:12px 0 4px;cursor:grab;flex-shrink:0;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.1);border-radius:999px;"></div>
+  </div>
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:4px 24px 0;height:52px;flex-shrink:0;">
+    <button id="cal-close-btn" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:50%;">
+      <span class="material-symbols-outlined" style="color:#fff;font-size:22px;">close</span>
+    </button>
+    <h2 style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;margin:0;">
+      <span id="cal-route-from">Откуда</span>
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:18px;">east</span>
+      <span id="cal-route-to">Куда?</span>
+    </h2>
+    <div style="width:40px;"></div>
+  </header>
+  <div style="padding:8px 16px 10px;flex-shrink:0;">
+    <div style="background:#121826;border-radius:9999px;padding:4px;display:flex;">
+      <button data-cal-tab="departure" style="flex:1;border:none;border-radius:9999px;padding:8px 12px;cursor:pointer;transition:background 0.2s,color 0.2s;background:#3B82F6;color:#fff;font-family:Manrope,sans-serif;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        <span id="cal-dep-text">Туда</span>
+      </button>
+      <button data-cal-tab="return" style="flex:1;border:none;border-radius:9999px;padding:8px 12px;cursor:pointer;transition:background 0.2s,color 0.2s;background:transparent;color:#9CA3AF;font-family:Manrope,sans-serif;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        <span id="cal-ret-text">Обратно</span>
+      </button>
+    </div>
+  </div>
+  <div class="sheet-scroll" id="cal-grid-wrap" style="flex:1;overflow-y:auto;padding:0 16px;"></div>
+  <div style="padding:12px 24px max(24px,env(safe-area-inset-bottom));background:linear-gradient(to top,#0b101e 70%,transparent);flex-shrink:0;">
+    <div class="cal-tip" style="background:#111827;border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div style="width:32px;height:32px;background:rgba(34,197,94,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#22C55E;font-variation-settings:'FILL' 1;">lightbulb</span>
+      </div>
+      <p style="font-size:12px;line-height:1.45;color:#9CA3AF;flex:1;margin:0;">Полёты в середине недели предлагают <span style="color:#22C55E;font-weight:700;">лучшую экономию до 35%</span>.</p>
+      <button data-tip-close style="width:28px;height:28px;background:rgba(255,255,255,0.06);border:none;border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#9CA3AF;">close</span>
+      </button>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button id="cal-reset-btn" style="flex:0 0 auto;height:52px;padding:0 24px;border:none;border-radius:999px;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:#9CA3AF;cursor:pointer;transition:all 0.2s;background:#121826;opacity:0.4;pointer-events:none;">Сбросить</button>
+      <button id="cal-cta-btn"   style="flex:1;height:52px;border:none;border-radius:999px;font-family:Manrope,sans-serif;font-size:16px;font-weight:800;color:#fff;cursor:pointer;transition:all 0.2s;background:#1F2937;">Выберите дату вылета</button>
+    </div>
+  </div>
+</div>
+
+<!-- Passengers Sheet -->
+<div id="sheet-passengers" role="dialog" aria-modal="true" aria-label="Пассажиры"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:400;
+            flex-direction:column;background:#0a0f1c;border-radius:24px 24px 0 0;
+            box-shadow:0 -12px 48px rgba(0,0,0,0.75);max-height:88dvh;overflow:hidden;">
+  <div style="flex-shrink:0;">
+    <div class="sheet-handle" style="display:flex;justify-content:center;padding:12px 0 4px;cursor:grab;">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:999px;"></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 24px 16px;">
+      <h2 style="font-family:Manrope,sans-serif;font-size:18px;font-weight:700;color:#fff;margin:0;">Пассажиры и класс</h2>
+      <button id="pax-close-btn" style="width:32px;height:32px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#6B7280;font-size:22px;">close</span>
+      </button>
+    </div>
+  </div>
+  <div class="sheet-scroll" style="flex:1;overflow-y:auto;padding:0 24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #1a2235;">
+      <div><div style="font-size:16px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Взрослые</div><div style="font-size:12px;color:#6B7280;margin-top:2px;font-family:Manrope,sans-serif;">От 18 лет</div></div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <button id="pax-adults-dec" data-pax-btn="adults-dec" style="width:44px;height:44px;background:#1F2937;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;opacity:0.3;pointer-events:none;"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">remove</span></button>
+        <span id="pax-adults-val" style="font-size:18px;font-weight:700;color:#fff;width:24px;text-align:center;font-family:Manrope,sans-serif;">1</span>
+        <button id="pax-adults-inc" data-pax-btn="adults-inc" style="width:44px;height:44px;background:#3B82F6;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">add</span></button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #1a2235;">
+      <div><div style="font-size:16px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Дети</div><div style="font-size:12px;color:#6B7280;margin-top:2px;font-family:Manrope,sans-serif;">От 2 до 12 лет</div></div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <button id="pax-children-dec" data-pax-btn="children-dec" style="width:44px;height:44px;background:#1F2937;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;opacity:0.3;pointer-events:none;"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">remove</span></button>
+        <span id="pax-children-val" style="font-size:18px;font-weight:700;color:#fff;width:24px;text-align:center;font-family:Manrope,sans-serif;">0</span>
+        <button id="pax-children-inc" data-pax-btn="children-inc" style="width:44px;height:44px;background:#3B82F6;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">add</span></button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #1a2235;">
+      <div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:16px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Младенцы</span><span class="material-symbols-outlined" style="font-size:14px;color:#6B7280;">info</span></div><div style="font-size:12px;color:#6B7280;margin-top:2px;font-family:Manrope,sans-serif;">До 2 лет, без места</div></div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <button id="pax-infants-dec" data-pax-btn="infants-dec" style="width:44px;height:44px;background:#1F2937;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;opacity:0.3;pointer-events:none;"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">remove</span></button>
+        <span id="pax-infants-val" style="font-size:18px;font-weight:700;color:#fff;width:24px;text-align:center;font-family:Manrope,sans-serif;">0</span>
+        <button id="pax-infants-inc" data-pax-btn="infants-inc" style="width:44px;height:44px;background:#3B82F6;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;"><span class="material-symbols-outlined" style="color:#fff;font-size:20px;">add</span></button>
+      </div>
+    </div>
+    <div style="padding:20px 0 8px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#374151;margin-bottom:12px;font-family:Manrope,sans-serif;">Класс обслуживания</div>
+      <div style="display:flex;background:#111827;border-radius:16px;padding:4px;gap:4px;">
+        <button data-pax-class="economy"  style="flex:1;padding:10px;border-radius:12px;font-family:Manrope,sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;background:rgba(59,130,246,0.15);color:#fff;border:1.5px solid #3B82F6;">Эконом</button>
+        <button data-pax-class="business" style="flex:1;padding:10px;border-radius:12px;font-family:Manrope,sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;background:transparent;color:#9CA3AF;border:1.5px solid transparent;">Бизнес</button>
+      </div>
+    </div>
+  </div>
+  <div style="padding:16px 24px max(20px,env(safe-area-inset-bottom));background:#0a0f1c;flex-shrink:0;">
+    <button id="pax-done-btn" style="width:100%;height:52px;background:#3B82F6;border:none;border-radius:999px;font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);">Готово</button>
+  </div>
+</div>
+
+<script src="data/airports.js"></script>
+<script src="js/bottom-sheet.js"></script>
+<script src="js/sheets.js"></script>
+<script>
+// ── Edit Sheet ────────────────────────────────────────────────────────────────
+(function() {
+  const MS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+
+  const editEl   = document.getElementById('sheet-edit');
+  const editSheet = new BottomSheet({ el: editEl });
+
+  // ── Open / Close ──────────────────────────────────────────────────────────
+  document.getElementById('edit-close-btn').addEventListener('click', () => editSheet.close());
+
+  // Pencil button → open edit sheet
+  const pencilBtn = document.querySelector('#app [onclick*="index.html"]');
+  if (pencilBtn) {
+    pencilBtn.removeAttribute('onclick');
+    pencilBtn.addEventListener('click', () => { refreshEditSheet(); editSheet.open(); });
+  }
+
+  // ── After any sub-sheet closes → re-open edit sheet ───────────────────────
+  window._afterSheetClose = function() {
+    refreshEditSheet();
+    setTimeout(() => editSheet.open(), 320);
+  };
+
+  // ── Row taps → open sub-sheet ─────────────────────────────────────────────
+  window.editNavTo = function(field) {
+    editSheet.close();
+    setTimeout(() => {
+      if (field === 'from' || field === 'to') {
+        window.openDirectionSheet(field);
+      } else if (field === 'date') {
+        window.openCalendarSheet();
+      } else if (field === 'pax') {
+        window.openPassengersSheet();
+      }
+    }, 280);
+  };
+
+  // ── Populate fields from current sheets.js state ─────────────────────────
+  function refreshEditSheet() {
+    const s = window._getSearchState ? window._getSearchState() : {};
+
+    const fromEl = document.getElementById('edit-from-val');
+    const toEl   = document.getElementById('edit-to-val');
+    if (fromEl) fromEl.textContent = s.from ? s.from.name : 'Откуда?';
+    if (toEl) {
+      toEl.textContent  = s.to ? s.to.name : 'Куда летим?';
+      toEl.style.color  = s.to ? '#fff' : '#9CA3AF';
+    }
+
+    const dateEl    = document.getElementById('edit-date-val');
+    const dateSubEl = document.getElementById('edit-date-sub');
+    const dep = s.depDate;
+    const ret = s.retDate;
+    if (dep) {
+      dateEl.textContent = ret
+        ? `${dep.getDate()} ${MS[dep.getMonth()]} — ${ret.getDate()} ${MS[ret.getMonth()]}`
+        : `${dep.getDate()} ${MS[dep.getMonth()]}`;
+      if (dateSubEl) dateSubEl.textContent = ret ? 'туда-обратно' : 'в одну сторону';
+    } else {
+      dateEl.textContent = 'Выбрать';
+      if (dateSubEl) dateSubEl.textContent = '';
+    }
+
+    const paxValEl = document.getElementById('edit-pax-val');
+    const paxSubEl = document.getElementById('edit-pax-sub');
+    const paxCntEl = document.getElementById('edit-pax-count');
+    if (s.pax) {
+      const total = s.pax.adults + (s.pax.children||0) + (s.pax.infants||0);
+      if (paxValEl) paxValEl.textContent = total === 1 ? '1 пассажир' : total < 5 ? `${total} пассажира` : `${total} пассажиров`;
+      if (paxCntEl) paxCntEl.textContent = total;
+      if (paxSubEl) paxSubEl.textContent = s.cls === 'business' ? 'бизнес' : 'эконом';
+    }
+  }
+
+  // ── "Сохранить" → save state, update header, close ───────────────────────
+  document.getElementById('edit-search-btn').addEventListener('click', () => {
+    const s = window._getSearchState ? window._getSearchState() : {};
+    // Persist to sessionStorage
+    try {
+      sessionStorage.setItem('ct_search', JSON.stringify({
+        from:    s.from,
+        to:      s.to,
+        depDate: s.depDate ? s.depDate.toISOString() : null,
+        retDate: s.retDate ? s.retDate.toISOString() : null,
+        pax:     s.pax,
+        cls:     s.cls,
+      }));
+    } catch(e) {}
+
+    // Update header immediately (no reload needed)
+    const routeEl = document.getElementById('hdr-route');
+    const metaEl  = document.getElementById('hdr-meta');
+    if (routeEl) routeEl.textContent = `${s.from ? s.from.name : '?'} → ${s.to ? s.to.name : '?'}`;
+    if (metaEl) {
+      const dep = s.depDate;
+      const ret = s.retDate;
+      const datePart = dep
+        ? `${dep.getDate()} ${MS[dep.getMonth()]}${ret ? ' — ' + ret.getDate() + ' ' + MS[ret.getMonth()] : ''}`
+        : 'Дата не выбрана';
+      const pax   = s.pax || { adults:1, children:0, infants:0 };
+      const total = pax.adults + (pax.children||0) + (pax.infants||0);
+      const paxLbl = total === 1 ? '1 пасс' : `${total} пасс`;
+      const clsLbl = s.cls === 'business' ? 'бизнес' : 'эконом';
+      metaEl.textContent = `${datePart} · ${paxLbl} · ${clsLbl}`;
+    }
+
+    editSheet.close();
+  });
+})();
+</script>
+</body>
+</html>

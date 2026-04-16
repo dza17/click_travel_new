@@ -45,7 +45,7 @@
         if (dateSubEl) dateSubEl.textContent = 'в одну сторону';
       } else {
         dateEl.textContent    = 'Выбрать';
-        if (dateSubEl) dateSubEl.textContent = '';
+        if (dateSubEl) dateSubEl.textContent = 'туда и обратно';
       }
     }
 
@@ -120,7 +120,7 @@
     dirSheet = new BottomSheet({
       el,
       scrollEl: el.querySelector('.sheet-scroll'),
-      onClose: updateMainUI,
+      onClose: () => { updateMainUI(); if (window._afterSheetClose) window._afterSheetClose('direction'); },
     });
 
     const input = el.querySelector('#dir-search-input');
@@ -261,7 +261,7 @@
   // B. CALENDAR SHEET
   // ─────────────────────────────────────────────────────────────────────────
   const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const MONTH_SHORT = ['ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'];
+  const MONTH_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const MONTH_GEN   = ['Января','Февраля','Марта','Апреля','Мая','Июня','Июля','Августа','Сентября','Октября','Ноября','Декабря'];
   const DAY_NAMES   = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
   const TODAY       = (() => { const d = new Date(); d.setHours(0,0,0,0); return d; })();
@@ -293,6 +293,7 @@
     calSheet = new BottomSheet({
       el,
       scrollEl: el.querySelector('.sheet-scroll'),
+      onClose: () => { if (window._afterSheetClose) window._afterSheetClose('calendar'); },
     });
 
     el.querySelectorAll('[data-cal-tab]').forEach(btn => {
@@ -303,6 +304,13 @@
     });
 
     el.querySelector('#cal-close-btn')?.addEventListener('click', () => calSheet.close());
+
+    el.querySelector('#cal-reset-btn')?.addEventListener('click', () => {
+      state.depDate = null;
+      state.retDate = null;
+      state._calField = 'departure';
+      renderCal();
+    });
 
     el.querySelector('#cal-cta-btn')?.addEventListener('click', () => {
       if (state.depDate) {
@@ -318,6 +326,20 @@
   }
 
   // Chip tap: set destination + open calendar immediately
+  window.openSearchResults = function () {
+    try {
+      sessionStorage.setItem('ct_search', JSON.stringify({
+        from:    state.from,
+        to:      state.to,
+        depDate: state.depDate ? state.depDate.toISOString() : null,
+        retDate: state.retDate ? state.retDate.toISOString() : null,
+        pax:     state.pax,
+        cls:     state.cls,
+      }));
+    } catch(e) {}
+    window.location.href = 'results.html';
+  };
+
   window.swapDirections = function () {
     const tmp = state.from;
     state.from = state.to;
@@ -407,22 +429,26 @@
   }
 
   function renderCalCTA() {
-    const btn = document.getElementById('cal-cta-btn');
+    const btn      = document.getElementById('cal-cta-btn');
+    const resetBtn = document.getElementById('cal-reset-btn');
     if (!btn) return;
     const dep = state.depDate;
     const ret = state.retDate;
+
+    // Сбросить: активна только когда выбрана хоть одна дата
+    if (resetBtn) {
+      resetBtn.style.opacity       = dep ? '1'    : '0.4';
+      resetBtn.style.pointerEvents = dep ? 'auto' : 'none';
+    }
+
     if (!dep) {
       btn.style.background = '#1F2937';
       btn.style.boxShadow  = 'none';
       btn.textContent      = 'Выберите дату вылета';
-    } else if (!ret) {
-      btn.style.background = '#3B82F6';
-      btn.style.boxShadow  = '0 4px 20px rgba(59,130,246,0.35)';
-      btn.textContent      = `Туда: ${fmtShort(dep)} · укажите обратно`;
     } else {
       btn.style.background = '#3B82F6';
       btn.style.boxShadow  = '0 4px 20px rgba(59,130,246,0.35)';
-      btn.textContent      = `${fmtShort(dep)} — ${fmtShort(ret)}`;
+      btn.textContent      = 'Далее';
     }
   }
 
@@ -547,7 +573,10 @@
     const el = document.getElementById('sheet-passengers');
     if (!el) return;
 
-    paxSheet = new BottomSheet({ el });
+    paxSheet = new BottomSheet({
+      el,
+      onClose: () => { if (window._afterSheetClose) window._afterSheetClose('passengers'); },
+    });
 
     el.querySelector('#pax-close-btn')?.addEventListener('click', () => paxSheet.close());
 
@@ -628,6 +657,16 @@
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
+  // Expose state getter for results.html
+  window._getSearchState = () => ({
+    from:    state.from,
+    to:      state.to,
+    depDate: state.depDate,
+    retDate: state.retDate,
+    pax:     Object.assign({}, state.pax),
+    cls:     state.cls,
+  });
+
   function init() {
     initSheets(); // bottom-sheet.js
     initDirectionSheet();
