@@ -527,37 +527,37 @@
       outer.innerHTML = `
         <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    box-shadow:0 0 16px rgba(59,130,246,0.5);">
-          <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;">${day}</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.8);text-transform:uppercase;">${info.label}</span>
+                    box-shadow:0 0 16px rgba(59,130,246,0.5);pointer-events:none;">
+          <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
+          <span style="font-size:8px;color:rgba(255,255,255,0.8);text-transform:uppercase;pointer-events:none;">${info.label}</span>
         </div>`;
 
     } else if (ds === 'range') {
       outer.innerHTML = `
         <div style="width:100%;height:40px;background:rgba(59,130,246,0.18);border-radius:8px;
-                    display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;">${day}</span>
-          <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}">${info.label}</span>
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+          <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
+          <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>
         </div>`;
 
     } else if (ds === 'past') {
       outer.style.cursor = 'default';
       outer.innerHTML = `
-        <span style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.18);">${day}</span>
-        <span style="font-size:8px;color:rgba(156,163,175,0.2);">${info.label}</span>`;
+        <span style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.18);pointer-events:none;">${day}</span>
+        <span style="font-size:8px;color:rgba(156,163,175,0.2);pointer-events:none;">${info.label}</span>`;
 
     } else {
       if (info.low) {
         outer.innerHTML = `
           <div style="width:38px;height:38px;background:rgba(34,197,94,0.08);border-radius:50%;
-                      display:flex;flex-direction:column;align-items:center;justify-content:center;">
-            <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;">${day}</span>
-            <span style="font-size:8px;color:#22C55E;font-weight:600;">${info.label}</span>
+                      display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+            <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
+            <span style="font-size:8px;color:#22C55E;font-weight:600;pointer-events:none;">${info.label}</span>
           </div>`;
       } else {
         outer.innerHTML = `
-          <span style="font-size:14px;font-weight:500;color:#fff;">${day}</span>
-          <span style="font-size:8px;color:#6B7280;">${info.label}</span>`;
+          <span style="font-size:14px;font-weight:500;color:#fff;pointer-events:none;">${day}</span>
+          <span style="font-size:8px;color:#6B7280;pointer-events:none;">${info.label}</span>`;
       }
     }
     return outer;
