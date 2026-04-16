@@ -147,13 +147,18 @@
 
   </div>
 
-  <!-- ── BOTTOM ACTION BAR ── -->
-  <div class="glass border-t border-white/[0.04]"
-       style="position:fixed;bottom:0;left:0;right:0;z-index:50;
-              padding: 10px 12px max(12px, env(safe-area-inset-bottom));">
-    <div style="display:flex;align-items:center;gap:10px;
-                background:rgba(255,255,255,0.03);border-radius:999px;
-                padding:6px;border:1px solid rgba(255,255,255,0.05);">
+  <!-- action bar placeholder to push content up — actual bar is outside #app -->
+  <div style="height:76px;"></div>
+
+</div><!-- /app -->
+
+<!-- ── BOTTOM ACTION BAR (outside #app, guaranteed fixed) ── -->
+<div class="glass border-t border-white/[0.04]"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:200;
+            padding: 10px 12px max(12px, env(safe-area-inset-bottom));">
+  <div style="display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto;
+              background:rgba(255,255,255,0.03);border-radius:999px;
+              padding:6px;border:1px solid rgba(255,255,255,0.05);">
       <!-- Edit -->
       <button id="edit-pencil-btn"
               style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;
@@ -188,10 +193,7 @@
         <span id="filter-icon" class="material-symbols-outlined" style="font-size:18px;color:#9CA3AF;">tune</span>
       </button>
     </div>
-  </div>
-
-
-</div><!-- /app -->
+</div><!-- /action bar -->
 
 <script>
 // ─── Constants ────────────────────────────────────────────────────────────────
