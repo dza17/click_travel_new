@@ -559,15 +559,32 @@
 
     const info  = getPrice(date);
     const outer = document.createElement('div');
-    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;';
+    outer.style.cssText = 'position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;';
     if (!past) {
       outer.style.cursor = 'pointer';
       outer.setAttribute('onclick', `handleCalTap('${key}')`);
     }
 
-    if (ds === 'departure' || ds === 'return') {
+    // Сплошная полоса диапазона: departure — правая половина, range — полная, return — левая
+    const BAND = 'position:absolute;top:6px;bottom:6px;background:rgba(59,130,246,0.15);pointer-events:none;';
+
+    if (ds === 'departure') {
+      const bandHtml = ret
+        ? `<div style="${BAND}left:50%;right:0;"></div>`
+        : '';
       outer.innerHTML = `
-        <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
+        ${bandHtml}
+        <div style="position:relative;width:42px;height:42px;background:#3B82F6;border-radius:50%;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    box-shadow:0 0 16px rgba(59,130,246,0.5);pointer-events:none;">
+          <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
+          <span style="font-size:8px;color:rgba(255,255,255,0.8);text-transform:uppercase;pointer-events:none;">${info.label}</span>
+        </div>`;
+
+    } else if (ds === 'return') {
+      outer.innerHTML = `
+        <div style="${BAND}left:0;right:50%;"></div>
+        <div style="position:relative;width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
                     box-shadow:0 0 16px rgba(59,130,246,0.5);pointer-events:none;">
           <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
@@ -576,8 +593,8 @@
 
     } else if (ds === 'range') {
       outer.innerHTML = `
-        <div style="width:100%;height:40px;background:rgba(59,130,246,0.18);border-radius:8px;
-                    display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+        <div style="${BAND}left:0;right:0;"></div>
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;pointer-events:none;">
           <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
           <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>
         </div>`;
@@ -591,7 +608,7 @@
     } else {
       if (info.low) {
         outer.innerHTML = `
-          <div style="width:38px;height:38px;background:rgba(34,197,94,0.08);border-radius:50%;
+          <div style="position:relative;width:38px;height:38px;background:rgba(34,197,94,0.08);border-radius:50%;
                       display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
             <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
             <span style="font-size:8px;color:#22C55E;font-weight:600;pointer-events:none;">${info.label}</span>
