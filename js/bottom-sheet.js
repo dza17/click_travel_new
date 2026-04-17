@@ -176,11 +176,15 @@
     _pointerDown(e) {
       if (e.button && e.button !== 0) return;
 
-      const handle  = this.el.querySelector('.sheet-handle');
+      const handle     = this.el.querySelector('.sheet-handle');
       const fromHandle = handle && (e.target === handle || handle.contains(e.target));
-      const atTop   = !this.scrollEl || this.scrollEl.scrollTop <= 2;
+      const atTop      = !this.scrollEl || this.scrollEl.scrollTop <= 2;
 
       if (!fromHandle && !atTop) return;
+
+      // Don't initiate drag on interactive elements (buttons, inputs, labels, [onclick])
+      const interactive = e.target.closest('button, input, select, textarea, label, [onclick], a');
+      if (interactive && !fromHandle) return;
 
       this._dragging = true;
       this._startY   = e.clientY;
