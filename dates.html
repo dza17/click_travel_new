@@ -325,28 +325,47 @@ function getDayState(date) {
     return 'default';
 }
 
-function buildDayCell(year, month, day) {
+function buildDayCell(year, month, day, totalDays) {
     const date   = new Date(year, month, day);
     const key    = toKey(date);
     const past   = isPast(date);
     const ds     = past ? 'past' : getDayState(date);
     const info   = getPrice(date);
+    const { departureDate, returnDate } = state;
+
+    const dow            = (date.getDay() + 6) % 7; // 0=Mon … 6=Sun
+    const isFirstOfWeek  = dow === 0;
+    const isLastOfWeek   = dow === 6;
+    const isFirstOfMonth = day === 1;
+    const isLastOfMonth  = day === totalDays;
+    const capLeft        = isFirstOfWeek  || isFirstOfMonth;
+    const capRight       = isLastOfWeek   || isLastOfMonth;
 
     const outer  = document.createElement('div');
-    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;cursor:pointer;user-select:none;';
+    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;cursor:pointer;user-select:none;position:relative;';
     if (!past) outer.onclick = () => handleDateTap(key);
 
     if (ds === 'departure' || ds === 'return') {
-        outer.innerHTML = `
-            <div class="glow" style="width:44px;height:44px;background:#3B82F6;border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        // Half-strip connecting circle to the range strip — only toward the range side
+        const hasRight = ds === 'departure' && returnDate && returnDate > date && !isLastOfWeek  && !isLastOfMonth;
+        const hasLeft  = ds === 'return'    && departureDate && departureDate < date && !isFirstOfWeek && !isFirstOfMonth;
+
+        let bgHtml = '';
+        if (hasRight) bgHtml = `<div style="position:absolute;left:50%;right:0;top:50%;transform:translateY(-50%);height:44px;background:rgba(59,130,246,0.2);z-index:0;"></div>`;
+        if (hasLeft)  bgHtml = `<div style="position:absolute;right:50%;left:0;top:50%;transform:translateY(-50%);height:44px;background:rgba(59,130,246,0.2);z-index:0;"></div>`;
+
+        outer.innerHTML = bgHtml + `
+            <div class="glow" style="position:relative;z-index:1;width:44px;height:44px;background:#3B82F6;border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 <span style="font-size:16px;font-weight:700;color:white;line-height:1.1;">${day}</span>
                 <span style="font-size:8px;color:rgba(255,255,255,0.75);text-transform:uppercase;">${info.price}</span>
             </div>`;
 
     } else if (ds === 'range') {
-        outer.style.padding = '2px';
+        // Continuous strip; rounded caps only at row/month edges
+        const lR = capLeft  ? '22px' : '0';
+        const rR = capRight ? '22px' : '0';
         outer.innerHTML = `
-            <div style="width:100%;height:100%;background:rgba(59,130,246,0.2);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="width:100%;height:44px;background:rgba(59,130,246,0.2);border-radius:${lR} ${rR} ${rR} ${lR};display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
                 <span style="font-size:9px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}">${info.price}</span>
             </div>`;
@@ -359,9 +378,8 @@ function buildDayCell(year, month, day) {
 
     } else {
         // Default: low-price dates get subtle green bg
-        if (info.low) outer.style.padding = '2px';
         outer.innerHTML = info.low
-            ? `<div style="width:100%;height:100%;background:rgba(34,197,94,0.08);border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            ? `<div style="width:40px;height:44px;background:rgba(34,197,94,0.08);border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                    <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
                    <span style="font-size:9px;color:#22C55E;font-weight:600;">${info.price}</span>
                </div>`
@@ -410,7 +428,7 @@ function renderCalendar() {
             grid.appendChild(empty);
         }
         for (let day = 1; day <= days; day++) {
-            grid.appendChild(buildDayCell(year, month, day));
+            grid.appendChild(buildDayCell(year, month, day, days));
         }
 
         section.appendChild(grid);

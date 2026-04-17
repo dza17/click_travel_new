@@ -107,7 +107,7 @@
   <!-- ── HEADER ── -->
   <header class="glass border-b border-white/[0.04] flex-shrink-0"
           style="height:56px;display:flex;align-items:center;padding:0 12px;">
-    <button onclick="history.length > 1 ? history.back() : window.location.href='index.html'"
+    <button onclick="window.location.href='index.html'"
             style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;
                    border:none;background:none;cursor:pointer;border-radius:50%;flex-shrink:0;
                    -webkit-tap-highlight-color:transparent;"
@@ -967,6 +967,11 @@ function buildFlightCards(flights, fromCode, toCode) {
     pencilBtn.addEventListener('click', () => { refreshEditSheet(); editSheet.open(); });
   }
 
+  // Auto-open edit sheet when arriving from all_results via ?edit=1
+  if (new URLSearchParams(location.search).get('edit') === '1') {
+    setTimeout(() => { refreshEditSheet(); editSheet.open(); }, 300);
+  }
+
   // ── After any sub-sheet closes → re-open edit sheet ───────────────────────
   window._afterSheetClose = function() {
     refreshEditSheet();
@@ -1204,7 +1209,16 @@ function buildFlightCards(flights, fromCode, toCode) {
   document.getElementById('filters-apply-btn').addEventListener('click', () => {
     updateFilterBtn();
     filterSheet.close();
-    // TODO: re-run results query with active filters when real API is connected
+    if (isActive()) {
+      sessionStorage.setItem('ct_filters', JSON.stringify({
+        sort:    fs.sort,
+        depTime: [...fs.depTime],
+        arrTime: [...fs.arrTime],
+        stops:   [...fs.stops],
+        baggage: fs.baggage,
+      }));
+      window.location.href = 'all_results.html';
+    }
   });
 })();
 </script>
