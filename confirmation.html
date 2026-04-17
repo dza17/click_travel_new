@@ -190,13 +190,29 @@
 
 <!-- ── MINIMAL BRAND HEADER ── -->
 <header style="position:sticky;top:0;z-index:50;
-               height:var(--header-h);display:flex;align-items:center;justify-content:center;
+               height:var(--header-h);display:flex;align-items:center;justify-content:space-between;
                padding:0 16px;border-bottom:1px solid rgba(255,255,255,0.04);
                background:rgba(11,15,26,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+  <div style="width:40px;"></div>
   <div style="display:flex;align-items:center;gap:8px;">
     <img src="img/travel_logo.png" alt="Click Travel" style="width:24px;height:24px;object-fit:contain;"/>
     <span style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Click Travel</span>
   </div>
+  <button onclick="openNavMenu()"
+          style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+                 border:none;background:none;cursor:pointer;flex-shrink:0;
+                 -webkit-tap-highlight-color:transparent;"
+          onpointerdown="this.style.opacity='0.6'"
+          onpointerup="this.style.opacity='1'"
+          onpointercancel="this.style.opacity='1'">
+    <div style="width:30px;height:30px;border-radius:7px;
+                background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.28);
+                transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+                pointer-events:none;">
+      <img src="img/travel_logo.png" alt=""
+           style="width:18px;height:18px;object-fit:contain;transform:rotate(-45deg);pointer-events:none;">
+    </div>
+  </button>
 </header>
 
 <!-- ── PAGE CONTENT ── -->
@@ -585,5 +601,6 @@ window.newSearch = function() {
   }
 })();
 </script>
+<script src="js/nav-menu.js"></script>
 </body>
 </html>

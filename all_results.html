@@ -114,18 +114,35 @@
                   overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.1;">
         Ташкент → Москва
       </div>
-      <div id="hdr-meta"
-           style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;
-                  letter-spacing:0.08em;margin-top:2px;white-space:nowrap;">
-        23 Апр · 1 пасс · эконом
+      <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+        <div id="hdr-meta"
+             style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;
+                    letter-spacing:0.08em;white-space:nowrap;">
+          23 Апр · 1 пасс · эконом
+        </div>
+        <div id="hdr-count"
+             style="font-size:10px;font-weight:800;letter-spacing:0.02em;
+                    color:#3B82F6;background:rgba(59,130,246,0.12);
+                    padding:2px 8px;border-radius:999px;flex-shrink:0;white-space:nowrap;">
+          9 рейсов
+        </div>
       </div>
     </div>
-    <div id="hdr-count"
-         style="font-size:11px;font-weight:800;letter-spacing:0.02em;
-                color:#3B82F6;background:rgba(59,130,246,0.12);
-                padding:4px 10px;border-radius:999px;flex-shrink:0;white-space:nowrap;">
-      9 рейсов
-    </div>
+    <button onclick="openNavMenu()"
+            style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+                   border:none;background:none;cursor:pointer;flex-shrink:0;
+                   -webkit-tap-highlight-color:transparent;"
+            onpointerdown="this.style.opacity='0.6'"
+            onpointerup="this.style.opacity='1'"
+            onpointercancel="this.style.opacity='1'">
+      <div style="width:28px;height:28px;border-radius:6px;
+                  background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.28);
+                  transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+                  pointer-events:none;">
+        <img src="img/travel_logo.png" alt=""
+             style="width:16px;height:16px;object-fit:contain;transform:rotate(-45deg);pointer-events:none;">
+      </div>
+    </button>
   </header>
 
   <!-- ── MAIN AREA ── -->
@@ -472,5 +489,6 @@ const filtersSheet = new FiltersSheet({
 });
 window.openFilters = () => filtersSheet.open();
 </script>
+<script src="js/nav-menu.js"></script>
 </body>
 </html>

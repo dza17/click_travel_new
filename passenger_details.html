@@ -16,7 +16,7 @@
     background: var(--c-bg);
     color: var(--c-text);
     min-height: max(884px, 100dvh);
-    padding-bottom: calc(160px + env(safe-area-inset-bottom));
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
     -webkit-tap-highlight-color: transparent;
   }
   .material-symbols-outlined {
@@ -212,7 +212,7 @@
           onpointercancel="this.style.background='none'">
     <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:22px;">arrow_back</span>
   </button>
-  <div style="margin-left:4px;">
+  <div style="margin-left:4px;flex:1;">
     <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">Данные пассажира</div>
     <div id="hdr-pax-label"
          style="font-size:10px;font-weight:700;text-transform:uppercase;
@@ -220,6 +220,21 @@
       1 пассажир
     </div>
   </div>
+  <button onclick="openNavMenu()"
+          style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+                 border:none;background:none;cursor:pointer;flex-shrink:0;
+                 -webkit-tap-highlight-color:transparent;"
+          onpointerdown="this.style.opacity='0.6'"
+          onpointerup="this.style.opacity='1'"
+          onpointercancel="this.style.opacity='1'">
+    <div style="width:30px;height:30px;border-radius:7px;
+                background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.28);
+                transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+                pointer-events:none;">
+      <img src="img/travel_logo.png" alt=""
+           style="width:18px;height:18px;object-fit:contain;transform:rotate(-45deg);pointer-events:none;">
+    </div>
+  </button>
 </header>
 
 <!-- ── PAGE CONTENT ── -->
@@ -484,7 +499,7 @@
 
 <!-- ── BOTTOM ACTION BAR ── -->
 <div class="glass"
-     style="position:fixed;bottom:calc(60px + env(safe-area-inset-bottom, 0px));
+     style="position:fixed;bottom:env(safe-area-inset-bottom, 0px);
             left:0;width:100%;z-index:50;
             border-top:1px solid rgba(255,255,255,0.05);padding:10px 16px;">
   <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;gap:14px;">
@@ -510,37 +525,6 @@
   </div>
 </div>
 
-<!-- ── BOTTOM NAV ── -->
-<nav class="glass"
-     style="position:fixed;bottom:0;left:0;width:100%;z-index:51;
-            display:flex;justify-content:space-around;align-items:center;
-            border-top:1px solid rgba(255,255,255,0.04);
-            padding:6px 16px max(8px,env(safe-area-inset-bottom));">
-  <a href="index.html"
-     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
-            text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
-    <span class="material-symbols-outlined" style="font-size:22px;">search</span>
-    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Поиск</span>
-  </a>
-  <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
-            text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
-    <span class="material-symbols-outlined" style="font-size:22px;">confirmation_number</span>
-    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Брони</span>
-  </a>
-  <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
-            text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
-    <span class="material-symbols-outlined" style="font-size:22px;">explore</span>
-    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Обзор</span>
-  </a>
-  <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
-            text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
-    <span class="material-symbols-outlined" style="font-size:22px;">person</span>
-    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Профиль</span>
-  </a>
-</nav>
 
 <script>
 // ─── Gender toggle ─────────────────────────────────────────────────────────────
@@ -633,5 +617,6 @@ window.goToConfirmation = function() {
     totalPrice ? fmtM(totalPrice) : '—';
 })();
 </script>
+<script src="js/nav-menu.js"></script>
 </body>
 </html>

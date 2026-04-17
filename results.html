@@ -128,7 +128,21 @@
         23 Апр · 1 пассажир
       </div>
     </div>
-    <div style="width:36px;flex-shrink:0;"></div>
+    <button onclick="openNavMenu()"
+            style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+                   border:none;background:none;cursor:pointer;flex-shrink:0;
+                   -webkit-tap-highlight-color:transparent;"
+            onpointerdown="this.style.opacity='0.6'"
+            onpointerup="this.style.opacity='1'"
+            onpointercancel="this.style.opacity='1'">
+      <div style="width:28px;height:28px;border-radius:6px;
+                  background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.28);
+                  transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+                  pointer-events:none;">
+        <img src="img/travel_logo.png" alt=""
+             style="width:16px;height:16px;object-fit:contain;transform:rotate(-45deg);pointer-events:none;">
+      </div>
+    </button>
   </header>
 
   <!-- ── MAIN AREA ── -->
@@ -875,5 +889,6 @@ const filtersSheet = new FiltersSheet({
 });
 window.openFilters = () => filtersSheet.open();
 </script>
+<script src="js/nav-menu.js"></script>
 </body>
 </html>

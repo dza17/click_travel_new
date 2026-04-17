@@ -96,7 +96,7 @@
         div[onclick] > *, div[onclick] > * > * { pointer-events: none; }
     </style>
 </head>
-<body class="text-on-background min-h-screen pb-24">
+<body class="text-on-background min-h-screen pb-6">
 <!-- TopAppBar -->
 <header class="sticky top-0 z-50 glass-header h-14 px-6 w-full flex justify-between items-center">
 <div class="flex items-center">
@@ -107,9 +107,20 @@
 <span class="text-xl font-extrabold text-white tracking-tighter whitespace-nowrap" style="">Click Travel</span>
 </div>
 <div class="flex items-center">
-<div class="w-8 h-8 rounded-full overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
-<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv7xNOtvYY_XKuC7EHuG8wZpvreVNBhYcx-w-vAQedbWfo4BhUXSYvBmRjHxbmxZ8ML9R0bFkq2h43fq08Vr49H1G6JRdJpkqnN8inhlPTU_mYFWPagZwHaLKg_eMNjTccCn7G15w1F0z9JAzeXtdYUsSSxUD8qWpqqB0oSW-So0M-Oylc7hjOTUsTwA_kYJ_x1W56eQR1Y9vlv1MTCd37KqiRdY0I-RtJ83xnLWDiu2J1vNgYI4gtKtAbFv283_Kb2lKaBVMY9ip-" style=""/>
-</div>
+<button onclick="openNavMenu()"
+        style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+               border:none;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;"
+        onpointerdown="this.style.opacity='0.6'"
+        onpointerup="this.style.opacity='1'"
+        onpointercancel="this.style.opacity='1'">
+  <div style="width:30px;height:30px;border-radius:7px;
+              background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.28);
+              transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+              pointer-events:none;">
+    <img src="img/travel_logo.png" alt=""
+         style="width:18px;height:18px;object-fit:contain;transform:rotate(-45deg);pointer-events:none;">
+  </div>
+</button>
 </div>
 </header>
 <main class="px-6 pt-6 max-w-2xl mx-auto">
@@ -245,26 +256,6 @@
 </div>
 </div>
 </main>
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full glass-header flex justify-around items-center px-4 z-50 shadow-[0px_-10px_30px_rgba(0,0,0,0.4)] border-t border-white/5"
-     style="padding-top:6px;padding-bottom:max(8px,env(safe-area-inset-bottom));">
-<a class="flex flex-col items-center justify-center text-brand-blue tap-highlight-none active:scale-90 transition-transform" href="index.html" style="padding:2px 8px;">
-<span class="material-symbols-outlined" style='font-variation-settings: "FILL" 1;font-size:22px;'>search</span>
-<span class="font-manrope text-[10px] font-bold uppercase tracking-[0.05em]" style="margin-top:2px;">Поиск</span>
-</a>
-<a class="flex flex-col items-center justify-center text-gray-500 hover:text-brand-blue transition-colors tap-highlight-none active:scale-90 transition-transform" href="#" style="padding:2px 8px;">
-<span class="material-symbols-outlined" style="font-size:22px;">confirmation_number</span>
-<span class="font-manrope text-[10px] font-bold uppercase tracking-[0.05em]" style="margin-top:2px;">МОИ БРОНИ</span>
-</a>
-<a class="flex flex-col items-center justify-center text-gray-500 hover:text-brand-blue transition-colors tap-highlight-none active:scale-90 transition-transform" href="#" style="padding:2px 8px;">
-<span class="material-symbols-outlined" style="font-size:22px;">explore</span>
-<span class="font-manrope text-[10px] font-bold uppercase tracking-[0.05em]" style="margin-top:2px;">Обзор</span>
-</a>
-<a class="flex flex-col items-center justify-center text-gray-500 hover:text-brand-blue transition-colors tap-highlight-none active:scale-90 transition-transform" href="#" style="padding:2px 8px;">
-<span class="material-symbols-outlined" style="font-size:22px;">person</span>
-<span class="font-manrope text-[10px] font-bold uppercase tracking-[0.05em]" style="margin-top:2px;">Профиль</span>
-</a>
-</nav>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      BOTTOM SHEETS
@@ -530,4 +521,5 @@
 <script src="data/airports.js"></script>
 <script src="js/bottom-sheet.js"></script>
 <script src="js/sheets.js"></script>
+<script src="js/nav-menu.js"></script>
 </body></html>
