@@ -69,8 +69,10 @@
   .flight-line .line { flex:1;height:1px;background:linear-gradient(to right,#424754,#3B82F6 50%,#424754); }
   .flight-line .plane-icon { font-size:14px!important;color:#3B82F6;flex-shrink:0;transform:rotate(90deg);margin:0 2px; }
 
-  .sort-chip {
+  .filter-chip {
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
     padding: 8px 16px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.06);
@@ -84,7 +86,7 @@
     background: #121826;
     color: #9CA3AF;
   }
-  .sort-chip.active {
+  .filter-chip.active {
     background: #3B82F6;
     color: #fff;
     border-color: transparent;
@@ -153,12 +155,16 @@
          style="display:flex;gap:8px;overflow-x:auto;padding:10px 0 8px;">
     </div>
 
-    <!-- Sort chips -->
+    <!-- Filter / sort chips -->
     <div id="sort-row" class="no-scrollbar"
          style="display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;">
-      <button class="sort-chip active" data-sort="recommended">Рекомендуемые</button>
-      <button class="sort-chip" data-sort="cheapest">Сначала дешёвые</button>
-      <button class="sort-chip" data-sort="fastest">Быстрее всего</button>
+      <button id="chip-sort" class="filter-chip" onclick="openSortSheet()">
+        <span class="material-symbols-outlined"
+              style="font-size:15px;margin-right:4px;pointer-events:none;">sort</span>Сортировка
+      </button>
+      <button id="chip-direct"  class="filter-chip" onclick="toggleDirectFilter()">Без пересадок</button>
+      <button id="chip-baggage" class="filter-chip" onclick="toggleBaggageFilter()">С багажом</button>
+      <button id="chip-fastest" class="filter-chip" onclick="toggleFastestSort()">Самый быстрый</button>
     </div>
 
     <!-- Section label -->
@@ -268,16 +274,95 @@ function generateAllFlights(fc, tc) {
 }
 
 // ─── State ────────────────────────────────────────────────────────────────────
-let currentSort = 'recommended';
-let baseFlights  = [];
-let _fromCode    = 'TAS';
-let _toCode      = 'MOW';
+let currentSort   = 'recommended';
+let sortFromSheet = false;   // true = sort chosen via sort bottom sheet
+let filterDirect  = false;
+let filterBaggage = false;
+let baseFlights   = [];
+let _fromCode     = 'TAS';
+let _toCode       = 'MOW';
 
-function sortedFlights(mode) {
-  const arr = [...baseFlights];
-  if (mode === 'cheapest') arr.sort((a,b) => a.price - b.price);
-  if (mode === 'fastest')  arr.sort((a,b) => a.durationMins - b.durationMins);
-  return arr;
+// ─── Chip state helpers ───────────────────────────────────────────────────────
+function setChipActive(el, active) {
+  if (!el) return;
+  if (active) {
+    el.style.background  = '#3B82F6';
+    el.style.color       = '#fff';
+    el.style.borderColor = 'transparent';
+    el.style.boxShadow   = '0 0 0 2px rgba(59,130,246,0.25)';
+  } else {
+    el.style.background  = '#121826';
+    el.style.color       = '#9CA3AF';
+    el.style.borderColor = 'rgba(255,255,255,0.06)';
+    el.style.boxShadow   = 'none';
+  }
+}
+
+function updateChipStates() {
+  setChipActive(document.getElementById('chip-sort'),
+    sortFromSheet && currentSort !== 'recommended');
+  setChipActive(document.getElementById('chip-direct'),  filterDirect);
+  setChipActive(document.getElementById('chip-baggage'), filterBaggage);
+  setChipActive(document.getElementById('chip-fastest'),
+    !sortFromSheet && currentSort === 'fastest');
+}
+
+// ─── Filter + sort pipeline ───────────────────────────────────────────────────
+function applyFiltersAndSort() {
+  let arr = [...baseFlights];
+  if (filterDirect)  arr = arr.filter(f => !f.stops);
+  if (filterBaggage) arr = arr.filter(f => f.chips.includes(3));
+  if (currentSort === 'cheapest') arr.sort((a,b) => a.price - b.price);
+  if (currentSort === 'fastest')  arr.sort((a,b) => a.durationMins - b.durationMins);
+  buildFlightCards(arr);
+}
+
+// ─── Sort sheet handlers ──────────────────────────────────────────────────────
+function openSortSheet() {
+  window._sortSheet.open();
+  document.querySelectorAll('[data-sort-opt]').forEach(el => {
+    const on    = el.dataset.sortOpt === currentSort;
+    const radio = el.querySelector('.sort-sheet-radio');
+    const text  = el.querySelector('span');
+    if (radio) {
+      radio.style.borderColor = on ? '#3B82F6' : '#424754';
+      radio.innerHTML = on
+        ? '<div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;"></div>' : '';
+    }
+    if (text) text.style.color = on ? '#fff' : '#9CA3AF';
+  });
+}
+
+function selectSortFromSheet(mode) {
+  currentSort   = mode;
+  sortFromSheet = mode !== 'recommended';
+  updateChipStates();
+  applyFiltersAndSort();
+  window._sortSheet.close();
+}
+
+// ─── Toggle handlers ──────────────────────────────────────────────────────────
+function toggleDirectFilter() {
+  filterDirect = !filterDirect;
+  updateChipStates();
+  applyFiltersAndSort();
+}
+
+function toggleBaggageFilter() {
+  filterBaggage = !filterBaggage;
+  updateChipStates();
+  applyFiltersAndSort();
+}
+
+function toggleFastestSort() {
+  if (!sortFromSheet && currentSort === 'fastest') {
+    currentSort = 'recommended';
+  } else {
+    currentSort   = 'fastest';
+    sortFromSheet = false;
+  }
+  updateChipStates();
+  applyFiltersAndSort();
 }
 
 // ─── Date Carousel ─────────────────────────────────────────────────────────────
@@ -405,17 +490,6 @@ function buildFlightCards(flights) {
   }).join('');
 }
 
-// ─── Sort chips ────────────────────────────────────────────────────────────────
-document.getElementById('sort-row').addEventListener('click', e => {
-  const btn = e.target.closest('[data-sort]');
-  if (!btn || btn.dataset.sort === currentSort) return;
-  currentSort = btn.dataset.sort;
-  document.querySelectorAll('.sort-chip').forEach(b => {
-    b.classList.toggle('active', b.dataset.sort === currentSort);
-  });
-  buildFlightCards(sortedFlights(currentSort));
-});
-
 // ─── Init ──────────────────────────────────────────────────────────────────────
 (function init() {
   let from = { name: 'Ташкент', code: 'TAS' };
@@ -447,7 +521,7 @@ document.getElementById('sort-row').addEventListener('click', e => {
 
   buildCarousel(depDate);
   baseFlights = generateAllFlights(_fromCode, _toCode);
-  buildFlightCards(baseFlights);
+  applyFiltersAndSort();
 
   window.openTicket = function(f) {
     try {
@@ -470,20 +544,88 @@ document.getElementById('sort-row').addEventListener('click', e => {
 })();
 </script>
 
+<!-- Sort Bottom Sheet -->
+<div id="sort-sheet"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:250;
+            display:none;flex-direction:column;
+            background:#0d1120;border-radius:24px 24px 0 0;
+            box-shadow:0 -12px 48px rgba(0,0,0,0.75);
+            will-change:transform;">
+  <div class="sheet-handle"
+       style="display:flex;justify-content:center;padding:12px 0 0;cursor:grab;flex-shrink:0;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.12);border-radius:999px;"></div>
+  </div>
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;flex-shrink:0;">
+    <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:#fff;margin:0;">Сортировка</h2>
+    <button id="sort-sheet-close"
+            style="width:36px;height:36px;background:rgba(255,255,255,0.08);border:none;
+                   border-radius:50%;cursor:pointer;display:flex;align-items:center;
+                   justify-content:center;-webkit-tap-highlight-color:transparent;">
+      <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;pointer-events:none;">close</span>
+    </button>
+  </header>
+  <div style="display:flex;flex-direction:column;gap:6px;padding:0 16px 8px;">
+    <div data-sort-opt="recommended" onclick="selectSortFromSheet('recommended')"
+         style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+                background:#121826;border-radius:14px;cursor:pointer;
+                border:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;"
+         onpointerdown="this.style.background='#1a2035'"
+         onpointerup="this.style.background='#121826'"
+         onpointercancel="this.style.background='#121826'">
+      <span style="font-size:14px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;pointer-events:none;">Рекомендуемые</span>
+      <div class="sort-sheet-radio"
+           style="width:22px;height:22px;border-radius:50%;border:2px solid #3B82F6;flex-shrink:0;
+                  display:flex;align-items:center;justify-content:center;pointer-events:none;">
+        <div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;pointer-events:none;"></div>
+      </div>
+    </div>
+    <div data-sort-opt="cheapest" onclick="selectSortFromSheet('cheapest')"
+         style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+                background:#121826;border-radius:14px;cursor:pointer;
+                border:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;"
+         onpointerdown="this.style.background='#1a2035'"
+         onpointerup="this.style.background='#121826'"
+         onpointercancel="this.style.background='#121826'">
+      <span style="font-size:14px;font-weight:600;color:#9CA3AF;font-family:Manrope,sans-serif;pointer-events:none;">Сначала дешёвые</span>
+      <div class="sort-sheet-radio"
+           style="width:22px;height:22px;border-radius:50%;border:2px solid #424754;flex-shrink:0;
+                  display:flex;align-items:center;justify-content:center;pointer-events:none;"></div>
+    </div>
+    <div data-sort-opt="fastest" onclick="selectSortFromSheet('fastest')"
+         style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+                background:#121826;border-radius:14px;cursor:pointer;
+                border:1px solid rgba(255,255,255,0.05);-webkit-tap-highlight-color:transparent;"
+         onpointerdown="this.style.background='#1a2035'"
+         onpointerup="this.style.background='#121826'"
+         onpointercancel="this.style.background='#121826'">
+      <span style="font-size:14px;font-weight:600;color:#9CA3AF;font-family:Manrope,sans-serif;pointer-events:none;">Быстрее всего</span>
+      <div class="sort-sheet-radio"
+           style="width:22px;height:22px;border-radius:50%;border:2px solid #424754;flex-shrink:0;
+                  display:flex;align-items:center;justify-content:center;pointer-events:none;"></div>
+    </div>
+  </div>
+  <div style="height:max(20px,env(safe-area-inset-bottom));flex-shrink:0;"></div>
+</div>
+
 <!-- filters.js injects sheet-filters and sheet-airlines -->
 
 <script src="js/bottom-sheet.js"></script>
+<script>
+// ── Sort Sheet init (bottom-sheet.js required above) ─────────────────────────
+initSheets();
+window._sortSheet = new BottomSheet({ el: document.getElementById('sort-sheet') });
+document.getElementById('sort-sheet-close').addEventListener('click', () => window._sortSheet.close());
+</script>
 <script src="js/filters.js"></script>
 <script>
 // ── Filters Sheet (unified — js/filters.js) ──────────────────────────────────
 const filtersSheet = new FiltersSheet({
   airlines: AIRLINES,
   onApply: (state) => {
-    currentSort = state.sort;
-    document.querySelectorAll('.sort-chip').forEach(b => {
-      b.classList.toggle('active', b.dataset.sort === currentSort);
-    });
-    buildFlightCards(sortedFlights(currentSort));
+    currentSort   = state.sort;
+    sortFromSheet = state.sort !== 'recommended';
+    updateChipStates();
+    applyFiltersAndSort();
     filtersSheet.updateFilterBtn();
   },
 });
