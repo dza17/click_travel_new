@@ -98,6 +98,66 @@
     transform: rotate(90deg);
     margin: 0 2px;
   }
+
+  /* ── Loading / Skeleton ─────────────────────────────────── */
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+  }
+  @keyframes scan-pulse {
+    0%, 100% { transform: scale(1);   opacity: 1; }
+    50%       { transform: scale(1.12); opacity: 0.7; }
+  }
+  @keyframes dot-blink {
+    0%, 80%, 100% { opacity: 0.2; }
+    40%           { opacity: 1; }
+  }
+
+  .sk {
+    background: linear-gradient(90deg, #1a2035 25%, #242d45 50%, #1a2035 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+    border-radius: 6px;
+  }
+  .skeleton-card {
+    background: #121826;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.04);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  #loading-state { display: flex; flex-direction: column; gap: 8px; }
+  #results-section { display: none; }
+  #results-section.visible { display: block; }
+
+  .scan-ring {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(59,130,246,0.1);
+    border: 1.5px solid rgba(59,130,246,0.3);
+    display: inline-flex; align-items: center; justify-content: center;
+    animation: scan-pulse 1.8s ease-in-out infinite;
+  }
+  .loading-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #3B82F6;
+    margin: 0 3px;
+  }
+  .loading-dot:nth-child(1) { animation: dot-blink 1.2s infinite 0s; }
+  .loading-dot:nth-child(2) { animation: dot-blink 1.2s infinite 0.2s; }
+  .loading-dot:nth-child(3) { animation: dot-blink 1.2s infinite 0.4s; }
+
+  .fade-in {
+    animation: fadeIn 0.35s ease forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 
@@ -154,14 +214,97 @@
          style="display:flex;gap:8px;overflow-x:auto;padding:10px 0 8px;flex-shrink:0;">
     </div>
 
-    <!-- Section label -->
-    <div style="padding:2px 2px 8px;flex-shrink:0;">
-      <span id="section-label" style="font-size:10px;font-weight:700;text-transform:uppercase;
-                   letter-spacing:0.1em;color:#374151;">подобрали 4 лучших варианта</span>
-    </div>
+    <!-- ── Loading state ── -->
+    <div id="loading-state">
 
-    <!-- Flight cards — flex:1, each card grows equally -->
-    <div id="flight-list"></div>
+      <!-- Scan info block -->
+      <div style="text-align:center;padding:20px 0 18px;">
+        <div class="scan-ring">
+          <span class="material-symbols-outlined" style="color:#3B82F6;font-size:26px;">travel_explore</span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#dfe2f2;margin-top:12px;line-height:1.4;">
+          Сканируем 600+ авиакомпаний…
+        </div>
+        <div style="margin-top:8px;">
+          <span class="loading-dot"></span>
+          <span class="loading-dot"></span>
+          <span class="loading-dot"></span>
+        </div>
+      </div>
+
+      <!-- Skeleton card × 3 -->
+      <div class="skeleton-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="sk" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div>
+            <div class="sk" style="width:110px;height:14px;"></div>
+          </div>
+          <div class="sk" style="width:72px;height:18px;border-radius:8px;"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sk" style="width:44px;height:13px;"></div>
+          <div class="sk" style="flex:1;height:1px;border-radius:0;"></div>
+          <div class="sk" style="width:44px;height:13px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <div class="sk" style="width:80px;height:11px;"></div>
+          <div class="sk" style="width:60px;height:11px;"></div>
+        </div>
+      </div>
+
+      <div class="skeleton-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="sk" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div>
+            <div class="sk" style="width:90px;height:14px;"></div>
+          </div>
+          <div class="sk" style="width:78px;height:18px;border-radius:8px;"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sk" style="width:44px;height:13px;"></div>
+          <div class="sk" style="flex:1;height:1px;border-radius:0;"></div>
+          <div class="sk" style="width:44px;height:13px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <div class="sk" style="width:70px;height:11px;"></div>
+          <div class="sk" style="width:50px;height:11px;"></div>
+        </div>
+      </div>
+
+      <div class="skeleton-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="sk" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div>
+            <div class="sk" style="width:100px;height:14px;"></div>
+          </div>
+          <div class="sk" style="width:68px;height:18px;border-radius:8px;"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sk" style="width:44px;height:13px;"></div>
+          <div class="sk" style="flex:1;height:1px;border-radius:0;"></div>
+          <div class="sk" style="width:44px;height:13px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <div class="sk" style="width:75px;height:11px;"></div>
+          <div class="sk" style="width:55px;height:11px;"></div>
+        </div>
+      </div>
+
+    </div><!-- /loading-state -->
+
+    <!-- ── Results (hidden until loading done) ── -->
+    <div id="results-section">
+
+      <!-- Section label -->
+      <div style="padding:2px 2px 8px;flex-shrink:0;">
+        <span id="section-label" style="font-size:10px;font-weight:700;text-transform:uppercase;
+                     letter-spacing:0.1em;color:#374151;">подобрали 4 лучших варианта</span>
+      </div>
+
+      <!-- Flight cards -->
+      <div id="flight-list"></div>
+
+    </div><!-- /results-section -->
 
   </div>
 
@@ -447,6 +590,14 @@ function buildFlightCards(flights, fromCode, toCode) {
 
   buildCarousel(depDate);
   buildFlightCards(generateFlights(fromCode, toCode), fromCode, toCode);
+
+  // Mock loading: show skeleton for 3s, then reveal results
+  const loadingEl  = document.getElementById('loading-state');
+  const resultsEl  = document.getElementById('results-section');
+  setTimeout(function() {
+    loadingEl.style.display = 'none';
+    resultsEl.classList.add('visible', 'fade-in');
+  }, 3000);
 
   // Navigate to ticket details
   window.openTicket = function(f) {
