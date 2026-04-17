@@ -551,58 +551,26 @@
     const ret  = state.retDate;
 
     let ds;
-    if (past)                                             ds = 'past';
-    else if (dep && sameDay(date, dep))                   ds = 'departure';
-    else if (ret && sameDay(date, ret))                   ds = 'return';
-    else if (dep && ret && isBetween(date, dep, ret))     ds = 'range';
-    else                                                  ds = 'default';
+    if (past)                                         ds = 'past';
+    else if (dep && sameDay(date, dep))               ds = 'departure';
+    else if (ret && sameDay(date, ret))               ds = 'return';
+    else if (dep && ret && isBetween(date, dep, ret)) ds = 'range';
+    else                                              ds = 'default';
 
     const info  = getPrice(date);
+    const dow   = (date.getDay() + 6) % 7; // 0=Mon … 6=Sun
+    const BAND  = 'rgba(59,130,246,0.2)';
+    const R     = 20;
+
     const outer = document.createElement('div');
-    // Базовый стиль — без position:relative, чтобы не нарушать обработку тапов на iOS
-    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;';
     if (!past) {
       outer.style.cursor = 'pointer';
       outer.setAttribute('onclick', `handleCalTap('${key}')`);
     }
 
-    // День недели: 0=Пн, 6=Вс
-    const dow = (date.getDay() + 6) % 7;
-
-    // Полоса диапазона через clip-path: inset(5px 0 5px 0) = 42px высотой, совпадает с кружком.
-    // round на концах строки недели создаёт скруглённые пилюли без доп. DOM-элементов.
-    const BAND_COLOR = 'rgba(59,130,246,0.2)';
-    // clip helper: inset(5px top/bottom) + опциональное скругление
-    function bandClip(roundLeft, roundRight) {
-      const r = 20;
-      const tl = roundLeft  ? r : 0;
-      const bl = roundLeft  ? r : 0;
-      const tr = roundRight ? r : 0;
-      const br = roundRight ? r : 0;
-      const hasRound = roundLeft || roundRight;
-      return hasRound
-        ? `inset(5px 0 5px 0 round ${tl}px ${tr}px ${br}px ${bl}px)`
-        : 'inset(5px 0 5px 0)';
-    }
-
-    if (ds === 'departure') {
-      if (ret) {
-        outer.style.background = `linear-gradient(to right, transparent 50%, ${BAND_COLOR} 50%)`;
-        // конец строки → скруглить правый край полосы
-        outer.style.clipPath = bandClip(false, dow === 6);
-      }
-      outer.innerHTML = `
-        <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
-                    display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    box-shadow:0 0 16px rgba(59,130,246,0.5);pointer-events:none;">
-          <span style="font-size:15px;font-weight:700;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.8);text-transform:uppercase;pointer-events:none;">${info.label}</span>
-        </div>`;
-
-    } else if (ds === 'return') {
-      outer.style.background = `linear-gradient(to right, ${BAND_COLOR} 50%, transparent 50%)`;
-      // начало строки → скруглить левый край полосы
-      outer.style.clipPath = bandClip(dow === 0, false);
+    if (ds === 'departure' || ds === 'return') {
+      // Pure circle — no band outside the circle
+      outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;';
       outer.innerHTML = `
         <div style="width:42px;height:42px;background:#3B82F6;border-radius:50%;
                     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -612,22 +580,40 @@
         </div>`;
 
     } else if (ds === 'range') {
-      outer.style.background = BAND_COLOR;
-      outer.style.clipPath = bandClip(dow === 0, dow === 6);
-      outer.innerHTML = `
-          <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
-          <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>`;
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const prevDay   = new Date(year, month, day - 1);
+      const nextDay   = new Date(year, month, day + 1);
+      const isFirstRange = dep && sameDay(prevDay, dep);
+      const isLastRange  = ret && sameDay(nextDay, ret);
+
+      const capLeft  = dow === 0 || day === 1 || isFirstRange;
+      const capRight = dow === 6 || day === totalDays || isLastRange;
+      const br = `${capLeft?R:0}px ${capRight?R:0}px ${capRight?R:0}px ${capLeft?R:0}px`;
+
+      outer.style.cssText = 'display:grid;place-items:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;';
+
+      const band = document.createElement('div');
+      band.style.cssText = `grid-area:1/1;justify-self:stretch;height:42px;background:${BAND};border-radius:${br};pointer-events:none;`;
+      outer.appendChild(band);
+
+      const content = document.createElement('div');
+      content.style.cssText = 'grid-area:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;';
+      content.innerHTML = `
+        <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
+        <span style="font-size:8px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.label}</span>`;
+      outer.appendChild(content);
 
     } else if (ds === 'past') {
-      outer.style.cursor = 'default';
+      outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;cursor:default;';
       outer.innerHTML = `
         <span style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.18);pointer-events:none;">${day}</span>
         <span style="font-size:8px;color:rgba(156,163,175,0.2);pointer-events:none;">${info.label}</span>`;
 
     } else {
+      outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;';
       if (info.low) {
         outer.innerHTML = `
-          <div style="position:relative;width:38px;height:38px;background:rgba(34,197,94,0.08);border-radius:50%;
+          <div style="width:38px;height:38px;background:rgba(34,197,94,0.08);border-radius:50%;
                       display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
             <span style="font-size:14px;font-weight:500;color:#fff;line-height:1.1;pointer-events:none;">${day}</span>
             <span style="font-size:8px;color:#22C55E;font-weight:600;pointer-events:none;">${info.label}</span>
