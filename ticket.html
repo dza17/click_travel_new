@@ -4,15 +4,16 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Click Travel — О билете</title>
+<link rel="stylesheet" href="design-tokens.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   body {
-    font-family: 'Manrope', sans-serif;
-    background: #0b0f1a;
-    color: #dfe2f2;
+    font-family: var(--font);
+    background: var(--c-bg);
+    color: var(--c-text);
     min-height: max(884px, 100dvh);
     padding-bottom: calc(150px + env(safe-area-inset-bottom));
   }
@@ -21,13 +22,12 @@
     display: inline-block; line-height: 1;
   }
   .glass {
-    background: rgba(11,15,26,0.9);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  /* Fare carousel snap */
   #fare-carousel { scroll-snap-type: x mandatory; }
   .fare-card { scroll-snap-align: start; }
   .fare-card * { pointer-events: none; }
@@ -38,7 +38,7 @@
 <!-- ── HEADER ── -->
 <header class="glass"
         style="position:fixed;top:0;width:100%;z-index:50;
-               height:56px;display:flex;align-items:center;padding:0 8px;
+               height:var(--header-h);display:flex;align-items:center;padding:0 8px;
                border-bottom:1px solid rgba(255,255,255,0.04);">
   <button onclick="window.location.href='results.html'"
           style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
@@ -47,13 +47,13 @@
           onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
           onpointerup="this.style.background='none'"
           onpointercancel="this.style.background='none'">
-    <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">arrow_back</span>
+    <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:22px;">arrow_back</span>
   </button>
   <span style="font-size:16px;font-weight:700;color:#fff;margin-left:4px;">О билете</span>
 </header>
 
 <!-- ── PAGE CONTENT ── -->
-<div style="padding:64px 16px 0; max-width:640px; margin:0 auto;">
+<div style="padding:var(--content-top) 16px 0; max-width:640px; margin:0 auto;">
 
   <!-- Hero: маршрут + пассажиры -->
   <div style="padding:16px 0 14px;">
@@ -62,25 +62,25 @@
       Ташкент → Москва
     </h1>
     <div id="hero-sub"
-         style="font-size:18px;font-weight:700;color:#6B7280;margin-top:4px;">
+         style="font-size:18px;font-weight:700;color:var(--c-dim);margin-top:4px;">
       1 пассажир, эконом
     </div>
     <div style="display:flex;align-items:center;gap:6px;margin-top:10px;">
-      <span class="material-symbols-outlined" style="font-size:14px;color:#9CA3AF;">schedule</span>
+      <span class="material-symbols-outlined" style="font-size:14px;color:var(--c-muted);">schedule</span>
       <span id="timer-text"
-            style="font-size:13px;font-weight:600;color:#9CA3AF;">
+            style="font-size:13px;font-weight:600;color:var(--c-muted);">
         Забронируйте в течение <span id="countdown" style="color:#fff;">12:09</span>
       </span>
     </div>
   </div>
 
   <!-- Cashback pill -->
-  <div style="display:inline-flex;align-items:center;gap:7px;background:#1a2338;
-              border:1px solid rgba(59,130,246,0.22);border-radius:999px;
+  <div style="display:inline-flex;align-items:center;gap:7px;background:var(--c-surface-accent);
+              border:1px solid var(--c-accent-border);border-radius:var(--r-pill);
               padding:8px 14px;margin-bottom:20px;">
     <span class="material-symbols-outlined"
-          style="font-size:18px;color:#3B82F6;font-variation-settings:'FILL' 1;">stars</span>
-    <span style="font-size:13px;font-weight:700;color:#3B82F6;">+2% кешбэк с Click Premium</span>
+          style="font-size:18px;color:var(--c-accent);font-variation-settings:'FILL' 1;">stars</span>
+    <span style="font-size:13px;font-weight:700;color:var(--c-accent);">+2% кешбэк с Click Premium</span>
   </div>
 
   <!-- ── ТАРИФ (carousel) ── -->
@@ -92,36 +92,36 @@
     <div class="fare-card" data-fare="lite"
          onclick="selectFare('lite',this)"
          style="flex-shrink:0;width:68vw;max-width:280px;min-width:220px;
-                background:rgba(59,130,246,0.06);border-radius:18px;padding:18px;
-                border:2px solid #3B82F6;cursor:pointer;
+                background:rgba(59,130,246,0.06);border-radius:var(--r-card);padding:18px;
+                border:2px solid var(--c-accent);cursor:pointer;
                 transition:border-color 0.2s,opacity 0.2s;
                 -webkit-tap-highlight-color:transparent;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:13px;font-weight:700;color:#3B82F6;text-transform:uppercase;letter-spacing:0.06em;">Лайт</span>
+        <span style="font-size:13px;font-weight:700;color:var(--c-accent);text-transform:uppercase;letter-spacing:0.06em;">Лайт</span>
         <div class="fare-check"
-             style="width:24px;height:24px;border-radius:50%;background:#3B82F6;
+             style="width:24px;height:24px;border-radius:50%;background:var(--c-accent);
                     display:flex;align-items:center;justify-content:center;">
           <span class="material-symbols-outlined" style="font-size:14px;color:#fff;">check</span>
         </div>
       </div>
       <div class="fare-price" style="font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:2px;"></div>
-      <div class="fare-pax"   style="font-size:12px;color:#9CA3AF;margin-bottom:14px;"></div>
+      <div class="fare-pax"   style="font-size:12px;color:var(--c-muted);margin-bottom:14px;"></div>
       <div style="display:flex;flex-direction:column;gap:7px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;font-variation-settings:'FILL' 1;">luggage</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);font-variation-settings:'FILL' 1;">luggage</span>
           <span style="font-size:12px;font-weight:600;color:#fff;">Ручная кладь 7 кг</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#4B5563;font-variation-settings:'FILL' 1;">no_luggage</span>
-          <span style="font-size:12px;color:#6B7280;">Нет багажа</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-dimmer);font-variation-settings:'FILL' 1;">no_luggage</span>
+          <span style="font-size:12px;color:var(--c-dim);">Нет багажа</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;">sync</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);">sync</span>
           <span style="font-size:12px;font-weight:600;color:#fff;">Есть обмен</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#4B5563;">money_off</span>
-          <span style="font-size:12px;color:#6B7280;">Нет возврата</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-dimmer);">money_off</span>
+          <span style="font-size:12px;color:var(--c-dim);">Нет возврата</span>
         </div>
       </div>
     </div>
@@ -130,33 +130,33 @@
     <div class="fare-card" data-fare="standard"
          onclick="selectFare('standard',this)"
          style="flex-shrink:0;width:68vw;max-width:280px;min-width:220px;
-                background:#121826;border-radius:18px;padding:18px;
+                background:var(--c-surface);border-radius:var(--r-card);padding:18px;
                 border:2px solid transparent;cursor:pointer;opacity:0.65;
                 transition:border-color 0.2s,opacity 0.2s;
                 -webkit-tap-highlight-color:transparent;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:13px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Стандарт</span>
+        <span style="font-size:13px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.06em;">Стандарт</span>
         <div class="fare-check"
              style="width:24px;height:24px;border-radius:50%;border:2px solid #424754;"></div>
       </div>
       <div class="fare-price" style="font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:2px;"></div>
-      <div class="fare-pax"   style="font-size:12px;color:#9CA3AF;margin-bottom:14px;"></div>
+      <div class="fare-pax"   style="font-size:12px;color:var(--c-muted);margin-bottom:14px;"></div>
       <div style="display:flex;flex-direction:column;gap:7px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;font-variation-settings:'FILL' 1;">luggage</span>
-          <span style="font-size:12px;color:#9CA3AF;">Ручная кладь 7 кг</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);font-variation-settings:'FILL' 1;">luggage</span>
+          <span style="font-size:12px;color:var(--c-muted);">Ручная кладь 7 кг</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;font-variation-settings:'FILL' 1;">luggage</span>
-          <span style="font-size:12px;color:#9CA3AF;">Багаж 23 кг</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);font-variation-settings:'FILL' 1;">luggage</span>
+          <span style="font-size:12px;color:var(--c-muted);">Багаж 23 кг</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#4B5563;">block</span>
-          <span style="font-size:12px;color:#6B7280;">Нет обмена</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-dimmer);">block</span>
+          <span style="font-size:12px;color:var(--c-dim);">Нет обмена</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#4B5563;">money_off</span>
-          <span style="font-size:12px;color:#6B7280;">Нет возврата</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-dimmer);">money_off</span>
+          <span style="font-size:12px;color:var(--c-dim);">Нет возврата</span>
         </div>
       </div>
     </div>
@@ -165,33 +165,33 @@
     <div class="fare-card" data-fare="flex"
          onclick="selectFare('flex',this)"
          style="flex-shrink:0;width:68vw;max-width:280px;min-width:220px;
-                background:#121826;border-radius:18px;padding:18px;
+                background:var(--c-surface);border-radius:var(--r-card);padding:18px;
                 border:2px solid transparent;cursor:pointer;opacity:0.65;
                 transition:border-color 0.2s,opacity 0.2s;
                 -webkit-tap-highlight-color:transparent;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:13px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Флекс</span>
+        <span style="font-size:13px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:0.06em;">Флекс</span>
         <div class="fare-check"
              style="width:24px;height:24px;border-radius:50%;border:2px solid #424754;"></div>
       </div>
       <div class="fare-price" style="font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:2px;"></div>
-      <div class="fare-pax"   style="font-size:12px;color:#9CA3AF;margin-bottom:14px;"></div>
+      <div class="fare-pax"   style="font-size:12px;color:var(--c-muted);margin-bottom:14px;"></div>
       <div style="display:flex;flex-direction:column;gap:7px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;font-variation-settings:'FILL' 1;">luggage</span>
-          <span style="font-size:12px;color:#9CA3AF;">Ручная кладь 7 кг</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);font-variation-settings:'FILL' 1;">luggage</span>
+          <span style="font-size:12px;color:var(--c-muted);">Ручная кладь 7 кг</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;font-variation-settings:'FILL' 1;">luggage</span>
-          <span style="font-size:12px;color:#9CA3AF;">Багаж 2×23 кг</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);font-variation-settings:'FILL' 1;">luggage</span>
+          <span style="font-size:12px;color:var(--c-muted);">Багаж 2×23 кг</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;">sync</span>
-          <span style="font-size:12px;color:#9CA3AF;">Есть обмен</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);">sync</span>
+          <span style="font-size:12px;color:var(--c-muted);">Есть обмен</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:15px;color:#22C55E;">payments</span>
-          <span style="font-size:12px;color:#9CA3AF;">Возврат без штрафа</span>
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--c-success);">payments</span>
+          <span style="font-size:12px;color:var(--c-muted);">Возврат без штрафа</span>
         </div>
       </div>
     </div>
@@ -200,19 +200,19 @@
 
   <!-- ── ТУДА / ОБРАТНО ПЕРЕКЛЮЧАТЕЛЬ (только для RT) ── -->
   <div id="leg-switcher" style="display:none;margin-bottom:18px;">
-    <div style="display:inline-flex;background:#121826;border-radius:999px;padding:4px;gap:4px;">
+    <div style="display:inline-flex;background:var(--c-surface);border-radius:var(--r-pill);padding:4px;gap:4px;">
       <button id="leg-dep" data-leg="dep" onclick="switchLeg('dep')"
-              style="border:none;border-radius:999px;padding:9px 20px;cursor:pointer;
-                     font-family:Manrope,sans-serif;font-size:14px;font-weight:700;
+              style="border:none;border-radius:var(--r-pill);padding:9px 20px;cursor:pointer;
+                     font-family:var(--font);font-size:14px;font-weight:700;
                      background:#fff;color:#0b0f1a;
                      transition:background 0.2s,color 0.2s;
                      -webkit-tap-highlight-color:transparent;">
         Туда
       </button>
       <button id="leg-ret" data-leg="ret" onclick="switchLeg('ret')"
-              style="border:none;border-radius:999px;padding:9px 20px;cursor:pointer;
-                     font-family:Manrope,sans-serif;font-size:14px;font-weight:700;
-                     background:transparent;color:#6B7280;
+              style="border:none;border-radius:var(--r-pill);padding:9px 20px;cursor:pointer;
+                     font-family:var(--font);font-size:14px;font-weight:700;
+                     background:transparent;color:var(--c-dim);
                      transition:background 0.2s,color 0.2s;
                      -webkit-tap-highlight-color:transparent;">
         Обратно
@@ -227,7 +227,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div>
         <div id="tl-airline" style="font-size:16px;font-weight:700;color:#fff;">Uzbekistan Airways</div>
-        <div id="tl-info"    style="font-size:13px;color:#6B7280;margin-top:2px;">Boeing 767 · 3ч 15м в пути</div>
+        <div id="tl-info"    style="font-size:13px;color:var(--c-dim);margin-top:2px;">Boeing 767 · 3ч 15м в пути</div>
       </div>
       <div id="tl-badge"
            style="width:44px;height:44px;border-radius:50%;background:#1E6AE118;
@@ -244,7 +244,7 @@
 
     <!-- Дисклеймер -->
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
-      <span style="font-size:11px;color:#4B5563;">Время вылета и прилёта указано по местному времени</span>
+      <span style="font-size:11px;color:var(--c-dimmer);">Время вылета и прилёта указано по местному времени</span>
     </div>
 
   </div><!-- /flight-detail -->
@@ -261,12 +261,12 @@
       <div id="bar-price"
            style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;"></div>
       <div id="bar-sub"
-           style="font-size:11px;color:#9CA3AF;margin-top:2px;">за 1 пассажира</div>
+           style="font-size:11px;color:var(--c-muted);margin-top:2px;">за 1 пассажира</div>
     </div>
     <button onclick="goToPassengers()"
-            style="flex:1;height:52px;background:#3B82F6;border:none;border-radius:999px;
-                   font-family:Manrope,sans-serif;font-size:16px;font-weight:800;color:#fff;
-                   cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);
+            style="flex:1;height:var(--btn-h);background:var(--c-accent);border:none;border-radius:var(--r-pill);
+                   font-family:var(--font);font-size:16px;font-weight:800;color:#fff;
+                   cursor:pointer;box-shadow:var(--btn-shadow);
                    -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
             onpointerdown="this.style.transform='scale(0.98)'"
             onpointerup="this.style.transform='scale(1)'"
@@ -283,25 +283,25 @@
             border-top:1px solid rgba(255,255,255,0.04);
             padding:6px 16px max(8px,env(safe-area-inset-bottom));">
   <a href="index.html"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">search</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Поиск</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">confirmation_number</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Брони</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">explore</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Обзор</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">person</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Профиль</span>
@@ -396,7 +396,7 @@ function buildTimeline(segments) {
         <!-- Left: time + date -->
         <div style="flex-shrink:0;width:56px;text-align:right;">
           <div style="font-size:20px;font-weight:800;color:#fff;line-height:1;">${seg.time}</div>
-          <div style="font-size:11px;color:#6B7280;margin-top:2px;">${seg.date}</div>
+          <div style="font-size:11px;color:var(--c-dim);margin-top:2px;">${seg.date}</div>
         </div>
         <!-- Timeline dot + line -->
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:16px;">
@@ -409,7 +409,7 @@ function buildTimeline(segments) {
         <!-- Right: city + airport -->
         <div style="flex:1;padding-bottom:${isLast?'0':'20px'};">
           <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">${seg.city}</div>
-          <div style="font-size:12px;color:#6B7280;margin-top:3px;">${seg.airport} · ${seg.iata}</div>
+          <div style="font-size:12px;color:var(--c-dim);margin-top:3px;">${seg.airport} · ${seg.iata}</div>
         </div>
       </div>
       ${seg.layover ? `

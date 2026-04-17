@@ -4,15 +4,16 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Click Travel — Бронирование подтверждено</title>
+<link rel="stylesheet" href="design-tokens.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   body {
-    font-family: 'Manrope', sans-serif;
-    background: #0b0f1a;
-    color: #dfe2f2;
+    font-family: var(--font);
+    background: var(--c-bg);
+    color: var(--c-text);
     min-height: 100dvh;
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
     -webkit-tap-highlight-color: transparent;
@@ -101,10 +102,10 @@
 
   /* ── Flight card ── */
   .flight-summary {
-    background: #121826;
-    border-radius: 18px;
+    background: var(--c-surface);
+    border-radius: var(--r-card);
     padding: 18px;
-    border: 1px solid rgba(255,255,255,0.04);
+    border: 1px solid var(--c-border);
   }
 
   /* ── Next steps ── */
@@ -130,16 +131,16 @@
   /* ── CTA buttons ── */
   .btn-primary {
     width: 100%;
-    height: 52px;
-    background: #3B82F6;
+    height: var(--btn-h);
+    background: var(--c-accent);
     border: none;
-    border-radius: 999px;
-    font-family: 'Manrope', sans-serif;
+    border-radius: var(--r-pill);
+    font-family: var(--font);
     font-size: 16px;
     font-weight: 800;
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+    box-shadow: var(--btn-shadow);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -149,21 +150,21 @@
   .btn-primary:active { transform: scale(0.98); }
   .btn-secondary {
     width: 100%;
-    height: 52px;
+    height: var(--btn-h);
     background: none;
     border: none;
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font);
     font-size: 15px;
     font-weight: 700;
-    color: #6B7280;
+    color: var(--c-dim);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: color 0.15s;
+    transition: color var(--duration-fast);
   }
-  .btn-secondary:active { color: #9CA3AF; }
+  .btn-secondary:active { color: var(--c-muted); }
 
   /* ── Copy feedback ── */
   #copy-toast {
@@ -189,7 +190,7 @@
 
 <!-- ── MINIMAL BRAND HEADER ── -->
 <header style="position:sticky;top:0;z-index:50;
-               height:56px;display:flex;align-items:center;justify-content:center;
+               height:var(--header-h);display:flex;align-items:center;justify-content:center;
                padding:0 16px;border-bottom:1px solid rgba(255,255,255,0.04);
                background:rgba(11,15,26,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
   <div style="display:flex;align-items:center;gap:8px;">
@@ -219,7 +220,7 @@
       <h1 style="font-size:26px;font-weight:800;color:#fff;line-height:1.15;letter-spacing:-0.3px;">
         Оплата прошла!
       </h1>
-      <p style="font-size:14px;font-weight:600;color:#6B7280;margin-top:6px;line-height:1.4;">
+      <p style="font-size:14px;font-weight:600;color:var(--c-dim);margin-top:6px;line-height:1.4;">
         Ваши билеты готовы.<br>Маршрут-квитанция придёт на почту.
       </p>
     </div>
@@ -228,14 +229,14 @@
     <div class="booking-ref-wrap">
       <div class="ref-chip">
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
-                     color:#22C55E;">Бронь №</span>
+                     color:var(--c-success);">Бронь №</span>
         <span id="booking-ref"
               style="font-size:16px;font-weight:800;color:#fff;letter-spacing:0.08em;">CT-——</span>
         <button onclick="copyRef()"
                 style="width:28px;height:28px;background:rgba(255,255,255,0.06);
                        border:none;border-radius:50%;cursor:pointer;display:flex;
                        align-items:center;justify-content:center;flex-shrink:0;">
-          <span class="material-symbols-outlined" style="font-size:14px;color:#9CA3AF;">content_copy</span>
+          <span class="material-symbols-outlined" style="font-size:14px;color:var(--c-muted);">content_copy</span>
         </button>
       </div>
     </div>
@@ -263,13 +264,13 @@
           </div>
           <div id="fs-class"
                style="font-size:11px;font-weight:700;text-transform:uppercase;
-                      letter-spacing:0.05em;color:#9CA3AF;margin-top:1px;">
+                      letter-spacing:0.05em;color:var(--c-muted);margin-top:1px;">
             Эконом · Лайт
           </div>
         </div>
       </div>
       <div id="fs-date"
-           style="font-size:12px;font-weight:700;color:#9CA3AF;flex-shrink:0;margin-left:8px;">—</div>
+           style="font-size:12px;font-weight:700;color:var(--c-muted);flex-shrink:0;margin-left:8px;">—</div>
     </div>
 
     <!-- Route -->
@@ -278,26 +279,26 @@
         <div id="fs-dep"
              style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">—</div>
         <div id="fs-from"
-             style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;
+             style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;
                     letter-spacing:0.06em;margin-top:2px;">TAS</div>
       </div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;">
         <div id="fs-dur"
-             style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.04em;">—</div>
+             style="font-size:10px;font-weight:700;color:var(--c-muted);letter-spacing:0.04em;">—</div>
         <div style="width:100%;display:flex;align-items:center;gap:3px;">
           <div style="height:2px;flex:1;background:rgba(255,255,255,0.1);border-radius:1px;"></div>
           <span class="material-symbols-outlined"
-                style="font-size:16px;color:#3B82F6;transform:rotate(90deg);">flight</span>
+                style="font-size:16px;color:var(--c-accent);transform:rotate(90deg);">flight</span>
           <div style="height:2px;flex:1;background:rgba(255,255,255,0.1);border-radius:1px;"></div>
         </div>
         <div id="fs-stops"
-             style="font-size:10px;font-weight:700;color:#22C55E;">Прямой</div>
+             style="font-size:10px;font-weight:700;color:var(--c-success);">Прямой</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
         <div id="fs-arr"
              style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">—</div>
         <div id="fs-to"
-             style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;
+             style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;
                     letter-spacing:0.06em;margin-top:2px;">MOW</div>
       </div>
     </div>
@@ -309,15 +310,15 @@
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
       <div style="display:flex;align-items:center;gap:7px;min-width:0;">
         <span class="material-symbols-outlined"
-              style="font-size:16px;color:#6B7280;font-variation-settings:'FILL' 1;flex-shrink:0;">person</span>
+              style="font-size:16px;color:var(--c-dim);font-variation-settings:'FILL' 1;flex-shrink:0;">person</span>
         <span id="pax-name"
-              style="font-size:13px;font-weight:700;color:#9CA3AF;
+              style="font-size:13px;font-weight:700;color:var(--c-muted);
                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</span>
       </div>
       <div style="text-align:right;flex-shrink:0;">
         <span id="fs-amount"
               style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px;">—</span>
-        <span style="font-size:11px;font-weight:600;color:#9CA3AF;margin-left:3px;">сум</span>
+        <span style="font-size:11px;font-weight:600;color:var(--c-muted);margin-left:3px;">сум</span>
       </div>
     </div>
 
@@ -326,9 +327,9 @@
          style="display:inline-flex;align-items:center;gap:6px;
                 background:#0b0f1a;border-radius:999px;padding:5px 12px;margin-top:10px;">
       <span id="pay-method-icon" class="material-symbols-outlined"
-            style="font-size:14px;color:#3B82F6;font-variation-settings:'FILL' 1;">account_balance_wallet</span>
+            style="font-size:14px;color:var(--c-accent);font-variation-settings:'FILL' 1;">account_balance_wallet</span>
       <span id="pay-method-label"
-            style="font-size:12px;font-weight:700;color:#9CA3AF;">Click Pay</span>
+            style="font-size:12px;font-weight:700;color:var(--c-muted);">Click Pay</span>
     </div>
 
   </div><!-- /flight summary -->
@@ -341,11 +342,11 @@
     <div class="step-row">
       <div class="step-icon" style="background:rgba(59,130,246,0.1);">
         <span class="material-symbols-outlined"
-              style="font-size:18px;color:#3B82F6;font-variation-settings:'FILL' 1;">mail</span>
+              style="font-size:18px;color:var(--c-accent);font-variation-settings:'FILL' 1;">mail</span>
       </div>
       <div>
         <div style="font-size:14px;font-weight:700;color:#fff;">Электронный билет</div>
-        <div style="font-size:12px;font-weight:600;color:#6B7280;margin-top:2px;line-height:1.4;">
+        <div style="font-size:12px;font-weight:600;color:var(--c-dim);margin-top:2px;line-height:1.4;">
           Маршрут-квитанция придёт на почту в течение 5 минут
         </div>
       </div>
@@ -359,7 +360,7 @@
       <div>
         <div style="font-size:14px;font-weight:700;color:#fff;">Онлайн-регистрация</div>
         <div id="checkin-text"
-             style="font-size:12px;font-weight:600;color:#6B7280;margin-top:2px;line-height:1.4;">
+             style="font-size:12px;font-weight:600;color:var(--c-dim);margin-top:2px;line-height:1.4;">
           Откроется за 24 часа до вылета на сайте авиакомпании
         </div>
       </div>
@@ -373,7 +374,7 @@
       <div>
         <div style="font-size:14px;font-weight:700;color:#fff;">Стойка регистрации</div>
         <div id="counter-text"
-             style="font-size:12px;font-weight:600;color:#6B7280;margin-top:2px;line-height:1.4;">
+             style="font-size:12px;font-weight:600;color:var(--c-dim);margin-top:2px;line-height:1.4;">
           Откроется за 3 часа до вылета. Документ и паспорт обязательны
         </div>
       </div>
@@ -382,11 +383,11 @@
     <div class="step-row">
       <div class="step-icon" style="background:rgba(34,197,94,0.1);">
         <span class="material-symbols-outlined"
-              style="font-size:18px;color:#22C55E;font-variation-settings:'FILL' 1;">flight_takeoff</span>
+              style="font-size:18px;color:var(--c-success);font-variation-settings:'FILL' 1;">flight_takeoff</span>
       </div>
       <div>
         <div style="font-size:14px;font-weight:700;color:#fff;">Приятного полёта!</div>
-        <div style="font-size:12px;font-weight:600;color:#6B7280;margin-top:2px;line-height:1.4;">
+        <div style="font-size:12px;font-weight:600;color:var(--c-dim);margin-top:2px;line-height:1.4;">
           Мы позаботились обо всём — наслаждайтесь путешествием
         </div>
       </div>
@@ -396,15 +397,15 @@
 
   <!-- ── KESHBEK CALLOUT ── -->
   <div id="cashback-callout"
-       style="display:none;margin-top:16px;background:#1a2338;border:1px solid rgba(59,130,246,0.22);
+       style="display:none;margin-top:16px;background:var(--c-surface-accent);border:1px solid var(--c-accent-border);
               border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
     <span class="material-symbols-outlined"
-          style="font-size:22px;color:#3B82F6;flex-shrink:0;font-variation-settings:'FILL' 1;">stars</span>
+          style="font-size:22px;color:var(--c-accent);flex-shrink:0;font-variation-settings:'FILL' 1;">stars</span>
     <div>
-      <div style="font-size:13px;font-weight:700;color:#3B82F6;" id="cashback-label">
+      <div style="font-size:13px;font-weight:700;color:var(--c-accent);" id="cashback-label">
         2% кешбэк начислится в течение 24ч
       </div>
-      <div style="font-size:11px;font-weight:600;color:#6B7280;margin-top:2px;">
+      <div style="font-size:11px;font-weight:600;color:var(--c-dim);margin-top:2px;">
         Доступен через Click Premium
       </div>
     </div>
@@ -435,25 +436,25 @@
             background:rgba(11,15,26,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
             padding:6px 16px max(8px,env(safe-area-inset-bottom));">
   <a href="index.html"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">search</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Поиск</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#3B82F6;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-accent);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;">confirmation_number</span>
-    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;color:#3B82F6;">Брони</span>
+    <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;color:var(--c-accent);">Брони</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">explore</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Обзор</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">person</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Профиль</span>

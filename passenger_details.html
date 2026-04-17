@@ -4,17 +4,17 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Click Travel — Данные пассажира</title>
+<link rel="stylesheet" href="design-tokens.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  /* Prevent iOS Safari auto-zoom on input focus (requires font-size >= 16px) */
   input, select, textarea { font-size: 16px; }
   body {
-    font-family: 'Manrope', sans-serif;
-    background: #0b0f1a;
-    color: #dfe2f2;
+    font-family: var(--font);
+    background: var(--c-bg);
+    color: var(--c-text);
     min-height: max(884px, 100dvh);
     padding-bottom: calc(160px + env(safe-area-inset-bottom));
     -webkit-tap-highlight-color: transparent;
@@ -24,49 +24,45 @@
     display: inline-block; line-height: 1;
   }
   .glass {
-    background: rgba(11,15,26,0.9);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
 
   /* ── Floating-label fields ── */
-  .field {
-    position: relative;
-  }
+  .field { position: relative; }
   .field > label {
     position: absolute;
     top: -8px;
     left: 16px;
     padding: 0 6px;
-    background: #0b0f1a;
+    background: var(--c-bg);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #3B82F6;
+    color: var(--c-accent);
     z-index: 1;
     pointer-events: none;
   }
   .field input,
   .field select {
     width: 100%;
-    height: 56px;
-    background: #080d18;
-    border: 1px solid rgba(255,255,255,0.06);
+    height: var(--field-h);
+    background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md);
     border-radius: 16px;
     padding: 0 16px;
     color: #fff;
-    font-family: 'Manrope', sans-serif;
-    font-size: 16px; /* 16px+ prevents iOS Safari auto-zoom on focus */
+    font-family: var(--font);
+    font-size: 16px;
     font-weight: 600;
     appearance: none;
     -webkit-appearance: none;
     outline: none;
   }
   .field input:focus,
-  .field select:focus {
-    border-color: #3B82F6;
-  }
+  .field select:focus { border-color: var(--c-accent); }
   .field input::placeholder {
     color: rgba(107,114,128,0.5);
     font-weight: 500;
@@ -76,15 +72,15 @@
     cursor: pointer;
   }
   .field select option {
-    background: #121826;
+    background: var(--c-surface);
     color: #fff;
   }
 
   /* ── Gender segment control ── */
   .gender-wrap {
-    height: 56px;
-    background: #080d18;
-    border: 1px solid rgba(255,255,255,0.06);
+    height: var(--field-h);
+    background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md);
     border-radius: 16px;
     display: flex;
     padding: 5px;
@@ -94,16 +90,16 @@
     flex: 1;
     border: none;
     border-radius: 12px;
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: background var(--duration-med), color var(--duration-med);
     background: transparent;
-    color: #6B7280;
+    color: var(--c-dim);
   }
   .gender-btn.active {
-    background: #3B82F6;
+    background: var(--c-accent);
     color: #fff;
   }
 
@@ -111,22 +107,20 @@
   .phone-wrap {
     display: flex;
     align-items: center;
-    background: #080d18;
-    border: 1px solid rgba(255,255,255,0.06);
+    background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md);
     border-radius: 16px;
-    height: 56px;
+    height: var(--field-h);
     overflow: hidden;
   }
-  .phone-wrap:focus-within {
-    border-color: #3B82F6;
-  }
+  .phone-wrap:focus-within { border-color: var(--c-accent); }
   .phone-prefix {
     padding: 0 12px 0 16px;
     font-size: 15px;
     font-weight: 700;
-    color: #9CA3AF;
+    color: var(--c-muted);
     white-space: nowrap;
-    border-right: 1px solid rgba(255,255,255,0.08);
+    border-right: 1px solid var(--c-border-hi);
     height: 100%;
     display: flex;
     align-items: center;
@@ -139,21 +133,19 @@
     border: none;
     padding: 0 16px;
     color: #fff;
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font);
     font-size: 16px;
     font-weight: 600;
     outline: none;
   }
-  .phone-wrap input::placeholder {
-    color: rgba(107,114,128,0.5);
-  }
+  .phone-wrap input::placeholder { color: rgba(107,114,128,0.5); }
 
   /* ── Toggle switch ── */
   .toggle-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #121826;
+    background: var(--c-surface);
     border-radius: 16px;
     padding: 16px;
     cursor: pointer;
@@ -161,12 +153,12 @@
   .toggle {
     width: 44px;
     height: 24px;
-    border-radius: 999px;
+    border-radius: var(--r-pill);
     position: relative;
-    transition: background 0.2s;
+    transition: background var(--duration-med);
     flex-shrink: 0;
   }
-  .toggle.on  { background: #3B82F6; }
+  .toggle.on  { background: var(--c-accent); }
   .toggle.off { background: rgba(107,114,128,0.25); }
   .toggle-thumb {
     position: absolute;
@@ -175,7 +167,7 @@
     height: 18px;
     border-radius: 50%;
     background: #fff;
-    transition: left 0.2s;
+    transition: left var(--duration-med);
     box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   .toggle.on  .toggle-thumb { left: 23px; }
@@ -187,7 +179,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #374151;
+    color: var(--c-label);
     margin-bottom: 14px;
   }
 
@@ -198,7 +190,7 @@
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: #6B7280;
+    color: var(--c-dim);
     font-size: 20px;
     pointer-events: none;
   }
@@ -209,7 +201,7 @@
 <!-- ── HEADER ── -->
 <header class="glass"
         style="position:fixed;top:0;width:100%;z-index:50;
-               height:56px;display:flex;align-items:center;padding:0 8px;
+               height:var(--header-h);display:flex;align-items:center;padding:0 8px;
                border-bottom:1px solid rgba(255,255,255,0.04);">
   <button onclick="window.location.href='ticket.html'"
           style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
@@ -218,23 +210,23 @@
           onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
           onpointerup="this.style.background='none'"
           onpointercancel="this.style.background='none'">
-    <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">arrow_back</span>
+    <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:22px;">arrow_back</span>
   </button>
   <div style="margin-left:4px;">
     <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">Данные пассажира</div>
     <div id="hdr-pax-label"
          style="font-size:10px;font-weight:700;text-transform:uppercase;
-                letter-spacing:0.06em;color:#6B7280;line-height:1.2;margin-top:1px;">
+                letter-spacing:0.06em;color:var(--c-dim);line-height:1.2;margin-top:1px;">
       1 пассажир
     </div>
   </div>
 </header>
 
 <!-- ── PAGE CONTENT ── -->
-<div style="padding:64px 16px 0;max-width:640px;margin:0 auto;">
+<div style="padding:var(--content-top) 16px 0;max-width:640px;margin:0 auto;">
 
   <!-- ── FLIGHT SUMMARY ── -->
-  <div style="background:#121826;border-radius:18px;padding:16px;margin-top:12px;
+  <div style="background:var(--c-surface);border-radius:var(--r-card);padding:16px;margin-top:12px;
               border:1px solid rgba(255,255,255,0.04);">
     <!-- Row 1: airline + date -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -254,13 +246,13 @@
           </div>
           <div id="fs-class"
                style="font-size:11px;font-weight:700;text-transform:uppercase;
-                      letter-spacing:0.05em;color:#9CA3AF;margin-top:1px;">
+                      letter-spacing:0.05em;color:var(--c-muted);margin-top:1px;">
             Эконом · Лайт
           </div>
         </div>
       </div>
       <div id="fs-date"
-           style="font-size:12px;font-weight:700;color:#9CA3AF;flex-shrink:0;margin-left:8px;">
+           style="font-size:12px;font-weight:700;color:var(--c-muted);flex-shrink:0;margin-left:8px;">
         29 Апр
       </div>
     </div>
@@ -268,31 +260,31 @@
     <div style="display:flex;align-items:center;gap:8px;">
       <div style="text-align:left;flex-shrink:0;">
         <div id="fs-dep" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">08:00</div>
-        <div id="fs-from" style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">TAS</div>
+        <div id="fs-from" style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">TAS</div>
       </div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;">
-        <div id="fs-dur" style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.04em;">3ч 15м</div>
+        <div id="fs-dur" style="font-size:10px;font-weight:700;color:var(--c-muted);letter-spacing:0.04em;">3ч 15м</div>
         <div style="width:100%;display:flex;align-items:center;gap:3px;">
           <div style="height:2px;flex:1;background:rgba(255,255,255,0.12);border-radius:1px;"></div>
           <span class="material-symbols-outlined"
-                style="font-size:16px;color:#3B82F6;
+                style="font-size:16px;color:var(--c-accent);
                        font-variation-settings:'FILL' 0,'wght' 400;
                        transform:rotate(90deg);">flight</span>
           <div style="height:2px;flex:1;background:rgba(255,255,255,0.12);border-radius:1px;"></div>
         </div>
-        <div id="fs-stops" style="font-size:10px;font-weight:700;color:#22C55E;">Прямой</div>
+        <div id="fs-stops" style="font-size:10px;font-weight:700;color:var(--c-success);">Прямой</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
         <div id="fs-arr" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">10:15</div>
-        <div id="fs-to" style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">MOW</div>
+        <div id="fs-to" style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">MOW</div>
       </div>
     </div>
   </div>
 
   <!-- ── SAVED TRAVELER ── -->
   <button style="width:100%;margin-top:12px;
-                 background:#121826;border:1px solid rgba(255,255,255,0.06);
-                 border-radius:999px;height:52px;padding:0 20px;
+                 background:var(--c-surface);border:1px solid rgba(255,255,255,0.06);
+                 border-radius:var(--r-pill);height:var(--btn-h);padding:0 20px;
                  display:flex;align-items:center;justify-content:space-between;
                  cursor:pointer;transition:background 0.15s;
                  -webkit-tap-highlight-color:transparent;"
@@ -300,20 +292,20 @@
           onpointerup="this.style.background='#121826'"
           onpointercancel="this.style.background='#121826'">
     <div style="display:flex;align-items:center;gap:12px;">
-      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:20px;">person_add</span>
+      <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:20px;">person_add</span>
       <span style="font-size:14px;font-weight:700;color:#fff;">Из сохранённых</span>
     </div>
-    <span class="material-symbols-outlined" style="color:#6B7280;font-size:20px;">chevron_right</span>
+    <span class="material-symbols-outlined" style="color:var(--c-dim);font-size:20px;">chevron_right</span>
   </button>
 
   <!-- ── PASSENGER 1: PERSONAL ── -->
   <div style="margin-top:24px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
       <h2 style="font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;">
-        <span style="color:#3B82F6;font-size:18px;font-weight:800;">01</span>
+        <span style="color:var(--c-accent);font-size:18px;font-weight:800;">01</span>
         Пассажир 1
       </h2>
-      <span style="font-size:10px;font-weight:800;color:#3B82F6;
+      <span style="font-size:10px;font-weight:800;color:var(--c-accent);
                    text-transform:uppercase;letter-spacing:0.07em;
                    border:1px solid rgba(59,130,246,0.25);
                    border-radius:6px;padding:3px 8px;">Взрослый</span>
@@ -341,9 +333,9 @@
         </div>
         <div style="position:relative;">
           <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
-                        background:#0b0f1a;font-size:10px;font-weight:700;
+                        background:var(--c-bg);font-size:10px;font-weight:700;
                         text-transform:uppercase;letter-spacing:0.1em;
-                        color:#3B82F6;z-index:1;pointer-events:none;">Пол</label>
+                        color:var(--c-accent);z-index:1;pointer-events:none;">Пол</label>
           <div class="gender-wrap">
             <button class="gender-btn active" id="gender-male"
                     onclick="setGender('male')">Муж</button>
@@ -380,7 +372,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div class="section-label" style="margin-bottom:0;">Документ</div>
       <button style="display:flex;align-items:center;gap:6px;background:none;border:none;
-                     cursor:pointer;color:#3B82F6;font-family:Manrope,sans-serif;
+                     cursor:pointer;color:var(--c-accent);font-family:var(--font);
                      font-size:12px;font-weight:700;padding:0;
                      -webkit-tap-highlight-color:transparent;"
               onpointerdown="this.style.opacity='0.6'"
@@ -433,16 +425,16 @@
       <!-- Телефон -->
       <div style="position:relative;">
         <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
-                      background:#0b0f1a;font-size:10px;font-weight:700;
+                      background:var(--c-bg);font-size:10px;font-weight:700;
                       text-transform:uppercase;letter-spacing:0.1em;
-                      color:#3B82F6;z-index:1;pointer-events:none;">Телефон</label>
+                      color:var(--c-accent);z-index:1;pointer-events:none;">Телефон</label>
         <div class="phone-wrap">
           <span class="phone-prefix">+998</span>
           <input type="tel" placeholder="90 123 45 67" autocomplete="tel"/>
         </div>
       </div>
 
-      <p style="font-size:11px;color:#6B7280;font-weight:500;padding:0 4px;font-style:italic;">
+      <p style="font-size:11px;color:var(--c-dim);font-weight:500;padding:0 4px;font-style:italic;">
         Подтверждение бронирования будет отправлено здесь
       </p>
 
@@ -472,14 +464,14 @@
     <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.12);
                 border-radius:16px;padding:14px 16px;display:flex;gap:12px;margin-top:2px;">
       <span class="material-symbols-outlined"
-            style="color:#EF4444;font-size:20px;flex-shrink:0;margin-top:1px;
+            style="color:var(--c-error);font-size:20px;flex-shrink:0;margin-top:1px;
                    font-variation-settings:'FILL' 1;">info</span>
       <div>
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;
-                    letter-spacing:0.06em;color:#EF4444;margin-bottom:4px;">
+                    letter-spacing:0.06em;color:var(--c-error);margin-bottom:4px;">
           Невозвратный тариф
         </div>
-        <div style="font-size:12px;color:#9CA3AF;line-height:1.5;font-weight:500;">
+        <div style="font-size:12px;color:var(--c-muted);line-height:1.5;font-weight:500;">
           Имя должно совпадать с паспортом. Любые изменения после бронирования
           могут повлечь штраф или отмену.
         </div>
@@ -501,12 +493,12 @@
            style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">
         —
       </div>
-      <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">итого</div>
+      <div style="font-size:11px;color:var(--c-muted);margin-top:2px;">итого</div>
     </div>
     <button onclick="goToConfirmation()"
-            style="flex:1;height:52px;background:#3B82F6;border:none;border-radius:999px;
-                   font-family:Manrope,sans-serif;font-size:16px;font-weight:800;color:#fff;
-                   cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);
+            style="flex:1;height:var(--btn-h);background:var(--c-accent);border:none;border-radius:var(--r-pill);
+                   font-family:var(--font);font-size:16px;font-weight:800;color:#fff;
+                   cursor:pointer;box-shadow:var(--btn-shadow);
                    display:flex;align-items:center;justify-content:center;gap:8px;
                    -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
             onpointerdown="this.style.transform='scale(0.98)'"
@@ -525,25 +517,25 @@
             border-top:1px solid rgba(255,255,255,0.04);
             padding:6px 16px max(8px,env(safe-area-inset-bottom));">
   <a href="index.html"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">search</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Поиск</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">confirmation_number</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Брони</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">explore</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Обзор</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;-webkit-tap-highlight-color:transparent;">
     <span class="material-symbols-outlined" style="font-size:22px;">person</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Профиль</span>

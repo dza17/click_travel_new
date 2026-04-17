@@ -4,15 +4,16 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Click Travel — Оплата</title>
+<link rel="stylesheet" href="design-tokens.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   body {
-    font-family: 'Manrope', sans-serif;
-    background: #0b0f1a;
-    color: #dfe2f2;
+    font-family: var(--font);
+    background: var(--c-bg);
+    color: var(--c-text);
     min-height: max(884px, 100dvh);
     padding-bottom: calc(160px + env(safe-area-inset-bottom));
     -webkit-tap-highlight-color: transparent;
@@ -22,27 +23,27 @@
     display: inline-block; line-height: 1;
   }
   .glass {
-    background: rgba(11,15,26,0.9);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
 
   /* ── Payment method cards ── */
   .pay-method {
-    background: #121826;
-    border-radius: 18px;
+    background: var(--c-surface);
+    border-radius: var(--r-card);
     padding: 16px;
     display: flex;
     align-items: center;
     gap: 14px;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color var(--duration-med), background var(--duration-med);
     -webkit-tap-highlight-color: transparent;
   }
   .pay-method.selected {
-    border-color: #3B82F6;
-    background: rgba(59,130,246,0.06);
+    border-color: var(--c-accent);
+    background: var(--c-accent-bg);
   }
   .pay-method.add-card {
     border: 2px dashed rgba(255,255,255,0.1);
@@ -59,27 +60,23 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    border: 2px solid #374151;
+    border: 2px solid var(--c-label);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     margin-left: auto;
-    transition: border-color 0.2s;
+    transition: border-color var(--duration-med);
   }
-  .radio-dot.checked {
-    border-color: #3B82F6;
-  }
+  .radio-dot.checked { border-color: var(--c-accent); }
   .radio-dot .dot-inner {
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: #3B82F6;
+    background: var(--c-accent);
     display: none;
   }
-  .radio-dot.checked .dot-inner {
-    display: block;
-  }
+  .radio-dot.checked .dot-inner { display: block; }
 
   /* ── Card logo badge ── */
   .card-logo {
@@ -87,7 +84,7 @@
     height: 30px;
     border-radius: 8px;
     background: #0a0e19;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--c-border-hi);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,7 +100,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #374151;
+    color: var(--c-label);
     margin-bottom: 12px;
   }
 
@@ -111,14 +108,14 @@
   .promo-wrap {
     display: flex;
     align-items: center;
-    background: #080d18;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    height: 52px;
+    background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md);
+    border-radius: var(--r-md);
+    height: var(--btn-h);
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: border-color var(--duration-med);
   }
-  .promo-wrap:focus-within { border-color: #3B82F6; }
+  .promo-wrap:focus-within { border-color: var(--c-accent); }
   .promo-wrap input {
     flex: 1;
     height: 100%;
@@ -126,7 +123,7 @@
     border: none;
     padding: 0 16px;
     color: #fff;
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font);
     font-size: 16px;
     font-weight: 600;
     outline: none;
@@ -142,14 +139,14 @@
   .promo-apply-btn {
     padding: 0 18px;
     height: 100%;
-    background: #3B82F6;
+    background: var(--c-accent);
     border: none;
     color: #fff;
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: opacity var(--duration-fast);
     flex-shrink: 0;
   }
   .promo-apply-btn:active { opacity: 0.8; }
@@ -181,7 +178,7 @@
 <!-- ── HEADER ── -->
 <header class="glass"
         style="position:fixed;top:0;width:100%;z-index:50;
-               height:56px;display:flex;align-items:center;
+               height:var(--header-h);display:flex;align-items:center;
                padding:0 8px;border-bottom:1px solid rgba(255,255,255,0.04);">
   <button onclick="window.location.href='passenger_details.html'"
           style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
@@ -189,16 +186,16 @@
           onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
           onpointerup="this.style.background='none'"
           onpointercancel="this.style.background='none'">
-    <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">arrow_back</span>
+    <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:22px;">arrow_back</span>
   </button>
   <span style="font-size:16px;font-weight:700;color:#fff;margin-left:4px;">Завершение бронирования</span>
 </header>
 
 <!-- ── PAGE CONTENT ── -->
-<div style="padding:64px 16px 0;max-width:640px;margin:0 auto;">
+<div style="padding:var(--content-top) 16px 0;max-width:640px;margin:0 auto;">
 
   <!-- ── FLIGHT SUMMARY ── -->
-  <div style="background:#121826;border-radius:18px;padding:16px;margin-top:12px;
+  <div style="background:var(--c-surface);border-radius:var(--r-card);padding:16px;margin-top:12px;
               border:1px solid rgba(255,255,255,0.04);">
     <!-- Row 1: airline + date -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -218,13 +215,13 @@
           </div>
           <div id="fs-class"
                style="font-size:11px;font-weight:700;text-transform:uppercase;
-                      letter-spacing:0.05em;color:#9CA3AF;margin-top:1px;">
+                      letter-spacing:0.05em;color:var(--c-muted);margin-top:1px;">
             Эконом · Лайт
           </div>
         </div>
       </div>
       <div id="fs-date"
-           style="font-size:12px;font-weight:700;color:#9CA3AF;flex-shrink:0;margin-left:8px;">
+           style="font-size:12px;font-weight:700;color:var(--c-muted);flex-shrink:0;margin-left:8px;">
         —
       </div>
     </div>
@@ -232,57 +229,57 @@
     <div style="display:flex;align-items:center;gap:8px;">
       <div style="text-align:left;flex-shrink:0;">
         <div id="fs-dep" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">—</div>
-        <div id="fs-from" style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">TAS</div>
+        <div id="fs-from" style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">TAS</div>
       </div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;">
-        <div id="fs-dur" style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.04em;">—</div>
+        <div id="fs-dur" style="font-size:10px;font-weight:700;color:var(--c-muted);letter-spacing:0.04em;">—</div>
         <div style="width:100%;display:flex;align-items:center;gap:3px;">
           <div style="height:2px;flex:1;background:rgba(255,255,255,0.12);border-radius:1px;"></div>
           <span class="material-symbols-outlined"
-                style="font-size:16px;color:#3B82F6;
+                style="font-size:16px;color:var(--c-accent);
                        font-variation-settings:'FILL' 0,'wght' 400;
                        transform:rotate(90deg);">flight</span>
           <div style="height:2px;flex:1;background:rgba(255,255,255,0.12);border-radius:1px;"></div>
         </div>
-        <div id="fs-stops" style="font-size:10px;font-weight:700;color:#22C55E;">Прямой</div>
+        <div id="fs-stops" style="font-size:10px;font-weight:700;color:var(--c-success);">Прямой</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
         <div id="fs-arr" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">—</div>
-        <div id="fs-to" style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">MOW</div>
+        <div id="fs-to" style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">MOW</div>
       </div>
     </div>
     <!-- Row 3: passenger pill -->
     <div id="pax-pill"
          style="display:inline-flex;align-items:center;gap:6px;
-                background:#0b0f1a;border-radius:999px;
+                background:var(--c-bg);border-radius:var(--r-pill);
                 padding:6px 12px;margin-top:12px;">
       <span class="material-symbols-outlined"
-            style="font-size:14px;color:#9CA3AF;font-variation-settings:'FILL' 1;">person</span>
+            style="font-size:14px;color:var(--c-muted);font-variation-settings:'FILL' 1;">person</span>
       <span id="pax-pill-text"
-            style="font-size:12px;font-weight:700;color:#9CA3AF;">Пассажир: —</span>
+            style="font-size:12px;font-weight:700;color:var(--c-muted);">Пассажир: —</span>
     </div>
   </div>
 
   <!-- ── TIMER ── -->
   <div style="display:flex;align-items:center;gap:7px;margin-top:12px;padding:9px 14px;
               background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.18);
-              border-radius:999px;width:fit-content;">
+              border-radius:var(--r-pill);width:fit-content;">
     <span class="material-symbols-outlined"
-          style="font-size:16px;color:#F59E0B;flex-shrink:0;">schedule</span>
-    <span style="font-size:13px;font-weight:600;color:#9CA3AF;">
+          style="font-size:16px;color:var(--c-warning);flex-shrink:0;">schedule</span>
+    <span style="font-size:13px;font-weight:600;color:var(--c-muted);">
       Стоимость действительна&nbsp;
-      <span id="price-countdown" style="font-weight:800;color:#F59E0B;">15:00</span>
+      <span id="price-countdown" style="font-weight:800;color:var(--c-warning);">15:00</span>
     </span>
   </div>
 
   <!-- ── CASHBACK BLOCK ── -->
-  <div style="display:inline-flex;align-items:center;gap:7px;background:#1a2338;
-              border:1px solid rgba(59,130,246,0.22);border-radius:999px;
+  <div style="display:inline-flex;align-items:center;gap:7px;background:var(--c-surface-accent);
+              border:1px solid var(--c-accent-border);border-radius:var(--r-pill);
               padding:8px 14px;margin-top:14px;">
     <span class="material-symbols-outlined"
-          style="font-size:16px;color:#3B82F6;font-variation-settings:'FILL' 1;flex-shrink:0;">stars</span>
+          style="font-size:16px;color:var(--c-accent);font-variation-settings:'FILL' 1;flex-shrink:0;">stars</span>
     <span id="cashback-label"
-          style="font-size:13px;font-weight:700;color:#3B82F6;">2% кешбэк с Click Premium · —</span>
+          style="font-size:13px;font-weight:700;color:var(--c-accent);">2% кешбэк с Click Premium · —</span>
   </div>
 
   <!-- ── PROMO CODE ── -->
@@ -293,8 +290,8 @@
                    background:none;border:none;cursor:pointer;padding:0;
                    -webkit-tap-highlight-color:transparent;">
       <span class="material-symbols-outlined"
-            style="font-size:16px;color:#3B82F6;" id="promo-toggle-icon">add_circle</span>
-      <span style="font-size:13px;font-weight:700;color:#3B82F6;">Ввести промокод</span>
+            style="font-size:16px;color:var(--c-accent);" id="promo-toggle-icon">add_circle</span>
+      <span style="font-size:13px;font-weight:700;color:var(--c-accent);">Ввести промокод</span>
     </button>
     <!-- Collapsible field -->
     <div id="promo-field"
@@ -309,14 +306,14 @@
       <div id="promo-ok"
            style="display:none;align-items:center;gap:8px;margin-top:8px;padding:0 4px;">
         <span class="material-symbols-outlined"
-              style="font-size:16px;color:#22C55E;font-variation-settings:'FILL' 1;">check_circle</span>
-        <span style="font-size:12px;font-weight:700;color:#22C55E;">Промокод применён — скидка 5%</span>
+              style="font-size:16px;color:var(--c-success);font-variation-settings:'FILL' 1;">check_circle</span>
+        <span style="font-size:12px;font-weight:700;color:var(--c-success);">Промокод применён — скидка 5%</span>
       </div>
       <div id="promo-err"
            style="display:none;align-items:center;gap:8px;margin-top:8px;padding:0 4px;">
         <span class="material-symbols-outlined"
-              style="font-size:16px;color:#EF4444;font-variation-settings:'FILL' 1;">error</span>
-        <span style="font-size:12px;font-weight:700;color:#EF4444;">Промокод не найден</span>
+              style="font-size:16px;color:var(--c-error);font-variation-settings:'FILL' 1;">error</span>
+        <span style="font-size:12px;font-weight:700;color:var(--c-error);">Промокод не найден</span>
       </div>
     </div>
   </div>
@@ -324,21 +321,21 @@
   <!-- ── FARE SUMMARY ── -->
   <div style="margin-top:24px;">
     <div class="section-label">Итоговая стоимость</div>
-    <div style="background:#121826;border-radius:18px;padding:18px 16px;
+    <div style="background:var(--c-surface);border-radius:var(--r-card);padding:18px 16px;
                 border:1px solid rgba(255,255,255,0.04);">
       <div style="display:flex;flex-direction:column;gap:10px;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;color:#9CA3AF;font-weight:500;">Базовый тариф</span>
+          <span style="font-size:14px;color:var(--c-muted);font-weight:500;">Базовый тариф</span>
           <span id="price-base" style="font-size:14px;font-weight:700;color:#fff;">—</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;color:#9CA3AF;font-weight:500;">Налоги и сборы</span>
+          <span style="font-size:14px;color:var(--c-muted);font-weight:500;">Налоги и сборы</span>
           <span id="price-tax" style="font-size:14px;font-weight:700;color:#fff;">—</span>
         </div>
         <div id="promo-discount-row"
              style="display:none;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;color:#22C55E;font-weight:600;">Скидка по промокоду</span>
-          <span id="price-discount" style="font-size:14px;font-weight:700;color:#22C55E;">—</span>
+          <span style="font-size:14px;color:var(--c-success);font-weight:600;">Скидка по промокоду</span>
+          <span id="price-discount" style="font-size:14px;font-weight:700;color:var(--c-success);">—</span>
         </div>
         <!-- Divider -->
         <div style="height:1px;background:rgba(255,255,255,0.05);margin:2px 0;"></div>
@@ -358,14 +355,14 @@
 
       <!-- Click Pay -->
       <div class="pay-method selected" id="pm-click" onclick="selectMethod('click')">
-        <div style="width:46px;height:30px;border-radius:8px;background:#3B82F6;
+        <div style="width:46px;height:30px;border-radius:8px;background:var(--c-accent);
                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span style="font-size:11px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Click</span>
         </div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;">Click Pay</div>
           <div id="click-balance"
-               style="font-size:12px;font-weight:600;color:#22C55E;margin-top:2px;">
+               style="font-size:12px;font-weight:600;color:var(--c-success);margin-top:2px;">
             Баланс: загрузка…
           </div>
         </div>
@@ -382,7 +379,7 @@
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;">UzCard •••• 7723</div>
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;
-                      letter-spacing:0.05em;color:#6B7280;margin-top:2px;">Действует до 03/27</div>
+                      letter-spacing:0.05em;color:var(--c-dim);margin-top:2px;">Действует до 03/27</div>
         </div>
         <div class="radio-dot" id="radio-uzcard">
           <div class="dot-inner"></div>
@@ -397,7 +394,7 @@
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;">Humo •••• 4411</div>
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;
-                      letter-spacing:0.05em;color:#6B7280;margin-top:2px;">Действует до 11/26</div>
+                      letter-spacing:0.05em;color:var(--c-dim);margin-top:2px;">Действует до 11/26</div>
         </div>
         <div class="radio-dot" id="radio-humo">
           <div class="dot-inner"></div>
@@ -411,9 +408,9 @@
                     border:1px solid rgba(255,255,255,0.08);
                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span class="material-symbols-outlined"
-                style="font-size:20px;color:#6B7280;">add</span>
+                style="font-size:20px;color:var(--c-dim);">add</span>
         </div>
-        <span style="font-size:14px;font-weight:700;color:#9CA3AF;">Добавить карту</span>
+        <span style="font-size:14px;font-weight:700;color:var(--c-muted);">Добавить карту</span>
       </div>
 
     </div>
@@ -422,32 +419,32 @@
   <!-- ── ERROR ── -->
   <div class="pay-error" id="pay-error">
     <span class="material-symbols-outlined"
-          style="font-size:18px;color:#EF4444;font-variation-settings:'FILL' 1;flex-shrink:0;">error</span>
-    <span style="font-size:13px;font-weight:600;color:#EF4444;" id="pay-error-text">
+          style="font-size:18px;color:var(--c-error);font-variation-settings:'FILL' 1;flex-shrink:0;">error</span>
+    <span style="font-size:13px;font-weight:600;color:var(--c-error);" id="pay-error-text">
       Оплата не прошла. Попробуйте ещё раз.
     </span>
   </div>
 
   <!-- ── BNPL (рассрочка) ── -->
   <div style="margin-top:16px;background:rgba(59,130,246,0.05);
-              border:1px solid rgba(59,130,246,0.15);border-radius:18px;
+              border:1px solid rgba(59,130,246,0.15);border-radius:var(--r-card);
               padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;"
        onclick="toggleBnpl()"
        onpointerdown="this.style.background='rgba(59,130,246,0.09)'"
        onpointerup="this.style.background='rgba(59,130,246,0.05)'"
        onpointercancel="this.style.background='rgba(59,130,246,0.05)'">
     <span class="material-symbols-outlined"
-          style="font-size:22px;color:#3B82F6;flex-shrink:0;
+          style="font-size:22px;color:var(--c-accent);flex-shrink:0;
                  font-variation-settings:'FILL' 1;">payments</span>
     <div style="flex:1;min-width:0;">
       <div style="font-size:14px;font-weight:700;color:#fff;">Оплатить в рассрочку</div>
       <div id="bnpl-sub"
-           style="font-size:12px;font-weight:600;color:#9CA3AF;margin-top:2px;">
+           style="font-size:12px;font-weight:600;color:var(--c-muted);margin-top:2px;">
         Доступно через Click BNPL
       </div>
     </div>
     <span class="material-symbols-outlined"
-          style="font-size:20px;color:#6B7280;flex-shrink:0;">chevron_right</span>
+          style="font-size:20px;color:var(--c-dim);flex-shrink:0;">chevron_right</span>
   </div>
 
   <!-- ── SECURITY NOTE ── -->
@@ -472,12 +469,12 @@
            style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">
         —
       </div>
-      <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">к оплате</div>
+      <div style="font-size:11px;color:var(--c-muted);margin-top:2px;">к оплате</div>
     </div>
     <button id="pay-button" onclick="handlePayment()"
-            style="flex:1;height:52px;background:#3B82F6;border:none;border-radius:999px;
-                   font-family:Manrope,sans-serif;font-size:16px;font-weight:800;color:#fff;
-                   cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);
+            style="flex:1;height:var(--btn-h);background:var(--c-accent);border:none;border-radius:var(--r-pill);
+                   font-family:var(--font);font-size:16px;font-weight:800;color:#fff;
+                   cursor:pointer;box-shadow:var(--btn-shadow);
                    display:flex;align-items:center;justify-content:center;
                    -webkit-tap-highlight-color:transparent;transition:transform 0.1s,opacity 0.1s;"
             onpointerdown="if(!this.disabled)this.style.transform='scale(0.98)'"
@@ -506,25 +503,25 @@
             border-top:1px solid rgba(255,255,255,0.04);
             padding:6px 16px max(8px,env(safe-area-inset-bottom));">
   <a href="index.html"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;">
     <span class="material-symbols-outlined" style="font-size:22px;">search</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Поиск</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;">
     <span class="material-symbols-outlined" style="font-size:22px;">confirmation_number</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Брони</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;">
     <span class="material-symbols-outlined" style="font-size:22px;">explore</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Обзор</span>
   </a>
   <a href="#"
-     style="display:flex;flex-direction:column;align-items:center;color:#6B7280;
+     style="display:flex;flex-direction:column;align-items:center;color:var(--c-dim);
             text-decoration:none;padding:2px 8px;">
     <span class="material-symbols-outlined" style="font-size:22px;">person</span>
     <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Профиль</span>
