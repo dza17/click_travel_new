@@ -3,6 +3,15 @@
 ## Entries
 
 - Date: 2026-04-18
+  Task: Refactor passenger_details.html — dynamic passenger list + bottom-sheet forms + date masks + validation
+  Agent: Claude Code
+  Branch: feature/passenger-details-refactor
+  Commit: 204ef39
+  Status: implemented, pending review
+  Checks: HTML/JS syntax check, manual flow trace
+  Notes: passenger count from ct_search.pax; single reusable BottomSheet; DD.MM.YYYY mask + calendar picker; contacts moved to per-booking section; goToConfirmation guards all fields filled
+
+- Date: 2026-04-18
   Task: Approved commit `bd2e54e`, pushed to `main`, and deployed to production server
   Agent: ChatGPT/Codex
   Branch: main
