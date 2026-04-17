@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<title>Click Travel — Данные пассажира</title>
+<title>Click Travel — Данные пассажиров</title>
 <link rel="stylesheet" href="design-tokens.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -29,6 +29,92 @@
     -webkit-backdrop-filter: blur(20px);
   }
 
+  /* ── Section label ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-label);
+    margin-bottom: 10px;
+  }
+
+  /* ── Passenger card ── */
+  .pax-card {
+    background: var(--c-surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--r-card);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+    text-align: left;
+  }
+  .pax-card:active { background: var(--c-surface-hi); }
+
+  .pax-card__num {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--c-accent);
+    flex-shrink: 0;
+    width: 26px;
+    line-height: 1;
+  }
+  .pax-card__info { flex: 1; min-width: 0; }
+  .pax-card__name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pax-card__name--empty { color: var(--c-dim); font-weight: 600; }
+  .pax-card__sub {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--c-muted);
+    margin-top: 2px;
+  }
+  .pax-card__badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .pax-card__type {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    border-radius: 6px;
+    padding: 3px 8px;
+  }
+  .pax-card__type--adult   { color: var(--c-accent);   border: 1px solid rgba(59,130,246,0.25);  }
+  .pax-card__type--child   { color: var(--c-warning);  border: 1px solid rgba(245,158,11,0.25);  }
+  .pax-card__type--infant  { color: var(--c-success);  border: 1px solid rgba(34,197,94,0.25);   }
+
+  .pax-card__done {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .pax-card__done .material-symbols-outlined {
+    font-size: 13px;
+    color: var(--c-success);
+    font-variation-settings: 'FILL' 1, 'wght' 700;
+  }
+
   /* ── Floating-label fields ── */
   .field { position: relative; }
   .field > label {
@@ -44,7 +130,9 @@
     color: var(--c-accent);
     z-index: 1;
     pointer-events: none;
+    transition: color 0.15s;
   }
+  .field.field--sheet > label { background: var(--c-surface); }
   .field input,
   .field select {
     width: 100%;
@@ -60,6 +148,7 @@
     appearance: none;
     -webkit-appearance: none;
     outline: none;
+    transition: border-color 0.15s;
   }
   .field input:focus,
   .field select:focus { border-color: var(--c-accent); }
@@ -67,16 +156,94 @@
     color: rgba(107,114,128,0.5);
     font-weight: 500;
   }
-  .field input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.5);
-    cursor: pointer;
-  }
   .field select option {
     background: var(--c-surface);
     color: #fff;
   }
+  /* Error state */
+  .field.field--error > label { color: var(--c-error); }
+  .field.field--error input,
+  .field.field--error select { border-color: rgba(239,68,68,0.55); }
+  .field.field--error .field-err {
+    display: block;
+  }
+  .field-err {
+    display: none;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--c-error);
+    margin-top: 4px;
+    padding-left: 6px;
+  }
+
+  /* ── Date input with calendar ── */
+  .date-wrap {
+    position: relative;
+    height: var(--field-h);
+  }
+  .date-wrap input[type="text"] {
+    width: 100%;
+    height: 100%;
+    background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md);
+    border-radius: 16px;
+    padding: 0 48px 0 16px;
+    color: #fff;
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .date-wrap input[type="text"]:focus { border-color: var(--c-accent); }
+  .date-wrap input[type="text"]::placeholder {
+    color: rgba(107,114,128,0.5);
+    font-weight: 500;
+  }
+  .date-wrap input[type="date"] {
+    position: absolute;
+    top: 0; right: 0;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .date-cal-btn {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--c-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .date-cal-btn:active { color: var(--c-accent); }
+  .date-cal-btn .material-symbols-outlined { font-size: 20px; }
+  /* Error state for date-wrap */
+  .date-field-outer.field--error .date-wrap input[type="text"] { border-color: rgba(239,68,68,0.55); }
+  .date-field-outer.field--error > label { color: var(--c-error); }
+  .date-field-outer.field--error .field-err { display: block; }
 
   /* ── Gender segment control ── */
+  .gender-field-outer { position: relative; }
+  .gender-field-outer > label {
+    position: absolute;
+    top: -8px; left: 16px;
+    padding: 0 6px;
+    background: var(--c-surface);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-accent);
+    z-index: 1;
+    pointer-events: none;
+  }
   .gender-wrap {
     height: var(--field-h);
     background: var(--c-bg-deep);
@@ -103,6 +270,18 @@
     color: #fff;
   }
 
+  /* ── Select chevron ── */
+  .select-wrap { position: relative; }
+  .select-wrap .chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--c-dim);
+    font-size: 20px;
+    pointer-events: none;
+  }
+
   /* ── Phone field ── */
   .phone-wrap {
     display: flex;
@@ -112,8 +291,10 @@
     border-radius: 16px;
     height: var(--field-h);
     overflow: hidden;
+    transition: border-color 0.15s;
   }
   .phone-wrap:focus-within { border-color: var(--c-accent); }
+  .phone-wrap.field--error { border-color: rgba(239,68,68,0.55); }
   .phone-prefix {
     padding: 0 12px 0 16px;
     font-size: 15px;
@@ -151,8 +332,7 @@
     cursor: pointer;
   }
   .toggle {
-    width: 44px;
-    height: 24px;
+    width: 44px; height: 24px;
     border-radius: var(--r-pill);
     position: relative;
     transition: background var(--duration-med);
@@ -161,38 +341,111 @@
   .toggle.on  { background: var(--c-accent); }
   .toggle.off { background: rgba(107,114,128,0.25); }
   .toggle-thumb {
-    position: absolute;
-    top: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #fff;
+    position: absolute; top: 3px;
+    width: 18px; height: 18px;
+    border-radius: 50%; background: #fff;
     transition: left var(--duration-med);
     box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   .toggle.on  .toggle-thumb { left: 23px; }
   .toggle.off .toggle-thumb { left: 3px; }
 
-  /* ── Section headers ── */
-  .section-label {
+  /* ── Bottom Sheet ── */
+  .pax-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--c-surface);
+    border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+    box-shadow: var(--sheet-shadow);
+    display: flex;
+    flex-direction: column;
+    max-height: 92dvh;
+    max-height: 92vh;
+  }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.12);
+    margin: 10px auto 0;
+    flex-shrink: 0;
+    cursor: grab;
+  }
+  .sheet-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px 10px;
+    flex-shrink: 0;
+    gap: 10px;
+  }
+  .sheet-header__title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .sheet-header__close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    color: var(--c-muted);
+  }
+  .sheet-header__close .material-symbols-outlined { font-size: 18px; }
+  .sheet-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 16px 0;
+    flex: 1;
+  }
+  .sheet-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0;
+    background: var(--c-surface);
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .sheet-save-btn {
+    width: 100%;
+    height: var(--btn-h);
+    background: var(--c-accent);
+    border: none;
+    border-radius: var(--r-pill);
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: var(--btn-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+  }
+  .sheet-save-btn:active { transform: scale(0.98); }
+
+  /* Sheet-level field labels use surface background */
+  .pax-sheet .field > label,
+  .pax-sheet .date-field-outer > label,
+  .pax-sheet .gender-field-outer > label { background: var(--c-surface); }
+
+  /* Sheet sub-section divider */
+  .sheet-section {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--c-label);
-    margin-bottom: 14px;
-  }
-
-  /* ── Select chevron ── */
-  .select-wrap { position: relative; }
-  .select-wrap .chevron {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--c-dim);
-    font-size: 20px;
-    pointer-events: none;
+    padding: 8px 0 12px;
   }
 </style>
 </head>
@@ -213,7 +466,7 @@
     <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:22px;">arrow_back</span>
   </button>
   <div style="margin-left:4px;flex:1;">
-    <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">Данные пассажира</div>
+    <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">Данные пассажиров</div>
     <div id="hdr-pax-label"
          style="font-size:10px;font-weight:700;text-transform:uppercase;
                 letter-spacing:0.06em;color:var(--c-dim);line-height:1.2;margin-top:1px;">
@@ -243,7 +496,6 @@
   <!-- ── FLIGHT SUMMARY ── -->
   <div style="background:var(--c-surface);border-radius:var(--r-card);padding:16px;margin-top:12px;
               border:1px solid rgba(255,255,255,0.04);">
-    <!-- Row 1: airline + date -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div style="display:flex;align-items:center;gap:10px;min-width:0;">
         <div id="fs-badge"
@@ -271,7 +523,6 @@
         29 Апр
       </div>
     </div>
-    <!-- Row 2: route -->
     <div style="display:flex;align-items:center;gap:8px;">
       <div style="text-align:left;flex-shrink:0;">
         <div id="fs-dep" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">08:00</div>
@@ -296,7 +547,7 @@
     </div>
   </div>
 
-  <!-- ── SAVED TRAVELER ── -->
+  <!-- ── FROM SAVED ── -->
   <button style="width:100%;margin-top:12px;
                  background:var(--c-surface);border:1px solid rgba(255,255,255,0.06);
                  border-radius:var(--r-pill);height:var(--btn-h);padding:0 20px;
@@ -313,161 +564,43 @@
     <span class="material-symbols-outlined" style="color:var(--c-dim);font-size:20px;">chevron_right</span>
   </button>
 
-  <!-- ── PASSENGER 1: PERSONAL ── -->
+  <!-- ── PASSENGER LIST ── -->
   <div style="margin-top:24px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <h2 style="font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;">
-        <span style="color:var(--c-accent);font-size:18px;font-weight:800;">01</span>
-        Пассажир 1
-      </h2>
-      <span style="font-size:10px;font-weight:800;color:var(--c-accent);
-                   text-transform:uppercase;letter-spacing:0.07em;
-                   border:1px solid rgba(59,130,246,0.25);
-                   border-radius:6px;padding:3px 8px;">Взрослый</span>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:18px;">
-
-      <!-- Имя -->
-      <div class="field">
-        <label>Имя</label>
-        <input type="text" placeholder="Иван" autocomplete="given-name" autocorrect="off" spellcheck="false"/>
-      </div>
-
-      <!-- Фамилия -->
-      <div class="field">
-        <label>Фамилия</label>
-        <input type="text" placeholder="Иванов" autocomplete="family-name" autocorrect="off" spellcheck="false"/>
-      </div>
-
-      <!-- Дата рождения + Пол -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="field">
-          <label>Дата рождения</label>
-          <input type="date"/>
-        </div>
-        <div style="position:relative;">
-          <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
-                        background:var(--c-bg);font-size:10px;font-weight:700;
-                        text-transform:uppercase;letter-spacing:0.1em;
-                        color:var(--c-accent);z-index:1;pointer-events:none;">Пол</label>
-          <div class="gender-wrap">
-            <button class="gender-btn active" id="gender-male"
-                    onclick="setGender('male')">Муж</button>
-            <button class="gender-btn" id="gender-female"
-                    onclick="setGender('female')">Жен</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Гражданство -->
-      <div class="field select-wrap">
-        <label>Гражданство</label>
-        <select>
-          <option value="UZ">Узбекистан</option>
-          <option value="RU">Россия</option>
-          <option value="KZ">Казахстан</option>
-          <option value="KG">Кыргызстан</option>
-          <option value="TJ">Таджикистан</option>
-          <option value="TR">Турция</option>
-          <option value="AE">ОАЭ</option>
-          <option value="US">США</option>
-          <option value="GB">Великобритания</option>
-          <option value="DE">Германия</option>
-          <option value="other">Другое</option>
-        </select>
-        <span class="material-symbols-outlined chevron">expand_more</span>
-      </div>
-
-    </div>
+    <div class="section-label">Пассажиры</div>
+    <div id="pax-list" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 
-  <!-- ── ДОКУМЕНТ ── -->
-  <div style="margin-top:28px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div class="section-label" style="margin-bottom:0;">Документ</div>
-      <button style="display:flex;align-items:center;gap:6px;background:none;border:none;
-                     cursor:pointer;color:var(--c-accent);font-family:var(--font);
-                     font-size:12px;font-weight:700;padding:0;
-                     -webkit-tap-highlight-color:transparent;"
-              onpointerdown="this.style.opacity='0.6'"
-              onpointerup="this.style.opacity='1'"
-              onpointercancel="this.style.opacity='1'">
-        <span class="material-symbols-outlined" style="font-size:18px;">document_scanner</span>
-        Сканировать
-      </button>
-    </div>
-
+  <!-- ── CONTACTS ── -->
+  <div style="margin-top:24px;">
+    <div class="section-label">Контакты для уведомлений</div>
     <div style="display:flex;flex-direction:column;gap:18px;">
 
-      <!-- Номер документа -->
-      <div class="field">
-        <label>Номер документа</label>
-        <input type="text" placeholder="AA 1234567"
-               autocomplete="off" autocorrect="off" spellcheck="false"
-               style="text-transform:uppercase;letter-spacing:0.05em;"/>
-      </div>
-
-      <!-- Страна выдачи + Срок действия -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="field">
-          <label>Страна выдачи</label>
-          <input type="text" placeholder="UZB"
-                 autocomplete="off" autocorrect="off" spellcheck="false"
-                 style="text-transform:uppercase;"/>
-        </div>
-        <div class="field">
-          <label>Срок действия</label>
-          <input type="date"/>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ── КОНТАКТЫ ── -->
-  <div style="margin-top:28px;">
-    <div class="section-label">Контакты</div>
-
-    <div style="display:flex;flex-direction:column;gap:18px;">
-
-      <!-- Email -->
-      <div class="field">
+      <div class="field" id="cont-email-field">
         <label>Email</label>
-        <input type="email" placeholder="ivan@example.com" autocomplete="email"/>
+        <input id="cont-email" type="email" placeholder="ivan@example.com" autocomplete="email"/>
+        <span class="field-err" id="cont-email-err">Введите корректный email</span>
       </div>
 
-      <!-- Телефон -->
       <div style="position:relative;">
         <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
                       background:var(--c-bg);font-size:10px;font-weight:700;
                       text-transform:uppercase;letter-spacing:0.1em;
                       color:var(--c-accent);z-index:1;pointer-events:none;">Телефон</label>
-        <div class="phone-wrap">
+        <div class="phone-wrap" id="cont-phone-wrap">
           <span class="phone-prefix">+998</span>
-          <input type="tel" placeholder="90 123 45 67" autocomplete="tel"/>
+          <input id="cont-phone" type="tel" placeholder="90 123 45 67" autocomplete="tel"/>
         </div>
+        <span class="field-err" id="cont-phone-err" style="display:none;font-size:10px;font-weight:700;color:var(--c-error);margin-top:4px;padding-left:6px;">Введите номер телефона</span>
       </div>
 
       <p style="font-size:11px;color:var(--c-dim);font-weight:500;padding:0 4px;font-style:italic;">
         Подтверждение бронирования будет отправлено здесь
       </p>
-
     </div>
   </div>
 
-  <!-- ── НАСТРОЙКИ ── -->
-  <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px;">
-
-    <!-- Сохранить пассажира -->
-    <div class="toggle-row" onclick="toggleSwitch('save-traveler')">
-      <span style="font-size:14px;font-weight:600;color:#fff;">Сохранить пассажира</span>
-      <div class="toggle on" id="save-traveler">
-        <div class="toggle-thumb"></div>
-      </div>
-    </div>
-
-    <!-- Обновления рейса -->
+  <!-- ── SETTINGS ── -->
+  <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px;">
     <div class="toggle-row" onclick="toggleSwitch('flight-updates')">
       <span style="font-size:14px;font-weight:600;color:#fff;">Обновления о рейсе</span>
       <div class="toggle off" id="flight-updates">
@@ -475,7 +608,6 @@
       </div>
     </div>
 
-    <!-- Предупреждение -->
     <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.12);
                 border-radius:16px;padding:14px 16px;display:flex;gap:12px;margin-top:2px;">
       <span class="material-symbols-outlined"
@@ -487,12 +619,11 @@
           Невозвратный тариф
         </div>
         <div style="font-size:12px;color:var(--c-muted);line-height:1.5;font-weight:500;">
-          Имя должно совпадать с паспортом. Любые изменения после бронирования
+          Имена должны совпадать с паспортом. Любые изменения после бронирования
           могут повлечь штраф или отмену.
         </div>
       </div>
     </div>
-
   </div>
 
 </div><!-- /page content -->
@@ -525,47 +656,160 @@
   </div>
 </div>
 
+<!-- ── PASSENGER BOTTOM SHEET ── -->
+<div class="pax-sheet" id="pax-sheet">
+  <div class="sheet-handle" id="pax-sheet-handle"></div>
 
+  <div class="sheet-header">
+    <div>
+      <div class="sheet-header__title" id="sheet-title">Пассажир 1</div>
+      <div id="sheet-type-badge"
+           style="display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;
+                  letter-spacing:0.07em;color:var(--c-accent);border:1px solid rgba(59,130,246,0.25);
+                  border-radius:6px;padding:2px 7px;margin-top:3px;">Взрослый</div>
+    </div>
+    <button class="sheet-header__close" id="sheet-close-btn">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <div class="sheet-scroll" id="pax-sheet-scroll">
+    <div style="display:flex;flex-direction:column;gap:18px;padding-bottom:8px;">
+
+      <!-- Имя -->
+      <div class="field" id="sf-first-field">
+        <label>Имя (латиница)</label>
+        <input id="sf-first" type="text" placeholder="IVAN"
+               autocomplete="given-name" autocorrect="off" spellcheck="false"
+               style="text-transform:uppercase;letter-spacing:0.04em;"/>
+        <span class="field-err" id="sf-first-err">Только латинские буквы</span>
+      </div>
+
+      <!-- Фамилия -->
+      <div class="field" id="sf-last-field">
+        <label>Фамилия (латиница)</label>
+        <input id="sf-last" type="text" placeholder="IVANOV"
+               autocomplete="family-name" autocorrect="off" spellcheck="false"
+               style="text-transform:uppercase;letter-spacing:0.04em;"/>
+        <span class="field-err" id="sf-last-err">Только латинские буквы</span>
+      </div>
+
+      <!-- Дата рождения + Пол -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+        <div style="position:relative;" id="sf-dob-outer" class="date-field-outer">
+          <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                        background:var(--c-surface);font-size:10px;font-weight:700;
+                        text-transform:uppercase;letter-spacing:0.1em;
+                        color:var(--c-accent);z-index:1;pointer-events:none;">
+            Дата рождения
+          </label>
+          <div class="date-wrap">
+            <input type="text" id="sf-dob" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
+            <input type="date" id="sf-dob-native" tabindex="-1"/>
+            <button type="button" class="date-cal-btn" onclick="openDatePicker('sf-dob-native')">
+              <span class="material-symbols-outlined">calendar_month</span>
+            </button>
+          </div>
+          <span class="field-err" id="sf-dob-err">Введите корректную дату</span>
+        </div>
+
+        <div class="gender-field-outer">
+          <label>Пол</label>
+          <div class="gender-wrap">
+            <button class="gender-btn active" id="sf-gender-male" type="button"
+                    onclick="setSheetGender('male')">Муж</button>
+            <button class="gender-btn" id="sf-gender-female" type="button"
+                    onclick="setSheetGender('female')">Жен</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Гражданство -->
+      <div class="field select-wrap" id="sf-cit-field">
+        <label>Гражданство</label>
+        <select id="sf-citizenship">
+          <option value="UZ">Узбекистан</option>
+          <option value="RU">Россия</option>
+          <option value="KZ">Казахстан</option>
+          <option value="KG">Кыргызстан</option>
+          <option value="TJ">Таджикистан</option>
+          <option value="TR">Турция</option>
+          <option value="AE">ОАЭ</option>
+          <option value="US">США</option>
+          <option value="GB">Великобритания</option>
+          <option value="DE">Германия</option>
+          <option value="other">Другое</option>
+        </select>
+        <span class="material-symbols-outlined chevron">expand_more</span>
+      </div>
+
+      <!-- Документ section -->
+      <div class="sheet-section">Документ</div>
+
+      <!-- Номер документа -->
+      <div class="field" id="sf-doc-field">
+        <label>Номер документа</label>
+        <input id="sf-doc" type="text" placeholder="AA 1234567"
+               autocomplete="off" autocorrect="off" spellcheck="false"
+               style="text-transform:uppercase;letter-spacing:0.05em;"/>
+        <span class="field-err" id="sf-doc-err">Латиница, цифры, длина 5–20 символов</span>
+      </div>
+
+      <!-- Срок действия -->
+      <div style="position:relative;" id="sf-exp-outer" class="date-field-outer">
+        <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                      background:var(--c-surface);font-size:10px;font-weight:700;
+                      text-transform:uppercase;letter-spacing:0.1em;
+                      color:var(--c-accent);z-index:1;pointer-events:none;">
+          Срок действия
+        </label>
+        <div class="date-wrap">
+          <input type="text" id="sf-exp" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
+          <input type="date" id="sf-exp-native" tabindex="-1"/>
+          <button type="button" class="date-cal-btn" onclick="openDatePicker('sf-exp-native')">
+            <span class="material-symbols-outlined">calendar_month</span>
+          </button>
+        </div>
+        <span class="field-err" id="sf-exp-err">Введите корректную дату</span>
+      </div>
+
+    </div><!-- /form fields -->
+  </div><!-- /sheet-scroll -->
+
+  <div class="sheet-footer">
+    <button class="sheet-save-btn" onclick="savePassenger()">
+      Сохранить
+      <span class="material-symbols-outlined" style="font-size:18px;">check</span>
+    </button>
+  </div>
+</div><!-- /pax-sheet -->
+
+
+<script src="js/bottom-sheet.js"></script>
+<script src="js/nav-menu.js"></script>
 <script>
-// ─── Gender toggle ─────────────────────────────────────────────────────────────
-window.setGender = function(val) {
-  document.getElementById('gender-male').classList.toggle('active',   val === 'male');
-  document.getElementById('gender-female').classList.toggle('active', val === 'female');
-};
+// ─── Passenger state ────────────────────────────────────────────────────────
+let PAX_LIST = [];
+let currentPaxIdx = -1;
+let sheetInstance = null;
 
-// ─── Toggle switches ───────────────────────────────────────────────────────────
-window.toggleSwitch = function(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const isOn = el.classList.contains('on');
-  el.classList.toggle('on',  !isOn);
-  el.classList.toggle('off',  isOn);
-};
+const PAX_TYPE_LABELS = { adult: 'Взрослый', child: 'Ребёнок', infant: 'Младенец' };
+const PAX_TYPE_CLASSES = { adult: 'adult', child: 'child', infant: 'infant' };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const MS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-const MS_GEN   = ['Января','Февраля','Марта','Апреля','Мая','Июня','Июля','Августа',
-                  'Сентября','Октября','Ноября','Декабря'];
-function fmtDate(d) {
-  return d ? `${d.getDate()} ${MS_SHORT[d.getMonth()]}` : '';
-}
-function fmtM(n) {
-  return n.toLocaleString('ru-RU').replace(/\u00A0/g, ' ') + ' сум';
+function emptyPax(type) {
+  return { type, firstName: '', lastName: '', gender: 'male',
+           dob: '', citizenship: 'UZ', docNum: '', docExp: '' };
 }
 
-// ─── Continue ─────────────────────────────────────────────────────────────────
-window.goToConfirmation = function() {
-  window.location.href = 'payment.html';
-};
-
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// ─── Init passenger list from search state ───────────────────────────────────
 (function init() {
   let flight = {}, search = {}, fare = {};
   try { flight = JSON.parse(sessionStorage.getItem('ct_flight') || '{}'); } catch(e) {}
   try { search = JSON.parse(sessionStorage.getItem('ct_search') || '{}'); } catch(e) {}
   try { fare   = JSON.parse(sessionStorage.getItem('ct_fare')   || '{}'); } catch(e) {}
 
-  // ── Flight summary card ──
+  // Flight summary
   const from    = search.from || flight.from || { name: 'Ташкент', code: 'TAS' };
   const to      = search.to   || flight.to   || { name: 'Москва',  code: 'MOW' };
   const depDate = search.depDate ? new Date(search.depDate) : null;
@@ -577,7 +821,6 @@ window.goToConfirmation = function() {
   const airlineCode  = flight.airlineCode  || 'UZ';
   const airlineColor = flight.airlineColor || '#1E6AE1';
 
-  // Badge
   const badge = document.getElementById('fs-badge');
   badge.textContent       = airlineCode;
   badge.style.color       = airlineColor;
@@ -593,7 +836,6 @@ window.goToConfirmation = function() {
   document.getElementById('fs-to').textContent      = to.code;
   document.getElementById('fs-date').textContent    = depDate ? fmtDate(depDate) : '';
 
-  // Stops
   const stopsEl = document.getElementById('fs-stops');
   if (flight.stops && flight.stops.count) {
     stopsEl.textContent  = `${flight.stops.count} пересадка`;
@@ -603,20 +845,326 @@ window.goToConfirmation = function() {
     stopsEl.style.color  = '#22C55E';
   }
 
-  // ── Passengers header ──
-  const pax   = search.pax || { adults: 1, children: 0, infants: 0 };
-  const total = (pax.adults || 1) + (pax.children || 0) + (pax.infants || 0);
-  const paxLabel = total === 1 ? '1 пассажир'
-    : total < 5  ? `${total} пассажира`
-    :              `${total} пассажиров`;
-  document.getElementById('hdr-pax-label').textContent = paxLabel;
+  // Passengers
+  const pax = search.pax || { adults: 1, children: 0, infants: 0 };
+  PAX_LIST = [];
+  for (let i = 0; i < (pax.adults   || 1); i++) PAX_LIST.push(emptyPax('adult'));
+  for (let i = 0; i < (pax.children || 0); i++) PAX_LIST.push(emptyPax('child'));
+  for (let i = 0; i < (pax.infants  || 0); i++) PAX_LIST.push(emptyPax('infant'));
 
-  // ── Bottom bar price ──
+  const total = PAX_LIST.length;
+  const MS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  function fmtDate(d) { return d ? `${d.getDate()} ${MS_SHORT[d.getMonth()]}` : ''; }
+  document.getElementById('hdr-pax-label').textContent =
+    total === 1 ? '1 пассажир' : total < 5 ? `${total} пассажира` : `${total} пассажиров`;
+
+  // Price
   const totalPrice = fare.price || flight.price || null;
   document.getElementById('bar-price').textContent =
     totalPrice ? fmtM(totalPrice) : '—';
+
+  renderPaxList();
+
+  // Init bottom sheet engine
+  initSheets();
+  sheetInstance = new BottomSheet({
+    el: document.getElementById('pax-sheet'),
+    scrollEl: document.getElementById('pax-sheet-scroll'),
+  });
+
+  document.getElementById('sheet-close-btn').addEventListener('click', () => sheetInstance.close());
 })();
+
+function fmtM(n) {
+  return n.toLocaleString('ru-RU').replace(/\u00A0/g, ' ') + ' сум';
+}
+function fmtDate(d) {
+  const MS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  return d ? `${d.getDate()} ${MS_SHORT[d.getMonth()]}` : '';
+}
+
+// ─── Render passenger list ───────────────────────────────────────────────────
+function renderPaxList() {
+  const list = document.getElementById('pax-list');
+  list.innerHTML = '';
+  PAX_LIST.forEach((pax, idx) => {
+    list.appendChild(buildPaxCard(pax, idx));
+  });
+}
+
+function buildPaxCard(pax, idx) {
+  const filled = pax.firstName && pax.lastName && pax.dob && pax.docNum;
+  const num = String(idx + 1).padStart(2, '0');
+  const typeLabel = PAX_TYPE_LABELS[pax.type] || 'Взрослый';
+  const typeCls   = PAX_TYPE_CLASSES[pax.type] || 'adult';
+
+  const card = document.createElement('button');
+  card.className = 'pax-card';
+  card.setAttribute('type', 'button');
+  card.onclick = () => openPassengerSheet(idx);
+
+  const nameLine = filled
+    ? `<span class="pax-card__name">${pax.lastName} ${pax.firstName}</span>`
+    : `<span class="pax-card__name pax-card__name--empty">Не заполнен</span>`;
+
+  const subLine = filled
+    ? `<div class="pax-card__sub">Паспорт · ${pax.docNum.replace(/\s/g,'')}</div>`
+    : `<div class="pax-card__sub">Нажмите, чтобы заполнить</div>`;
+
+  const doneIcon = filled ? `
+    <div class="pax-card__done">
+      <span class="material-symbols-outlined">check</span>
+    </div>` : '';
+
+  card.innerHTML = `
+    <div class="pax-card__num">${num}</div>
+    <div class="pax-card__info">
+      ${nameLine}
+      ${subLine}
+    </div>
+    <div class="pax-card__badges">
+      <span class="pax-card__type pax-card__type--${typeCls}">${typeLabel}</span>
+      ${doneIcon}
+      <span class="material-symbols-outlined" style="color:var(--c-dim);font-size:20px;">chevron_right</span>
+    </div>
+  `;
+  return card;
+}
+
+// ─── Open passenger sheet ────────────────────────────────────────────────────
+function openPassengerSheet(idx) {
+  currentPaxIdx = idx;
+  const pax = PAX_LIST[idx];
+  const num = idx + 1;
+
+  // Header
+  document.getElementById('sheet-title').textContent = `Пассажир ${num}`;
+  const typeBadge = document.getElementById('sheet-type-badge');
+  typeBadge.textContent = PAX_TYPE_LABELS[pax.type] || 'Взрослый';
+  const typeColorMap = { adult: 'var(--c-accent)', child: 'var(--c-warning)', infant: 'var(--c-success)' };
+  const typeBorderMap = {
+    adult:  'rgba(59,130,246,0.25)',
+    child:  'rgba(245,158,11,0.25)',
+    infant: 'rgba(34,197,94,0.25)',
+  };
+  typeBadge.style.color       = typeColorMap[pax.type]   || 'var(--c-accent)';
+  typeBadge.style.borderColor = typeBorderMap[pax.type]  || 'rgba(59,130,246,0.25)';
+
+  // Form values
+  document.getElementById('sf-first').value       = pax.firstName;
+  document.getElementById('sf-last').value        = pax.lastName;
+  document.getElementById('sf-dob').value         = pax.dob;
+  document.getElementById('sf-doc').value         = pax.docNum;
+  document.getElementById('sf-exp').value         = pax.docExp;
+  document.getElementById('sf-citizenship').value = pax.citizenship || 'UZ';
+
+  setSheetGender(pax.gender || 'male');
+
+  // Clear validation errors
+  clearSheetErrors();
+
+  sheetInstance.open();
+}
+
+// ─── Gender toggle ───────────────────────────────────────────────────────────
+window.setSheetGender = function(val) {
+  document.getElementById('sf-gender-male').classList.toggle('active',   val === 'male');
+  document.getElementById('sf-gender-female').classList.toggle('active', val === 'female');
+};
+
+// ─── Date input helpers ──────────────────────────────────────────────────────
+window.openDatePicker = function(nativeId) {
+  const native = document.getElementById(nativeId);
+  if (native) native.showPicker ? native.showPicker() : native.click();
+};
+
+// Auto-format ДД.ММ.ГГГГ as user types
+function bindDateMask(textId, nativeId) {
+  const text   = document.getElementById(textId);
+  const native = document.getElementById(nativeId);
+
+  text.addEventListener('input', function() {
+    let raw = this.value.replace(/\D/g, '').slice(0, 8);
+    let out = raw;
+    if (raw.length > 4) out = raw.slice(0,2) + '.' + raw.slice(2,4) + '.' + raw.slice(4);
+    else if (raw.length > 2) out = raw.slice(0,2) + '.' + raw.slice(2);
+    this.value = out;
+
+    // Sync to native if complete
+    if (raw.length === 8) {
+      const dd = raw.slice(0,2), mm = raw.slice(2,4), yyyy = raw.slice(4);
+      native.value = `${yyyy}-${mm}-${dd}`;
+    } else {
+      native.value = '';
+    }
+  });
+
+  // Sync from native calendar picker
+  native.addEventListener('change', function() {
+    if (!this.value) return;
+    const [yyyy, mm, dd] = this.value.split('-');
+    text.value = `${dd}.${mm}.${yyyy}`;
+  });
+}
+
+bindDateMask('sf-dob', 'sf-dob-native');
+bindDateMask('sf-exp', 'sf-exp-native');
+
+// ─── Validation ──────────────────────────────────────────────────────────────
+const RE_LATIN_NAME = /^[A-Za-z][A-Za-z\s\-']*$/;
+const RE_DOC_NUM    = /^[A-Za-z0-9]([A-Za-z0-9\s\-]{3,18})[A-Za-z0-9]$/;
+const RE_DATE       = /^\d{2}\.\d{2}\.\d{4}$/;
+const RE_EMAIL      = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const RE_CYRILLIC   = /[а-яёА-ЯЁ]/;
+
+function isValidDate(str) {
+  if (!RE_DATE.test(str)) return false;
+  const [dd, mm, yyyy] = str.split('.').map(Number);
+  const d = new Date(yyyy, mm - 1, dd);
+  return d.getFullYear() === yyyy && d.getMonth() === mm - 1 && d.getDate() === dd;
+}
+
+function isValidDocNum(val) {
+  const clean = val.trim();
+  if (RE_CYRILLIC.test(clean)) return false;
+  if (clean.length < 5 || clean.length > 20) return false;
+  return /^[A-Za-z0-9][A-Za-z0-9\s\-]{3,18}[A-Za-z0-9]$/.test(clean);
+}
+
+function setFieldError(fieldId, errId, hasError) {
+  const field = document.getElementById(fieldId);
+  const err   = document.getElementById(errId);
+  if (!field) return;
+  if (hasError) { field.classList.add('field--error'); if (err) err.style.display = 'block'; }
+  else          { field.classList.remove('field--error'); if (err) err.style.display = 'none'; }
+}
+
+function setDateFieldError(outerClass, errId, hasError) {
+  const outer = document.getElementById(outerClass);
+  const err   = document.getElementById(errId);
+  if (!outer) return;
+  if (hasError) { outer.classList.add('field--error'); if (err) err.style.display = 'block'; }
+  else          { outer.classList.remove('field--error'); if (err) err.style.display = 'none'; }
+}
+
+function clearSheetErrors() {
+  ['sf-first-field','sf-last-field','sf-cit-field','sf-doc-field'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('field--error');
+  });
+  ['sf-first-err','sf-last-err','sf-dob-err','sf-doc-err','sf-exp-err'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  ['sf-dob-outer','sf-exp-outer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('field--error');
+  });
+}
+
+// Blur-time validation
+document.getElementById('sf-first').addEventListener('blur', function() {
+  const v = this.value.trim();
+  setFieldError('sf-first-field', 'sf-first-err', v.length > 0 && !RE_LATIN_NAME.test(v));
+});
+document.getElementById('sf-last').addEventListener('blur', function() {
+  const v = this.value.trim();
+  setFieldError('sf-last-field', 'sf-last-err', v.length > 0 && !RE_LATIN_NAME.test(v));
+});
+document.getElementById('sf-dob').addEventListener('blur', function() {
+  const v = this.value.trim();
+  setDateFieldError('sf-dob-outer', 'sf-dob-err', v.length > 0 && !isValidDate(v));
+});
+document.getElementById('sf-doc').addEventListener('blur', function() {
+  const v = this.value.trim();
+  setFieldError('sf-doc-field', 'sf-doc-err', v.length > 0 && !isValidDocNum(v));
+});
+document.getElementById('sf-exp').addEventListener('blur', function() {
+  const v = this.value.trim();
+  setDateFieldError('sf-exp-outer', 'sf-exp-err', v.length > 0 && !isValidDate(v));
+});
+
+// Contacts validation
+document.getElementById('cont-email').addEventListener('blur', function() {
+  const v = this.value.trim();
+  const hasErr = v.length > 0 && !RE_EMAIL.test(v);
+  setFieldError('cont-email-field', 'cont-email-err', hasErr);
+});
+
+// ─── Save passenger ──────────────────────────────────────────────────────────
+window.savePassenger = function() {
+  const firstName   = document.getElementById('sf-first').value.trim().toUpperCase();
+  const lastName    = document.getElementById('sf-last').value.trim().toUpperCase();
+  const dob         = document.getElementById('sf-dob').value.trim();
+  const docNum      = document.getElementById('sf-doc').value.trim().toUpperCase();
+  const docExp      = document.getElementById('sf-exp').value.trim();
+  const citizenship = document.getElementById('sf-citizenship').value;
+  const gender      = document.getElementById('sf-gender-male').classList.contains('active') ? 'male' : 'female';
+
+  let hasError = false;
+
+  if (!firstName || !RE_LATIN_NAME.test(firstName)) {
+    setFieldError('sf-first-field', 'sf-first-err', true); hasError = true;
+  }
+  if (!lastName || !RE_LATIN_NAME.test(lastName)) {
+    setFieldError('sf-last-field', 'sf-last-err', true); hasError = true;
+  }
+  if (!dob || !isValidDate(dob)) {
+    setDateFieldError('sf-dob-outer', 'sf-dob-err', true); hasError = true;
+  }
+  if (!docNum || !isValidDocNum(docNum)) {
+    setFieldError('sf-doc-field', 'sf-doc-err', true); hasError = true;
+  }
+  if (!docExp || !isValidDate(docExp)) {
+    setDateFieldError('sf-exp-outer', 'sf-exp-err', true); hasError = true;
+  }
+
+  if (hasError) return;
+
+  PAX_LIST[currentPaxIdx] = {
+    ...PAX_LIST[currentPaxIdx],
+    firstName, lastName, gender, dob, citizenship, docNum, docExp,
+  };
+
+  renderPaxList();
+  sheetInstance.close();
+};
+
+// ─── Continue ────────────────────────────────────────────────────────────────
+window.goToConfirmation = function() {
+  // Check all passengers filled
+  const allFilled = PAX_LIST.every(p => p.firstName && p.lastName && p.dob && p.docNum);
+  if (!allFilled) {
+    // Shake the list or scroll to first unfilled
+    const firstEmpty = PAX_LIST.findIndex(p => !p.firstName || !p.lastName || !p.dob || !p.docNum);
+    if (firstEmpty !== -1) openPassengerSheet(firstEmpty);
+    return;
+  }
+  // Validate contacts
+  const email = document.getElementById('cont-email').value.trim();
+  if (email && !RE_EMAIL.test(email)) {
+    setFieldError('cont-email-field', 'cont-email-err', true);
+    document.getElementById('cont-email').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  // Save to sessionStorage and proceed
+  try {
+    sessionStorage.setItem('ct_passengers', JSON.stringify(PAX_LIST));
+    sessionStorage.setItem('ct_contacts', JSON.stringify({
+      email, phone: document.getElementById('cont-phone').value.trim()
+    }));
+  } catch(e) {}
+  window.location.href = 'payment.html';
+};
+
+// ─── Toggle switches ─────────────────────────────────────────────────────────
+window.toggleSwitch = function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOn = el.classList.contains('on');
+  el.classList.toggle('on',  !isOn);
+  el.classList.toggle('off',  isOn);
+};
 </script>
-<script src="js/nav-menu.js"></script>
 </body>
 </html>
