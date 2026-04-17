@@ -848,7 +848,7 @@ function emptyPax(type) {
   // Passengers
   const pax = search.pax || { adults: 1, children: 0, infants: 0 };
   PAX_LIST = [];
-  for (let i = 0; i < (pax.adults   || 1); i++) PAX_LIST.push(emptyPax('adult'));
+  for (let i = 0; i < (pax.adults   || 0); i++) PAX_LIST.push(emptyPax('adult'));
   for (let i = 0; i < (pax.children || 0); i++) PAX_LIST.push(emptyPax('child'));
   for (let i = 0; i < (pax.infants  || 0); i++) PAX_LIST.push(emptyPax('infant'));
 
@@ -1015,6 +1015,7 @@ const RE_LATIN_NAME = /^[A-Za-z][A-Za-z\s\-']*$/;
 const RE_DOC_NUM    = /^[A-Za-z0-9]([A-Za-z0-9\s\-]{3,18})[A-Za-z0-9]$/;
 const RE_DATE       = /^\d{2}\.\d{2}\.\d{4}$/;
 const RE_EMAIL      = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const RE_PHONE      = /^\d{9}$/;
 const RE_CYRILLIC   = /[а-яёА-ЯЁ]/;
 
 function isValidDate(str) {
@@ -1087,8 +1088,15 @@ document.getElementById('sf-exp').addEventListener('blur', function() {
 // Contacts validation
 document.getElementById('cont-email').addEventListener('blur', function() {
   const v = this.value.trim();
-  const hasErr = v.length > 0 && !RE_EMAIL.test(v);
-  setFieldError('cont-email-field', 'cont-email-err', hasErr);
+  setFieldError('cont-email-field', 'cont-email-err', v.length > 0 && !RE_EMAIL.test(v));
+});
+document.getElementById('cont-phone').addEventListener('blur', function() {
+  const digits = this.value.replace(/\D/g, '');
+  const hasErr = this.value.trim().length > 0 && !RE_PHONE.test(digits);
+  const wrap = document.getElementById('cont-phone-wrap');
+  const err  = document.getElementById('cont-phone-err');
+  if (hasErr) { wrap.classList.add('field--error'); err.style.display = 'block'; }
+  else        { wrap.classList.remove('field--error'); err.style.display = 'none'; }
 });
 
 // ─── Save passenger ──────────────────────────────────────────────────────────
@@ -1142,16 +1150,34 @@ window.goToConfirmation = function() {
   }
   // Validate contacts
   const email = document.getElementById('cont-email').value.trim();
+  const phoneRaw = document.getElementById('cont-phone').value.trim();
+  const phoneDigits = phoneRaw.replace(/\D/g, '');
+  let contactsErr = false;
   if (email && !RE_EMAIL.test(email)) {
     setFieldError('cont-email-field', 'cont-email-err', true);
+    contactsErr = true;
+  }
+  if (phoneRaw && !RE_PHONE.test(phoneDigits)) {
+    const wrap = document.getElementById('cont-phone-wrap');
+    const err  = document.getElementById('cont-phone-err');
+    wrap.classList.add('field--error'); err.style.display = 'block';
+    contactsErr = true;
+  }
+  if (contactsErr) {
     document.getElementById('cont-email').scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
   // Save to sessionStorage and proceed
   try {
     sessionStorage.setItem('ct_passengers', JSON.stringify(PAX_LIST));
-    sessionStorage.setItem('ct_contacts', JSON.stringify({
-      email, phone: document.getElementById('cont-phone').value.trim()
+    sessionStorage.setItem('ct_contacts', JSON.stringify({ email, phone: phoneRaw }));
+    // Backward-compat: downstream screens (payment, confirmation) read ct_passenger for display
+    const p0 = PAX_LIST[0] || {};
+    sessionStorage.setItem('ct_passenger', JSON.stringify({
+      firstName: p0.firstName || '', lastName: p0.lastName || '',
+      gender: p0.gender || 'male', dob: p0.dob || '',
+      citizenship: p0.citizenship || 'UZ', docNum: p0.docNum || '', docExp: p0.docExp || '',
+      email, phone: phoneRaw,
     }));
   } catch(e) {}
   window.location.href = 'payment.html';
