@@ -331,76 +331,81 @@ function buildDayCell(year, month, day, totalDays) {
     const past   = isPast(date);
     const ds     = past ? 'past' : getDayState(date);
     const info   = getPrice(date);
-    const { departureDate, returnDate } = state;
+    const { returnDate } = state;
 
-    const dow            = (date.getDay() + 6) % 7; // 0=Mon … 6=Sun
-    const isFirstOfWeek  = dow === 0;
-    const isLastOfWeek   = dow === 6;
-    const isFirstOfMonth = day === 1;
-    const isLastOfMonth  = day === totalDays;
-    const capLeft        = isFirstOfWeek  || isFirstOfMonth;
-    const capRight       = isLastOfWeek   || isLastOfMonth;
-
-    const BAND = 'rgba(59,130,246,0.2)';
-
-    // clip-path inset: 6px top/bottom → 44px visible band; optional rounded ends
-    function bandClip(roundLeft, roundRight) {
-        const r = 22;
-        const tl = roundLeft  ? r : 0, bl = roundLeft  ? r : 0;
-        const tr = roundRight ? r : 0, br = roundRight ? r : 0;
-        return (roundLeft || roundRight)
-            ? `inset(6px 0 6px 0 round ${tl}px ${tr}px ${br}px ${bl}px)`
-            : 'inset(6px 0 6px 0)';
-    }
+    const dow      = (date.getDay() + 6) % 7; // 0=Mon … 6=Sun
+    const capLeft  = dow === 0 || day === 1;
+    const capRight = dow === 6 || day === totalDays;
+    const R        = 22;
+    const BAND     = 'rgba(59,130,246,0.2)';
 
     const outer = document.createElement('div');
-    // no position:relative — avoids stacking context / iOS tap coordinate shift
-    outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;';
     if (!past) outer.onclick = () => handleDateTap(key);
-    else outer.style.cursor = 'default';
 
-    if (ds === 'departure') {
-        if (returnDate) {
-            outer.style.background = `linear-gradient(to right, transparent 50%, ${BAND} 50%)`;
-            outer.style.clipPath   = bandClip(false, capRight);
+    const isBanded = ds === 'departure' || ds === 'return' || ds === 'range';
+
+    if (isBanded) {
+        // CSS Grid: band and content share same cell; content (later in DOM) paints on top
+        outer.style.cssText = 'display:grid;place-items:center;height:56px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;';
+
+        // Compute left / right half colors and radii
+        let lBg = 'transparent', rBg = 'transparent';
+        let lRad = '0', rRad = '0';
+
+        if (ds === 'range') {
+            lBg  = BAND; rBg = BAND;
+            if (capLeft)  lRad = `${R}px 0 0 ${R}px`;
+            if (capRight) rRad = `0 ${R}px ${R}px 0`;
+        } else if (ds === 'departure') {
+            rBg = returnDate ? BAND : 'transparent';
+            if (returnDate && capRight) rRad = `0 ${R}px ${R}px 0`;
+        } else { // return
+            lBg = BAND;
+            if (capLeft) lRad = `${R}px 0 0 ${R}px`;
         }
-        outer.innerHTML = `
-            <div class="glow" style="width:44px;height:44px;background:#3B82F6;border-radius:9999px;
-                        display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                <span style="font-size:16px;font-weight:700;color:white;line-height:1.1;pointer-events:none;">${day}</span>
-                <span style="font-size:8px;color:rgba(255,255,255,0.75);text-transform:uppercase;pointer-events:none;">${info.price}</span>
-            </div>`;
 
-    } else if (ds === 'return') {
-        outer.style.background = `linear-gradient(to right, ${BAND} 50%, transparent 50%)`;
-        outer.style.clipPath   = bandClip(capLeft, false);
-        outer.innerHTML = `
-            <div class="glow" style="width:44px;height:44px;background:#3B82F6;border-radius:9999px;
-                        display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                <span style="font-size:16px;font-weight:700;color:white;line-height:1.1;pointer-events:none;">${day}</span>
-                <span style="font-size:8px;color:rgba(255,255,255,0.75);text-transform:uppercase;pointer-events:none;">${info.price}</span>
-            </div>`;
+        // Layer 1 — band (two halves side by side, full width, 44px tall)
+        const band = document.createElement('div');
+        band.style.cssText = 'grid-area:1/1;justify-self:stretch;height:44px;display:flex;pointer-events:none;';
+        band.innerHTML = `<div style="flex:1;height:100%;background:${lBg};border-radius:${lRad};"></div>
+                          <div style="flex:1;height:100%;background:${rBg};border-radius:${rRad};"></div>`;
+        outer.appendChild(band);
 
-    } else if (ds === 'range') {
-        outer.style.background = BAND;
-        outer.style.clipPath   = bandClip(capLeft, capRight);
-        outer.innerHTML = `
-            <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;pointer-events:none;">${day}</span>
-            <span style="font-size:9px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.price}</span>`;
+        // Layer 2 — content (circle or text, centered, painted above band)
+        const content = document.createElement('div');
+        content.style.cssText = 'grid-area:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;';
 
-    } else if (ds === 'past') {
-        outer.innerHTML = `
-            <span style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.2);line-height:1.1;">${day}</span>
-            <span style="font-size:9px;color:rgba(156,163,175,0.2);">${info.price}</span>`;
+        if (ds === 'departure' || ds === 'return') {
+            content.innerHTML = `
+                <div class="glow" style="width:44px;height:44px;background:#3B82F6;border-radius:9999px;
+                            display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                    <span style="font-size:16px;font-weight:700;color:white;line-height:1.1;pointer-events:none;">${day}</span>
+                    <span style="font-size:8px;color:rgba(255,255,255,0.75);text-transform:uppercase;pointer-events:none;">${info.price}</span>
+                </div>`;
+        } else {
+            content.innerHTML = `
+                <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;pointer-events:none;">${day}</span>
+                <span style="font-size:9px;color:${info.low?'#22C55E':'#9CA3AF'};${info.low?'font-weight:600;':''}pointer-events:none;">${info.price}</span>`;
+        }
+        outer.appendChild(content);
 
     } else {
-        outer.innerHTML = info.low
-            ? `<div style="width:40px;height:44px;background:rgba(34,197,94,0.08);border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                   <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;pointer-events:none;">${day}</span>
-                   <span style="font-size:9px;color:#22C55E;font-weight:600;pointer-events:none;">${info.price}</span>
-               </div>`
-            : `<span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
-               <span style="font-size:9px;color:#9CA3AF;">${info.price}</span>`;
+        outer.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;user-select:none;-webkit-tap-highlight-color:transparent;';
+        outer.style.cursor = past ? 'default' : 'pointer';
+
+        if (ds === 'past') {
+            outer.innerHTML = `
+                <span style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.2);line-height:1.1;">${day}</span>
+                <span style="font-size:9px;color:rgba(156,163,175,0.2);">${info.price}</span>`;
+        } else {
+            outer.innerHTML = info.low
+                ? `<div style="width:40px;height:44px;background:rgba(34,197,94,0.08);border-radius:9999px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                       <span style="font-size:15px;font-weight:500;color:white;line-height:1.1;pointer-events:none;">${day}</span>
+                       <span style="font-size:9px;color:#22C55E;font-weight:600;pointer-events:none;">${info.price}</span>
+                   </div>`
+                : `<span style="font-size:15px;font-weight:500;color:white;line-height:1.1;">${day}</span>
+                   <span style="font-size:9px;color:#9CA3AF;">${info.price}</span>`;
+        }
     }
 
     return outer;
