@@ -54,3 +54,42 @@ When reviewing `TECH_DEBT.md`, prioritize work in this order:
   Impact: maintainability, scale readiness, safer future filter logic
   Effort: S
   Trigger to address: when results data model or shared filtering logic is touched again
+
+- ID: TD-002
+  Date: 2026-04-18
+  Status: todo
+  Area: `passenger_details.html`
+  Source: architecture review after passenger-details refactor
+  Title: Extract passenger-details logic into dedicated screen and validation modules
+  Why it matters: the current screen mixes markup, styling, state, validation, storage, and bottom-sheet orchestration in one large file, which inflates token usage and increases regression risk
+  Suggested direction: move passenger screen logic into `js/screens/passenger-details.js` and reusable validation helpers into `js/core/validation.js`
+  Priority: high
+  Impact: token efficiency, maintainability, safer iteration, faster review cycles
+  Effort: M
+  Trigger to address: before the next substantial passenger-details enhancement or when this screen is touched again
+
+- ID: TD-003
+  Date: 2026-04-18
+  Status: todo
+  Area: `results.html`
+  Source: architecture review after loading-skeleton implementation
+  Title: Extract results screen loading/render logic from large HTML file
+  Why it matters: results flow now combines screen markup, mock data generation, loading-state behavior, rendering logic, and interactions in one file, making small changes more expensive in tokens and review effort
+  Suggested direction: move results-specific state and rendering into `js/screens/results.js`, keeping HTML primarily declarative
+  Priority: medium
+  Impact: token efficiency, cleaner diffs, lower regression risk
+  Effort: M
+  Trigger to address: before the next non-trivial results-screen feature or shared results refactor
+
+- ID: TD-004
+  Date: 2026-04-18
+  Status: todo
+  Area: `sessionStorage contracts`
+  Source: architecture review after passenger-details compatibility patch
+  Title: Normalize storage contracts for search, flight, passenger, passengers, and contacts
+  Why it matters: the flow currently relies on a mix of singular and plural storage keys (`ct_passenger`, `ct_passengers`, `ct_contacts`), which creates compatibility patches and raises cross-screen bug risk
+  Suggested direction: introduce a small storage helper module with explicit read/write compatibility rules and one canonical contract per entity
+  Priority: high
+  Impact: correctness, scale readiness, lower cross-screen regression risk
+  Effort: M
+  Trigger to address: before another booking-funnel refactor touching passenger/payment/confirmation continuity

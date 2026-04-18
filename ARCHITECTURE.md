@@ -46,6 +46,10 @@ This repository is a static front-end prototype for the Click Travel booking flo
   Reason: maintain one visual language across the flow
   Tradeoff: local one-off styles can erode consistency if not reviewed carefully
 
+- Prefer modular front-end decomposition over microservices
+  Reason: token efficiency and implementation safety improve when tasks touch a few small files instead of large HTML files with mixed markup/CSS/JS
+  Tradeoff: requires gradual extraction of screen logic into stable JS modules and shared helpers
+
 ## Risks
 
 - Screen divergence
@@ -64,3 +68,35 @@ This repository is a static front-end prototype for the Click Travel booking flo
 
 - Add canonical run/build/preview workflow if the prototype becomes a shared internal artifact
 - Introduce a more explicit component or templating strategy if duplication grows further
+- Gradually move from large screen-local inline logic toward a modular front-end structure:
+  - screen HTML focused mostly on markup
+  - shared UI behavior in `js/ui/*`
+  - storage/contracts in `js/core/*`
+  - screen-specific logic in `js/screens/*`
+  - validation helpers in dedicated modules
+
+## Token-Efficient Direction
+
+Target architecture for future refactors:
+- `js/core/storage.js`
+  Responsibility: read/write helpers for `ct_search`, `ct_flight`, `ct_passengers`, `ct_contacts`
+
+- `js/core/formatters.js`
+  Responsibility: shared date, currency, and label formatting helpers
+
+- `js/core/validation.js`
+  Responsibility: reusable validation for passenger forms, contacts, and common inputs
+
+- `js/core/passenger-model.js`
+  Responsibility: passenger defaults, normalization, serialization, and compatibility helpers
+
+- `js/ui/date-input.js`
+  Responsibility: masked date input + calendar interaction logic
+
+- `js/screens/results.js`
+  Responsibility: loading state, mock generation, and results rendering
+
+- `js/screens/passenger-details.js`
+  Responsibility: passenger list rendering, sheet interactions, and form orchestration
+
+This is a staged refactor direction, not a rewrite mandate. The preferred approach is incremental extraction when repeated pain appears, not large one-shot rewrites.
