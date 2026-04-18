@@ -531,24 +531,6 @@
     </div>
   </div>
 
-  <!-- ── FROM SAVED ── -->
-  <button onclick="goToSavedPassengers()"
-          style="width:100%;margin-top:12px;
-                 background:var(--c-surface);border:1px solid rgba(255,255,255,0.06);
-                 border-radius:var(--r-pill);height:var(--btn-h);padding:0 20px;
-                 display:flex;align-items:center;justify-content:space-between;
-                 cursor:pointer;transition:background 0.15s;
-                 -webkit-tap-highlight-color:transparent;"
-          onpointerdown="this.style.background='#1a2035'"
-          onpointerup="this.style.background='var(--c-surface)'"
-          onpointercancel="this.style.background='var(--c-surface)'">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:20px;">person_add</span>
-      <span style="font-size:14px;font-weight:700;color:#fff;">Из сохранённых</span>
-    </div>
-    <span class="material-symbols-outlined" style="color:var(--c-dim);font-size:20px;">chevron_right</span>
-  </button>
-
   <!-- ── PASSENGER LIST ── -->
   <div style="margin-top:24px;">
     <div class="section-label">Пассажиры</div>
@@ -654,7 +636,26 @@
     </button>
   </div>
 
-  <div class="sheet-scroll" id="pax-sheet-scroll">
+  <!-- ── View 1: Selection ── -->
+  <div class="sheet-scroll" id="sheet-view-select">
+    <div id="sheet-saved-options" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
+    <button type="button" onclick="switchToForm()"
+            style="width:100%;background:var(--c-bg-deep);
+                   border:1.5px dashed var(--c-border-md);border-radius:var(--r-card);
+                   padding:14px 16px;display:flex;align-items:center;gap:12px;
+                   cursor:pointer;-webkit-tap-highlight-color:transparent;
+                   transition:border-color 0.15s;"
+            onpointerdown="this.style.borderColor='var(--c-accent)'"
+            onpointerup="this.style.borderColor='var(--c-border-md)'"
+            onpointercancel="this.style.borderColor='var(--c-border-md)'">
+      <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:20px;">add_circle</span>
+      <span style="font-size:14px;font-weight:700;color:var(--c-accent);">Добавить пассажира</span>
+    </button>
+    <div style="height:16px;"></div>
+  </div>
+
+  <!-- ── View 2: Form ── -->
+  <div class="sheet-scroll" id="pax-sheet-scroll" style="display:none;">
     <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px;">
 
       <!-- Имя + Фамилия -->
@@ -777,7 +778,7 @@
     </div><!-- /form fields -->
   </div><!-- /sheet-scroll -->
 
-  <div class="sheet-footer">
+  <div class="sheet-footer" id="sheet-footer-form" style="display:none;">
     <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.15);
                 border-radius:14px;padding:12px 14px;display:flex;gap:10px;margin-bottom:10px;">
       <span class="material-symbols-outlined"
@@ -850,25 +851,11 @@ function emptyPax(type) {
   for (let i = 0; i < (pax.children || 0); i++) PAX_LIST.push(emptyPax('child'));
   for (let i = 0; i < (pax.infants  || 0); i++) PAX_LIST.push(emptyPax('infant'));
 
-  // Restore previously filled passengers (draft saved before navigating away)
+  // Restore previously filled passengers
   try {
     const draft = JSON.parse(sessionStorage.getItem('ct_pax_list_draft') || 'null');
     if (draft && Array.isArray(draft) && draft.length === PAX_LIST.length) {
       PAX_LIST = PAX_LIST.map((pax, i) => ({ ...pax, ...draft[i], type: pax.type }));
-    }
-  } catch(e) {}
-
-  // Apply selected saved passenger (type-matched, first unfilled slot)
-  try {
-    const saved = JSON.parse(sessionStorage.getItem('ct_saved_passenger') || 'null');
-    if (saved) {
-      sessionStorage.removeItem('ct_saved_passenger');
-      const targetIdx = PAX_LIST.findIndex(
-        p => p.type === saved.type && !(p.firstName && p.lastName)
-      );
-      if (targetIdx !== -1) {
-        PAX_LIST[targetIdx] = { ...PAX_LIST[targetIdx], ...saved, type: PAX_LIST[targetIdx].type };
-      }
     }
   } catch(e) {}
 
@@ -885,11 +872,11 @@ function emptyPax(type) {
 
   renderPaxList();
 
-  // Init bottom sheet engine
+  // Init bottom sheet engine (scrollEl starts on selection view)
   initSheets();
   sheetInstance = new BottomSheet({
     el: document.getElementById('pax-sheet'),
-    scrollEl: document.getElementById('pax-sheet-scroll'),
+    scrollEl: document.getElementById('sheet-view-select'),
   });
 
   document.getElementById('sheet-close-btn').addEventListener('click', () => sheetInstance.close());
@@ -951,40 +938,98 @@ function buildPaxCard(pax, idx) {
   return card;
 }
 
-// ─── Open passenger sheet ────────────────────────────────────────────────────
+// ─── Mock saved passengers ───────────────────────────────────────────────────
+const MOCK_SAVED = [
+  { firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
+  { firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
+  { firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
+];
+
+const typeColorMap  = { adult: 'var(--c-accent)', child: 'var(--c-warning)', infant: 'var(--c-success)' };
+const typeBorderMap = { adult:'rgba(59,130,246,0.25)', child:'rgba(245,158,11,0.25)', infant:'rgba(34,197,94,0.25)' };
+
+function setSheetHeader(idx) {
+  const pax = PAX_LIST[idx];
+  document.getElementById('sheet-title').textContent = `Пассажир ${idx + 1}`;
+  const badge = document.getElementById('sheet-type-badge');
+  badge.textContent   = PAX_TYPE_LABELS[pax.type] || 'Взрослый';
+  badge.style.color       = typeColorMap[pax.type]  || 'var(--c-accent)';
+  badge.style.borderColor = typeBorderMap[pax.type] || 'rgba(59,130,246,0.25)';
+}
+
+// ─── Open passenger sheet → selection view ───────────────────────────────────
 function openPassengerSheet(idx) {
   currentPaxIdx = idx;
-  const pax = PAX_LIST[idx];
-  const num = idx + 1;
+  setSheetHeader(idx);
 
-  // Header
-  document.getElementById('sheet-title').textContent = `Пассажир ${num}`;
-  const typeBadge = document.getElementById('sheet-type-badge');
-  typeBadge.textContent = PAX_TYPE_LABELS[pax.type] || 'Взрослый';
-  const typeColorMap = { adult: 'var(--c-accent)', child: 'var(--c-warning)', infant: 'var(--c-success)' };
-  const typeBorderMap = {
-    adult:  'rgba(59,130,246,0.25)',
-    child:  'rgba(245,158,11,0.25)',
-    infant: 'rgba(34,197,94,0.25)',
-  };
-  typeBadge.style.color       = typeColorMap[pax.type]   || 'var(--c-accent)';
-  typeBadge.style.borderColor = typeBorderMap[pax.type]  || 'rgba(59,130,246,0.25)';
+  // Build filtered saved list
+  const matching = MOCK_SAVED.filter(s => s.type === PAX_LIST[idx].type);
+  const optEl = document.getElementById('sheet-saved-options');
+  optEl.innerHTML = '';
 
-  // Form values
-  document.getElementById('sf-first').value       = pax.firstName;
-  document.getElementById('sf-last').value        = pax.lastName;
-  document.getElementById('sf-dob').value         = pax.dob;
-  document.getElementById('sf-doc').value         = pax.docNum;
-  document.getElementById('sf-exp').value         = pax.docExp;
-  document.getElementById('sf-citizenship').value = pax.citizenship || 'UZ';
+  if (matching.length > 0) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label';
+    lbl.textContent = 'Сохранённые';
+    optEl.appendChild(lbl);
 
-  setSheetGender(pax.gender || 'male');
+    matching.forEach(saved => {
+      const btn = document.createElement('button');
+      btn.className = 'pax-card';
+      btn.setAttribute('type', 'button');
+      const initials = (saved.firstName[0] || '') + (saved.lastName[0] || '');
+      btn.innerHTML = `
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(59,130,246,0.10);
+                    border:1.5px solid rgba(59,130,246,0.22);display:flex;align-items:center;
+                    justify-content:center;font-size:12px;font-weight:800;color:var(--c-accent);
+                    flex-shrink:0;">${initials}</div>
+        <div class="pax-card__info">
+          <span class="pax-card__name">${saved.lastName} ${saved.firstName}</span>
+          <div class="pax-card__sub">Паспорт · ${saved.docNum} · ${saved.dob}</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--c-dim);font-size:20px;">chevron_right</span>`;
+      btn.onclick = () => applySavedToSlot(saved);
+      optEl.appendChild(btn);
+    });
+  }
 
-  // Clear validation errors
-  clearSheetErrors();
+  // Show selection view
+  document.getElementById('sheet-view-select').style.display = 'flex';
+  document.getElementById('sheet-view-select').style.flexDirection = 'column';
+  document.getElementById('pax-sheet-scroll').style.display = 'none';
+  document.getElementById('sheet-footer-form').style.display = 'none';
+  sheetInstance.scrollEl = document.getElementById('sheet-view-select');
 
   sheetInstance.open();
 }
+
+// ─── Apply saved passenger to current slot ───────────────────────────────────
+function applySavedToSlot(saved) {
+  PAX_LIST[currentPaxIdx] = { ...PAX_LIST[currentPaxIdx], ...saved, type: PAX_LIST[currentPaxIdx].type };
+  try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
+  renderPaxList();
+  sheetInstance.close();
+}
+
+// ─── Switch to form view ─────────────────────────────────────────────────────
+window.switchToForm = function() {
+  const pax = PAX_LIST[currentPaxIdx];
+  document.getElementById('sf-first').value       = pax.firstName || '';
+  document.getElementById('sf-last').value        = pax.lastName  || '';
+  document.getElementById('sf-dob').value         = pax.dob       || '';
+  document.getElementById('sf-doc').value         = pax.docNum    || '';
+  document.getElementById('sf-exp').value         = pax.docExp    || '';
+  document.getElementById('sf-citizenship').value = pax.citizenship || 'UZ';
+  setSheetGender(pax.gender || 'male');
+  clearSheetErrors();
+
+  document.getElementById('sheet-view-select').style.display = 'none';
+  document.getElementById('pax-sheet-scroll').style.display  = 'flex';
+  document.getElementById('pax-sheet-scroll').style.flexDirection = 'column';
+  document.getElementById('sheet-footer-form').style.display = 'block';
+  sheetInstance.scrollEl = document.getElementById('pax-sheet-scroll');
+  document.getElementById('pax-sheet-scroll').scrollTop = 0;
+};
 
 // ─── Gender toggle ───────────────────────────────────────────────────────────
 window.setSheetGender = function(val) {
@@ -1188,15 +1233,15 @@ window.savePassenger = function() {
     firstName, lastName, gender, dob, citizenship, docNum, docExp,
   };
 
+  // Add to mock saved list if not already there
+  if (!MOCK_SAVED.some(s => s.docNum === docNum)) {
+    MOCK_SAVED.push({ firstName, lastName, gender, dob, citizenship, docNum, docExp,
+                      type: PAX_LIST[currentPaxIdx].type });
+  }
+
   renderPaxList();
   try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
   sheetInstance.close();
-};
-
-// ─── Navigate to saved passengers (saves draft first) ────────────────────────
-window.goToSavedPassengers = function() {
-  try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
-  window.location.href = 'saved_passengers.html';
 };
 
 // ─── Continue ────────────────────────────────────────────────────────────────
