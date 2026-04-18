@@ -508,70 +508,38 @@
 <!-- ── PAGE CONTENT ── -->
 <div style="padding:var(--content-top) 16px 0;max-width:640px;margin:0 auto;">
 
-  <!-- ── FLIGHT SUMMARY ── -->
-  <div style="background:var(--c-surface);border-radius:var(--r-card);padding:16px;margin-top:12px;
+  <!-- ── FLIGHT SUMMARY (compact) ── -->
+  <div style="background:var(--c-surface);border-radius:var(--r-card);padding:12px 16px;margin-top:12px;
               border:1px solid rgba(255,255,255,0.04);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
-        <div id="fs-badge"
-             style="width:38px;height:38px;border-radius:50%;flex-shrink:0;
-                    display:flex;align-items:center;justify-content:center;
-                    font-size:11px;font-weight:800;letter-spacing:0.02em;
-                    background:#1E6AE118;border:1px solid #1E6AE140;color:#1E6AE1;">
-          UZ
-        </div>
-        <div style="min-width:0;">
-          <div id="fs-airline"
-               style="font-size:14px;font-weight:700;color:#fff;
-                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            Uzbekistan Airways
-          </div>
-          <div id="fs-class"
-               style="font-size:11px;font-weight:700;text-transform:uppercase;
-                      letter-spacing:0.05em;color:var(--c-muted);margin-top:1px;">
-            Эконом · Лайт
-          </div>
-        </div>
-      </div>
-      <div id="fs-date"
-           style="font-size:12px;font-weight:700;color:var(--c-muted);flex-shrink:0;margin-left:8px;">
-        29 Апр
-      </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+      <span id="fs-from" style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px;">TAS</span>
+      <span class="material-symbols-outlined"
+            style="font-size:16px;color:var(--c-accent);
+                   font-variation-settings:'FILL' 0,'wght' 400;transform:rotate(90deg);">flight</span>
+      <span id="fs-to" style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px;">MOW</span>
+      <div style="flex:1;"></div>
+      <span id="fs-date" style="font-size:13px;font-weight:700;color:var(--c-muted);">29 Апр</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="text-align:left;flex-shrink:0;">
-        <div id="fs-dep" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">08:00</div>
-        <div id="fs-from" style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">TAS</div>
-      </div>
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;">
-        <div id="fs-dur" style="font-size:10px;font-weight:700;color:var(--c-muted);letter-spacing:0.04em;">3ч 15м</div>
-        <div style="width:100%;display:flex;align-items:center;gap:3px;">
-          <div style="height:2px;flex:1;background:rgba(255,255,255,0.12);border-radius:1px;"></div>
-          <span class="material-symbols-outlined"
-                style="font-size:16px;color:var(--c-accent);
-                       font-variation-settings:'FILL' 0,'wght' 400;
-                       transform:rotate(90deg);">flight</span>
-          <div style="height:2px;flex:1;background:rgba(255,255,255,0.12);border-radius:1px;"></div>
-        </div>
-        <div id="fs-stops" style="font-size:10px;font-weight:700;color:var(--c-success);">Прямой</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;">
-        <div id="fs-arr" style="font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px;">10:15</div>
-        <div id="fs-to" style="font-size:11px;font-weight:700;color:var(--c-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">MOW</div>
-      </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <span id="fs-airline" style="font-size:11px;font-weight:700;color:var(--c-dim);">Uzbekistan Airways</span>
+      <span style="font-size:11px;color:var(--c-border-md);">·</span>
+      <span id="fs-class" style="font-size:11px;font-weight:700;color:var(--c-dim);">Эконом · Лайт</span>
+      <span style="font-size:11px;color:var(--c-border-md);">·</span>
+      <span id="fs-pax-count" style="font-size:11px;font-weight:700;color:var(--c-dim);">1 пасс.</span>
     </div>
   </div>
 
   <!-- ── FROM SAVED ── -->
-  <button style="width:100%;margin-top:12px;
+  <button onclick="window.location.href='saved_passengers.html'"
+          style="width:100%;margin-top:12px;
                  background:var(--c-surface);border:1px solid rgba(255,255,255,0.06);
                  border-radius:var(--r-pill);height:var(--btn-h);padding:0 20px;
                  display:flex;align-items:center;justify-content:space-between;
                  cursor:pointer;transition:background 0.15s;
                  -webkit-tap-highlight-color:transparent;"
           onpointerdown="this.style.background='#1a2035'"
-          onpointerup="this.style.background='#121826'"
-          onpointercancel="this.style.background='#121826'">
+          onpointerup="this.style.background='var(--c-surface)'"
+          onpointercancel="this.style.background='var(--c-surface)'">
     <div style="display:flex;align-items:center;gap:12px;">
       <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:20px;">person_add</span>
       <span style="font-size:14px;font-weight:700;color:#fff;">Из сохранённых</span>
@@ -590,27 +558,33 @@
     <div class="section-label">Контакты для уведомлений</div>
     <div style="display:flex;flex-direction:column;gap:18px;">
 
-      <div class="field" id="cont-email-field">
-        <label>Email</label>
-        <input id="cont-email" type="email" placeholder="ivan@example.com" autocomplete="email"/>
-        <span class="field-err" id="cont-email-err">Введите корректный email</span>
-      </div>
-
-      <div style="position:relative;">
-        <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
-                      background:var(--c-bg);font-size:10px;font-weight:700;
-                      text-transform:uppercase;letter-spacing:0.1em;
-                      color:var(--c-accent);z-index:1;pointer-events:none;">Телефон</label>
-        <div class="phone-wrap" id="cont-phone-wrap">
-          <span class="phone-prefix">+998</span>
-          <input id="cont-phone" type="tel" placeholder="90 123 45 67" autocomplete="tel"/>
+      <div>
+        <div class="field" id="cont-email-field">
+          <label>Email</label>
+          <input id="cont-email" type="email" placeholder="ivan@example.com" autocomplete="email"/>
+          <span class="field-err" id="cont-email-err">Введите корректный email</span>
         </div>
-        <span class="field-err" id="cont-phone-err" style="display:none;font-size:10px;font-weight:700;color:var(--c-error);margin-top:4px;padding-left:6px;">Введите номер телефона</span>
+        <p style="font-size:11px;color:var(--c-dim);font-weight:500;padding:0 4px;margin-top:6px;">
+          Подтверждение бронирования будет отправлено на почту
+        </p>
       </div>
 
-      <p style="font-size:11px;color:var(--c-dim);font-weight:500;padding:0 4px;font-style:italic;">
-        Подтверждение бронирования будет отправлено здесь
-      </p>
+      <div>
+        <div style="position:relative;">
+          <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                        background:var(--c-bg);font-size:10px;font-weight:700;
+                        text-transform:uppercase;letter-spacing:0.1em;
+                        color:var(--c-accent);z-index:1;pointer-events:none;">Телефон</label>
+          <div class="phone-wrap" id="cont-phone-wrap">
+            <span class="phone-prefix">+998</span>
+            <input id="cont-phone" type="tel" placeholder="90 123 45 67" autocomplete="tel"/>
+          </div>
+          <span class="field-err" id="cont-phone-err" style="display:none;font-size:10px;font-weight:700;color:var(--c-error);margin-top:4px;padding-left:6px;">Введите номер телефона</span>
+        </div>
+        <p style="font-size:11px;color:var(--c-dim);font-weight:500;padding:0 4px;margin-top:6px;">
+          Для связи авиакомпании в случае изменений рейса
+        </p>
+      </div>
     </div>
   </div>
 
@@ -836,29 +810,11 @@ function emptyPax(type) {
   const airlineCode  = flight.airlineCode  || 'UZ';
   const airlineColor = flight.airlineColor || '#1E6AE1';
 
-  const badge = document.getElementById('fs-badge');
-  badge.textContent       = airlineCode;
-  badge.style.color       = airlineColor;
-  badge.style.background  = airlineColor + '18';
-  badge.style.borderColor = airlineColor + '40';
-
-  document.getElementById('fs-airline').textContent = airlineName;
-  document.getElementById('fs-class').textContent   = `${cls} · ${fareName}`;
-  document.getElementById('fs-dep').textContent     = flight.dep  || '—';
-  document.getElementById('fs-arr').textContent     = flight.arr  || '—';
-  document.getElementById('fs-dur').textContent     = flight.duration || '—';
-  document.getElementById('fs-from').textContent    = from.code;
-  document.getElementById('fs-to').textContent      = to.code;
-  document.getElementById('fs-date').textContent    = depDate ? fmtDate(depDate) : '';
-
-  const stopsEl = document.getElementById('fs-stops');
-  if (flight.stops && flight.stops.count) {
-    stopsEl.textContent  = `${flight.stops.count} пересадка`;
-    stopsEl.style.color  = '#F59E0B';
-  } else {
-    stopsEl.textContent  = 'Прямой';
-    stopsEl.style.color  = '#22C55E';
-  }
+  document.getElementById('fs-airline').textContent  = airlineName;
+  document.getElementById('fs-class').textContent    = `${cls} · ${fareName}`;
+  document.getElementById('fs-from').textContent     = from.code;
+  document.getElementById('fs-to').textContent       = to.code;
+  document.getElementById('fs-date').textContent     = depDate ? fmtDate(depDate) : '';
 
   // Passengers
   const pax = search.pax || { adults: 1, children: 0, infants: 0 };
@@ -868,10 +824,10 @@ function emptyPax(type) {
   for (let i = 0; i < (pax.infants  || 0); i++) PAX_LIST.push(emptyPax('infant'));
 
   const total = PAX_LIST.length;
-  const MS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-  function fmtDate(d) { return d ? `${d.getDate()} ${MS_SHORT[d.getMonth()]}` : ''; }
   document.getElementById('hdr-pax-label').textContent =
     total === 1 ? '1 пассажир' : total < 5 ? `${total} пассажира` : `${total} пассажиров`;
+  document.getElementById('fs-pax-count').textContent =
+    total === 1 ? '1 пасс.' : `${total} пасс.`;
 
   // Price
   const totalPrice = fare.price || flight.price || null;

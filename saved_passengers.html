@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Click Travel — Сохранённые пассажиры</title>
+<link rel="stylesheet" href="design-tokens.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  body {
+    font-family: var(--font);
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100dvh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color: transparent;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block; line-height: 1;
+  }
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-label);
+    margin-bottom: 10px;
+  }
+
+  /* ── Saved passenger card ── */
+  .saved-card {
+    background: var(--c-surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--r-card);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+    text-align: left;
+  }
+  .saved-card:active { background: var(--c-surface-hi); }
+  .saved-card.selected {
+    border-color: rgba(59,130,246,0.45);
+    background: rgba(59,130,246,0.07);
+  }
+
+  .saved-card__avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(59,130,246,0.12);
+    border: 1.5px solid rgba(59,130,246,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; color: var(--c-accent);
+    flex-shrink: 0;
+  }
+  .saved-card__info { flex: 1; min-width: 0; }
+  .saved-card__name {
+    font-size: 14px; font-weight: 700; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .saved-card__meta {
+    font-size: 11px; font-weight: 600; color: var(--c-muted);
+    margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .saved-card__check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .saved-card__check .material-symbols-outlined {
+    font-size: 14px; color: transparent;
+    font-variation-settings: 'FILL' 1, 'wght' 700;
+    transition: color 0.15s;
+  }
+  .saved-card.selected .saved-card__check {
+    background: rgba(59,130,246,0.2);
+    border-color: var(--c-accent);
+  }
+  .saved-card.selected .saved-card__check .material-symbols-outlined {
+    color: var(--c-accent);
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 48px 24px; gap: 12px; text-align: center;
+  }
+  .empty-state__icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .empty-state__icon .material-symbols-outlined {
+    font-size: 28px; color: var(--c-dim);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="glass"
+        style="position:fixed;top:0;width:100%;z-index:50;
+               height:var(--header-h);display:flex;align-items:center;padding:0 8px;
+               border-bottom:1px solid rgba(255,255,255,0.04);">
+  <button onclick="window.location.href='passenger_details.html'"
+          style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+                 border:none;background:none;cursor:pointer;border-radius:50%;
+                 -webkit-tap-highlight-color:transparent;flex-shrink:0;"
+          onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
+          onpointerup="this.style.background='none'"
+          onpointercancel="this.style.background='none'">
+    <span class="material-symbols-outlined" style="color:var(--c-accent);font-size:22px;">arrow_back</span>
+  </button>
+  <div style="margin-left:4px;flex:1;">
+    <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">Сохранённые пассажиры</div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;
+                letter-spacing:0.06em;color:var(--c-dim);line-height:1.2;margin-top:1px;">
+      Выберите пассажира
+    </div>
+  </div>
+  <button onclick="window.location.href='passenger_details.html'"
+          style="height:32px;padding:0 14px;
+                 display:flex;align-items:center;gap:6px;
+                 border:none;background:rgba(59,130,246,0.12);border-radius:var(--r-pill);
+                 cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;"
+          onpointerdown="this.style.background='rgba(59,130,246,0.22)'"
+          onpointerup="this.style.background='rgba(59,130,246,0.12)'"
+          onpointercancel="this.style.background='rgba(59,130,246,0.12)'">
+    <span style="font-size:13px;font-weight:700;color:var(--c-accent);">Готово</span>
+  </button>
+</header>
+
+<!-- ── PAGE CONTENT ── -->
+<div style="padding:var(--content-top) 16px 0;max-width:640px;margin:0 auto;">
+
+  <div style="margin-top:16px;">
+    <div class="section-label">Ваши пассажиры</div>
+    <div style="display:flex;flex-direction:column;gap:8px;" id="saved-list">
+
+      <!-- Пассажир 1 -->
+      <button class="saved-card" onclick="selectSaved(0, this)">
+        <div class="saved-card__avatar">IK</div>
+        <div class="saved-card__info">
+          <div class="saved-card__name">KARIMOV ISLOM</div>
+          <div class="saved-card__meta">Паспорт · AA1234567 · 12.03.1990</div>
+        </div>
+        <div class="saved-card__check">
+          <span class="material-symbols-outlined">check</span>
+        </div>
+      </button>
+
+      <!-- Пассажир 2 -->
+      <button class="saved-card" onclick="selectSaved(1, this)">
+        <div class="saved-card__avatar" style="background:rgba(245,158,11,0.10);border-color:rgba(245,158,11,0.25);">
+          <span style="color:var(--c-warning);">ZK</span>
+        </div>
+        <div class="saved-card__info">
+          <div class="saved-card__name">KARIMOVA ZULFIYA</div>
+          <div class="saved-card__meta">Паспорт · AA7654321 · 05.08.1993</div>
+        </div>
+        <div class="saved-card__check">
+          <span class="material-symbols-outlined">check</span>
+        </div>
+      </button>
+
+      <!-- Пассажир 3 -->
+      <button class="saved-card" onclick="selectSaved(2, this)">
+        <div class="saved-card__avatar" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.22);">
+          <span style="color:var(--c-success);">AK</span>
+        </div>
+        <div class="saved-card__info">
+          <div class="saved-card__name">KARIMOV AMIR</div>
+          <div class="saved-card__meta">Паспорт · AB9876543 · 17.11.2015</div>
+        </div>
+        <div class="saved-card__check">
+          <span class="material-symbols-outlined">check</span>
+        </div>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Hint -->
+  <p style="font-size:11px;color:var(--c-dim);font-weight:500;
+            text-align:center;margin-top:20px;line-height:1.5;">
+    Данные автоматически заполнятся из сохранённого профиля
+  </p>
+
+</div>
+
+<script>
+function selectSaved(idx, el) {
+  document.querySelectorAll('.saved-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(() => {
+    window.location.href = 'passenger_details.html';
+  }, 380);
+}
+</script>
+</body>
+</html>
