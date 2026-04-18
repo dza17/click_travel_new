@@ -993,7 +993,8 @@ function openPassengerSheet(idx) {
     });
   }
 
-  // Show selection view
+  // Show selection view (compact — let content determine height)
+  document.getElementById('pax-sheet').style.minHeight = '';
   document.getElementById('sheet-view-select').style.display = 'block';
   document.getElementById('pax-sheet-scroll').style.display = 'none';
   document.getElementById('sheet-footer-form').style.display = 'none';
@@ -1025,6 +1026,10 @@ window.switchToForm = function() {
   document.getElementById('sheet-view-select').style.display = 'none';
   document.getElementById('pax-sheet-scroll').style.display  = 'block';
   document.getElementById('sheet-footer-form').style.display = 'block';
+  // Expand sheet to proper form height so it feels like a full sheet, not a content fragment
+  const sheet = document.getElementById('pax-sheet');
+  sheet.style.minHeight = '70vh';
+  sheet.style.minHeight = '70dvh';
   sheetInstance.scrollEl = document.getElementById('pax-sheet-scroll');
   document.getElementById('pax-sheet-scroll').scrollTop = 0;
 };
