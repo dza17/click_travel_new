@@ -200,14 +200,6 @@
     color: rgba(107,114,128,0.5);
     font-weight: 500;
   }
-  .date-wrap input[type="date"] {
-    position: absolute;
-    top: 0; right: 0;
-    width: 1px; height: 1px;
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
   .date-cal-btn {
     position: absolute;
     right: 12px; top: 50%;
@@ -221,9 +213,22 @@
     align-items: center;
     justify-content: center;
     -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
   }
   .date-cal-btn:active { color: var(--c-accent); }
-  .date-cal-btn .material-symbols-outlined { font-size: 20px; }
+  .date-cal-btn .material-symbols-outlined { font-size: 20px; position: relative; pointer-events: none; }
+  .date-native-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    z-index: 1;
+  }
   /* Error state for date-wrap */
   .date-field-outer.field--error .date-wrap input[type="text"] { border-color: rgba(239,68,68,0.55); }
   .date-field-outer.field--error > label { color: var(--c-error); }
@@ -255,19 +260,20 @@
   }
   .gender-btn {
     flex: 1;
-    border: none;
+    border: 1.5px solid transparent;
     border-radius: 12px;
     font-family: var(--font);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background var(--duration-med), color var(--duration-med);
+    transition: background var(--duration-med), color var(--duration-med), border-color var(--duration-med);
     background: transparent;
     color: var(--c-dim);
   }
   .gender-btn.active {
-    background: var(--c-accent);
+    background: rgba(59,130,246,0.15);
     color: #fff;
+    border-color: var(--c-accent);
   }
 
   /* ── Select chevron ── */
@@ -360,7 +366,7 @@
     background: var(--c-surface);
     border-radius: var(--r-sheet) var(--r-sheet) 0 0;
     box-shadow: var(--sheet-shadow);
-    display: flex;
+    display: none;
     flex-direction: column;
     max-height: 92dvh;
     max-height: 92vh;
@@ -387,19 +393,20 @@
     color: #fff;
   }
   .sheet-header__close {
-    width: 32px; height: 32px;
+    width: 36px; height: 36px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.08);
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin-left: auto;
     -webkit-tap-highlight-color: transparent;
     color: var(--c-muted);
   }
-  .sheet-header__close .material-symbols-outlined { font-size: 18px; }
+  .sheet-header__close .material-symbols-outlined { font-size: 20px; }
   .sheet-scroll {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -433,10 +440,18 @@
   }
   .sheet-save-btn:active { transform: scale(0.98); }
 
-  /* Sheet-level field labels use surface background */
+  /* Sheet labels: static above-field, no floating plate */
   .pax-sheet .field > label,
   .pax-sheet .date-field-outer > label,
-  .pax-sheet .gender-field-outer > label { background: var(--c-surface); }
+  .pax-sheet .gender-field-outer > label {
+    position: static !important;
+    display: block;
+    padding: 0 2px;
+    margin-bottom: 8px;
+    background: transparent !important;
+    top: auto !important;
+    left: auto !important;
+  }
 
   /* Sheet sub-section divider */
   .sheet-section {
@@ -661,14 +676,14 @@
   <div class="sheet-handle" id="pax-sheet-handle"></div>
 
   <div class="sheet-header">
-    <div>
+    <div style="flex:1;min-width:0;">
       <div class="sheet-header__title" id="sheet-title">Пассажир 1</div>
       <div id="sheet-type-badge"
            style="display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;
                   letter-spacing:0.07em;color:var(--c-accent);border:1px solid rgba(59,130,246,0.25);
                   border-radius:6px;padding:2px 7px;margin-top:3px;">Взрослый</div>
     </div>
-    <button class="sheet-header__close" id="sheet-close-btn">
+    <button class="sheet-header__close" id="sheet-close-btn" type="button">
       <span class="material-symbols-outlined">close</span>
     </button>
   </div>
@@ -706,10 +721,10 @@
           </label>
           <div class="date-wrap">
             <input type="text" id="sf-dob" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
-            <input type="date" id="sf-dob-native" tabindex="-1"/>
-            <button type="button" class="date-cal-btn" onclick="openDatePicker('sf-dob-native')">
+            <label class="date-cal-btn">
               <span class="material-symbols-outlined">calendar_month</span>
-            </button>
+              <input type="date" id="sf-dob-native" class="date-native-input"/>
+            </label>
           </div>
           <span class="field-err" id="sf-dob-err">Введите корректную дату</span>
         </div>
@@ -766,10 +781,10 @@
         </label>
         <div class="date-wrap">
           <input type="text" id="sf-exp" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
-          <input type="date" id="sf-exp-native" tabindex="-1"/>
-          <button type="button" class="date-cal-btn" onclick="openDatePicker('sf-exp-native')">
+          <label class="date-cal-btn">
             <span class="material-symbols-outlined">calendar_month</span>
-          </button>
+            <input type="date" id="sf-exp-native" class="date-native-input"/>
+          </label>
         </div>
         <span class="field-err" id="sf-exp-err">Введите корректную дату</span>
       </div>
@@ -978,19 +993,31 @@ window.openDatePicker = function(nativeId) {
   if (native) native.showPicker ? native.showPicker() : native.click();
 };
 
-// Auto-format ДД.ММ.ГГГГ as user types
+// Auto-format ДД.ММ.ГГГГ as user types, with auto-pad for single-digit day/month
 function bindDateMask(textId, nativeId) {
   const text   = document.getElementById(textId);
   const native = document.getElementById(nativeId);
+  let _prevRawLen = 0;
 
   text.addEventListener('input', function() {
-    let raw = this.value.replace(/\D/g, '').slice(0, 8);
+    let raw = this.value.replace(/\D/g, '');
+    const isDeleting = raw.length < _prevRawLen;
+
+    if (!isDeleting) {
+      // Auto-pad day: first digit > 3 means can only be 04–09
+      if (raw.length === 1 && parseInt(raw[0]) > 3) raw = '0' + raw;
+      // Auto-pad month: third digit (month[0]) > 1 means can only be 02–09
+      if (raw.length === 3 && parseInt(raw[2]) > 1) raw = raw.slice(0,2) + '0' + raw[2];
+    }
+
+    raw = raw.slice(0, 8);
+    _prevRawLen = raw.length;
+
     let out = raw;
     if (raw.length > 4) out = raw.slice(0,2) + '.' + raw.slice(2,4) + '.' + raw.slice(4);
     else if (raw.length > 2) out = raw.slice(0,2) + '.' + raw.slice(2);
     this.value = out;
 
-    // Sync to native if complete
     if (raw.length === 8) {
       const dd = raw.slice(0,2), mm = raw.slice(2,4), yyyy = raw.slice(4);
       native.value = `${yyyy}-${mm}-${dd}`;
@@ -999,11 +1026,18 @@ function bindDateMask(textId, nativeId) {
     }
   });
 
-  // Sync from native calendar picker
+  // Sync from native calendar picker + scroll field into view so calendar is visible
   native.addEventListener('change', function() {
     if (!this.value) return;
     const [yyyy, mm, dd] = this.value.split('-');
     text.value = `${dd}.${mm}.${yyyy}`;
+    _prevRawLen = 8;
+  });
+
+  native.addEventListener('focus', function() {
+    const outer = this.closest('.date-field-outer');
+    if (!outer) return;
+    setTimeout(() => outer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
   });
 }
 
@@ -1101,6 +1135,7 @@ document.getElementById('cont-phone').addEventListener('blur', function() {
 
 // ─── Save passenger ──────────────────────────────────────────────────────────
 window.savePassenger = function() {
+  if (currentPaxIdx < 0) return;
   const firstName   = document.getElementById('sf-first').value.trim().toUpperCase();
   const lastName    = document.getElementById('sf-last').value.trim().toUpperCase();
   const dob         = document.getElementById('sf-dob').value.trim();
