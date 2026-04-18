@@ -366,6 +366,7 @@
     background: var(--c-surface);
     border-radius: var(--r-sheet) var(--r-sheet) 0 0;
     box-shadow: var(--sheet-shadow);
+    overflow: hidden;
     display: none;
     flex-direction: column;
     max-height: 92dvh;
@@ -412,6 +413,7 @@
     -webkit-overflow-scrolling: touch;
     padding: 6px 16px 0;
     flex: 1;
+    min-height: 0;
   }
   .sheet-footer {
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
@@ -597,14 +599,14 @@
       </div>
     </div>
 
-    <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.12);
+    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.15);
                 border-radius:16px;padding:14px 16px;display:flex;gap:12px;margin-top:2px;">
       <span class="material-symbols-outlined"
-            style="color:var(--c-error);font-size:20px;flex-shrink:0;margin-top:1px;
+            style="color:var(--c-warning);font-size:20px;flex-shrink:0;margin-top:1px;
                    font-variation-settings:'FILL' 1;">info</span>
       <div>
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;
-                    letter-spacing:0.06em;color:var(--c-error);margin-bottom:4px;">
+                    letter-spacing:0.06em;color:var(--c-warning);margin-bottom:4px;">
           Невозвратный тариф
         </div>
         <div style="font-size:12px;color:var(--c-muted);line-height:1.5;font-weight:500;">
@@ -613,6 +615,13 @@
         </div>
       </div>
     </div>
+
+    <p style="font-size:11px;color:var(--c-dim);font-weight:500;line-height:1.6;padding:0 4px;margin-top:4px;">
+      Бронируя билеты, вы подтверждаете согласие с офертой тревел-партнера. Оплата принимается через АО «Click» на условиях нашей
+      <a href="https://click.uz/ru/terms" target="_blank"
+         style="color:var(--c-accent);text-decoration:underline;text-underline-offset:2px;">публичной оферты</a>.
+      Настоящим вы даёте согласие на обработку персональных данных.
+    </p>
   </div>
 
 </div><!-- /page content -->
@@ -663,35 +672,34 @@
   </div>
 
   <div class="sheet-scroll" id="pax-sheet-scroll">
-    <div style="display:flex;flex-direction:column;gap:18px;padding-bottom:8px;">
+    <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px;">
 
-      <!-- Имя -->
-      <div class="field" id="sf-first-field">
-        <label>Имя (латиница)</label>
-        <input id="sf-first" type="text" placeholder="IVAN"
-               autocomplete="given-name" autocorrect="off" spellcheck="false"
-               style="text-transform:uppercase;letter-spacing:0.04em;"/>
-        <span class="field-err" id="sf-first-err">Только латинские буквы</span>
-      </div>
-
-      <!-- Фамилия -->
-      <div class="field" id="sf-last-field">
-        <label>Фамилия (латиница)</label>
-        <input id="sf-last" type="text" placeholder="IVANOV"
-               autocomplete="family-name" autocorrect="off" spellcheck="false"
-               style="text-transform:uppercase;letter-spacing:0.04em;"/>
-        <span class="field-err" id="sf-last-err">Только латинские буквы</span>
+      <!-- Имя + Фамилия -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field" id="sf-first-field">
+          <label>Имя</label>
+          <input id="sf-first" type="text" placeholder="IVAN"
+                 autocomplete="given-name" autocorrect="off" spellcheck="false"
+                 style="text-transform:uppercase;letter-spacing:0.04em;"/>
+          <span class="field-err" id="sf-first-err">Только лат. буквы</span>
+        </div>
+        <div class="field" id="sf-last-field">
+          <label>Фамилия</label>
+          <input id="sf-last" type="text" placeholder="IVANOV"
+                 autocomplete="family-name" autocorrect="off" spellcheck="false"
+                 style="text-transform:uppercase;letter-spacing:0.04em;"/>
+          <span class="field-err" id="sf-last-err">Только лат. буквы</span>
+        </div>
       </div>
 
       <!-- Дата рождения + Пол -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div style="position:relative;" id="sf-dob-outer" class="date-field-outer">
           <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
                         background:var(--c-surface);font-size:10px;font-weight:700;
                         text-transform:uppercase;letter-spacing:0.1em;
                         color:var(--c-accent);z-index:1;pointer-events:none;">
-            Дата рождения
+            Дата рожд.
           </label>
           <div class="date-wrap">
             <input type="text" id="sf-dob" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
@@ -700,9 +708,8 @@
               <input type="date" id="sf-dob-native" class="date-native-input"/>
             </label>
           </div>
-          <span class="field-err" id="sf-dob-err">Введите корректную дату</span>
+          <span class="field-err" id="sf-dob-err">Некорректная дата</span>
         </div>
-
         <div class="gender-field-outer">
           <label>Пол</label>
           <div class="gender-wrap">
@@ -714,53 +721,74 @@
         </div>
       </div>
 
-      <!-- Гражданство -->
-      <div class="field select-wrap" id="sf-cit-field">
-        <label>Гражданство</label>
-        <select id="sf-citizenship">
-          <option value="UZ">Узбекистан</option>
-          <option value="RU">Россия</option>
-          <option value="KZ">Казахстан</option>
-          <option value="KG">Кыргызстан</option>
-          <option value="TJ">Таджикистан</option>
-          <option value="TR">Турция</option>
-          <option value="AE">ОАЭ</option>
-          <option value="US">США</option>
-          <option value="GB">Великобритания</option>
-          <option value="DE">Германия</option>
-          <option value="other">Другое</option>
-        </select>
-        <span class="material-symbols-outlined chevron">expand_more</span>
-      </div>
-
       <!-- Документ section -->
-      <div class="sheet-section">Документ</div>
+      <div class="sheet-section" style="padding-bottom:0;">Документ</div>
 
-      <!-- Номер документа -->
-      <div class="field" id="sf-doc-field">
-        <label>Номер документа</label>
-        <input id="sf-doc" type="text" placeholder="AA 1234567"
-               autocomplete="off" autocorrect="off" spellcheck="false"
-               style="text-transform:uppercase;letter-spacing:0.05em;"/>
-        <span class="field-err" id="sf-doc-err">Латиница, цифры, длина 5–20 символов</span>
+      <!-- Гражданство -->
+      <div class="field" id="sf-cit-field">
+        <label>Гражданство</label>
+        <div style="position:relative;">
+          <select id="sf-citizenship"
+                  style="width:100%;height:var(--field-h);background:var(--c-bg-deep);
+                         border:1px solid var(--c-border-md);border-radius:16px;
+                         padding:0 40px 0 16px;color:#fff;font-family:var(--font);
+                         font-size:16px;font-weight:600;appearance:none;
+                         -webkit-appearance:none;outline:none;transition:border-color 0.15s;">
+            <option value="UZ">Узбекистан</option>
+            <option value="RU">Россия</option>
+            <option value="KZ">Казахстан</option>
+            <option value="KG">Кыргызстан</option>
+            <option value="TJ">Таджикистан</option>
+            <option value="TR">Турция</option>
+            <option value="AE">ОАЭ</option>
+            <option value="US">США</option>
+            <option value="GB">Великобритания</option>
+            <option value="DE">Германия</option>
+            <option value="other">Другое</option>
+          </select>
+          <span class="material-symbols-outlined"
+                style="position:absolute;right:14px;top:50%;transform:translateY(-50%);
+                       color:var(--c-dim);font-size:20px;pointer-events:none;">expand_more</span>
+        </div>
       </div>
 
-      <!-- Срок действия -->
-      <div style="position:relative;" id="sf-exp-outer" class="date-field-outer">
-        <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
-                      background:var(--c-surface);font-size:10px;font-weight:700;
-                      text-transform:uppercase;letter-spacing:0.1em;
-                      color:var(--c-accent);z-index:1;pointer-events:none;">
-          Срок действия
-        </label>
-        <div class="date-wrap">
-          <input type="text" id="sf-exp" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
-          <label class="date-cal-btn">
-            <span class="material-symbols-outlined">calendar_month</span>
-            <input type="date" id="sf-exp-native" class="date-native-input"/>
-          </label>
+      <!-- Номер документа + Срок действия -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field" id="sf-doc-field">
+          <label>Номер</label>
+          <input id="sf-doc" type="text" placeholder="AA 1234567"
+                 autocomplete="off" autocorrect="off" spellcheck="false"
+                 style="text-transform:uppercase;letter-spacing:0.05em;"/>
+          <span class="field-err" id="sf-doc-err">5–20 символов</span>
         </div>
-        <span class="field-err" id="sf-exp-err">Введите корректную дату</span>
+        <div style="position:relative;" id="sf-exp-outer" class="date-field-outer">
+          <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                        background:var(--c-surface);font-size:10px;font-weight:700;
+                        text-transform:uppercase;letter-spacing:0.1em;
+                        color:var(--c-accent);z-index:1;pointer-events:none;">
+            Срок действ.
+          </label>
+          <div class="date-wrap">
+            <input type="text" id="sf-exp" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
+            <label class="date-cal-btn">
+              <span class="material-symbols-outlined">calendar_month</span>
+              <input type="date" id="sf-exp-native" class="date-native-input"/>
+            </label>
+          </div>
+          <span class="field-err" id="sf-exp-err">Некорректная дата</span>
+        </div>
+      </div>
+
+      <!-- Сохранить данные о пассажире -->
+      <div class="toggle-row" onclick="toggleSwitch('sf-save-pax')"
+           style="background:var(--c-bg-deep);border:1px solid var(--c-border-md);">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#fff;">Сохранить данные о пассажире</div>
+          <div style="font-size:11px;color:var(--c-dim);margin-top:2px;">Для быстрого заполнения в следующий раз</div>
+        </div>
+        <div class="toggle off" id="sf-save-pax">
+          <div class="toggle-thumb"></div>
+        </div>
       </div>
 
     </div><!-- /form fields -->
@@ -814,7 +842,9 @@ function emptyPax(type) {
   document.getElementById('fs-class').textContent    = `${cls} · ${fareName}`;
   document.getElementById('fs-from').textContent     = from.code;
   document.getElementById('fs-to').textContent       = to.code;
-  document.getElementById('fs-date').textContent     = depDate ? fmtDate(depDate) : '';
+  const dateStr = depDate ? fmtDate(depDate) : '';
+  const depTime = flight.dep || '';
+  document.getElementById('fs-date').textContent     = dateStr + (depTime ? ' · ' + depTime : '');
 
   // Passengers
   const pax = search.pax || { adults: 1, children: 0, infants: 0 };
@@ -999,6 +1029,20 @@ function bindDateMask(textId, nativeId) {
 
 bindDateMask('sf-dob', 'sf-dob-native');
 bindDateMask('sf-exp', 'sf-exp-native');
+
+// ─── Phone auto-format XX XXX XX XX ─────────────────────────────────────────
+(function() {
+  const ph = document.getElementById('cont-phone');
+  if (!ph) return;
+  ph.addEventListener('input', function() {
+    const digits = this.value.replace(/\D/g, '').slice(0, 9);
+    let out = digits;
+    if (digits.length > 7)      out = digits.slice(0,2)+' '+digits.slice(2,5)+' '+digits.slice(5,7)+' '+digits.slice(7);
+    else if (digits.length > 5) out = digits.slice(0,2)+' '+digits.slice(2,5)+' '+digits.slice(5);
+    else if (digits.length > 2) out = digits.slice(0,2)+' '+digits.slice(2);
+    this.value = out;
+  });
+})();
 
 // ─── Validation ──────────────────────────────────────────────────────────────
 const RE_LATIN_NAME = /^[A-Za-z][A-Za-z\s\-']*$/;
