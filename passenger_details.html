@@ -532,7 +532,7 @@
   </div>
 
   <!-- ── FROM SAVED ── -->
-  <button onclick="window.location.href='saved_passengers.html'"
+  <button onclick="goToSavedPassengers()"
           style="width:100%;margin-top:12px;
                  background:var(--c-surface);border:1px solid rgba(255,255,255,0.06);
                  border-radius:var(--r-pill);height:var(--btn-h);padding:0 20px;
@@ -598,30 +598,6 @@
         <div class="toggle-thumb"></div>
       </div>
     </div>
-
-    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.15);
-                border-radius:16px;padding:14px 16px;display:flex;gap:12px;margin-top:2px;">
-      <span class="material-symbols-outlined"
-            style="color:var(--c-warning);font-size:20px;flex-shrink:0;margin-top:1px;
-                   font-variation-settings:'FILL' 1;">info</span>
-      <div>
-        <div style="font-size:10px;font-weight:800;text-transform:uppercase;
-                    letter-spacing:0.06em;color:var(--c-warning);margin-bottom:4px;">
-          Невозвратный тариф
-        </div>
-        <div style="font-size:12px;color:var(--c-muted);line-height:1.5;font-weight:500;">
-          Имена должны совпадать с паспортом. Любые изменения после бронирования
-          могут повлечь штраф или отмену.
-        </div>
-      </div>
-    </div>
-
-    <p style="font-size:11px;color:var(--c-dim);font-weight:500;line-height:1.6;padding:0 4px;margin-top:4px;">
-      Бронируя билеты, вы подтверждаете согласие с офертой тревел-партнера. Оплата принимается через АО «Click» на условиях нашей
-      <a href="https://click.uz/ru/terms" target="_blank"
-         style="color:var(--c-accent);text-decoration:underline;text-underline-offset:2px;">публичной оферты</a>.
-      Настоящим вы даёте согласие на обработку персональных данных.
-    </p>
   </div>
 
   <p style="font-size:11px;color:var(--c-dim);font-weight:500;line-height:1.6;padding:0 4px;margin-top:16px;">
@@ -802,9 +778,23 @@
   </div><!-- /sheet-scroll -->
 
   <div class="sheet-footer">
+    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.15);
+                border-radius:14px;padding:12px 14px;display:flex;gap:10px;margin-bottom:10px;">
+      <span class="material-symbols-outlined"
+            style="color:var(--c-warning);font-size:18px;flex-shrink:0;margin-top:1px;
+                   font-variation-settings:'FILL' 1;">info</span>
+      <div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;
+                    letter-spacing:0.06em;color:var(--c-warning);margin-bottom:3px;">
+          Проверьте данные из документа
+        </div>
+        <div style="font-size:11px;color:var(--c-muted);line-height:1.5;font-weight:500;">
+          Особенно, фамилию и имя на латинице, номер паспорта. Если будут ошибки, можно не попасть на рейс или потерять деньги.
+        </div>
+      </div>
+    </div>
     <button class="sheet-save-btn" onclick="savePassenger()">
       Сохранить
-      <span class="material-symbols-outlined" style="font-size:18px;">check</span>
     </button>
   </div>
 </div><!-- /pax-sheet -->
@@ -860,6 +850,28 @@ function emptyPax(type) {
   for (let i = 0; i < (pax.children || 0); i++) PAX_LIST.push(emptyPax('child'));
   for (let i = 0; i < (pax.infants  || 0); i++) PAX_LIST.push(emptyPax('infant'));
 
+  // Restore previously filled passengers (draft saved before navigating away)
+  try {
+    const draft = JSON.parse(sessionStorage.getItem('ct_pax_list_draft') || 'null');
+    if (draft && Array.isArray(draft) && draft.length === PAX_LIST.length) {
+      PAX_LIST = PAX_LIST.map((pax, i) => ({ ...pax, ...draft[i], type: pax.type }));
+    }
+  } catch(e) {}
+
+  // Apply selected saved passenger (type-matched, first unfilled slot)
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('ct_saved_passenger') || 'null');
+    if (saved) {
+      sessionStorage.removeItem('ct_saved_passenger');
+      const targetIdx = PAX_LIST.findIndex(
+        p => p.type === saved.type && !(p.firstName && p.lastName)
+      );
+      if (targetIdx !== -1) {
+        PAX_LIST[targetIdx] = { ...PAX_LIST[targetIdx], ...saved, type: PAX_LIST[targetIdx].type };
+      }
+    }
+  } catch(e) {}
+
   const total = PAX_LIST.length;
   document.getElementById('hdr-pax-label').textContent =
     total === 1 ? '1 пассажир' : total < 5 ? `${total} пассажира` : `${total} пассажиров`;
@@ -913,7 +925,7 @@ function buildPaxCard(pax, idx) {
 
   const nameLine = filled
     ? `<span class="pax-card__name">${pax.lastName} ${pax.firstName}</span>`
-    : `<span class="pax-card__name pax-card__name--empty">Не заполнен</span>`;
+    : `<span class="pax-card__name pax-card__name--empty">Не заполнено</span>`;
 
   const subLine = filled
     ? `<div class="pax-card__sub">Паспорт · ${pax.docNum.replace(/\s/g,'')}</div>`
@@ -1177,7 +1189,14 @@ window.savePassenger = function() {
   };
 
   renderPaxList();
+  try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
   sheetInstance.close();
+};
+
+// ─── Navigate to saved passengers (saves draft first) ────────────────────────
+window.goToSavedPassengers = function() {
+  try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
+  window.location.href = 'saved_passengers.html';
 };
 
 // ─── Continue ────────────────────────────────────────────────────────────────

@@ -206,9 +206,19 @@
 </div>
 
 <script>
+const MOCK_SAVED = [
+  { firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
+  { firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
+  { firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
+];
+
 function selectSaved(idx, el) {
   document.querySelectorAll('.saved-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
+  const chosen = MOCK_SAVED[idx];
+  if (chosen) {
+    try { sessionStorage.setItem('ct_saved_passenger', JSON.stringify(chosen)); } catch(e) {}
+  }
   setTimeout(() => {
     window.location.href = 'passenger_details.html';
   }, 380);
