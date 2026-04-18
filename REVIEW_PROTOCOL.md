@@ -40,6 +40,12 @@ Preferred input to Claude Code:
 - `Prompt for Claude`
 - `Expected handoff`
 
+For medium/large tasks or whenever repo-layout confusion is plausible, ChatGPT/Codex should also include:
+- `Repo root: /Users/romangolik/CC_projects/click_travel_new/project`
+- `Do not run git commands outside this directory`
+- `Do not run git init`
+- `Do not use git reset --hard for recovery`
+
 ## What Claude Code Must Return
 
 Claude Code should return a compact handoff after each completed implementation cycle.
@@ -83,8 +89,19 @@ Use the full transcript only if:
 - behavior was strange or inconsistent
 - the implementation decision is unclear from diff and handoff
 - you want me to audit Claude's process, not just the code result
+- there was a git/process incident such as wrong repo root, `git init` in the wrong place, or destructive recovery attempts
 
 Otherwise, handoff is enough.
+
+## Process Incidents
+
+The following should be treated as process incidents even if the code result is later recovered:
+- working outside the intended repo root
+- running `git init` in the wrong directory
+- using `git reset --hard` for workflow recovery
+- committing on the wrong branch and then repairing it destructively
+
+Process incidents should be surfaced in review and used to justify session reset plus stricter next-task prompting.
 
 ## Review Response Format
 

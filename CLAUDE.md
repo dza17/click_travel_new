@@ -33,6 +33,8 @@ Also read the global memory file configured in `~/.claude/CLAUDE.md`.
 - If UI changes, validate all directly affected screens, not just one file
 - For local UI work, keep exploration narrow and token-efficient
 - Assume Roman received the task prompt from ChatGPT/Codex acting as task compiler; follow that prompt literally and do not broaden scope on your own
+- For this project, the only valid repo root is `/Users/romangolik/CC_projects/click_travel_new/project`
+- Do not run git commands outside that repo root
 
 ## Complexity And Mode
 
@@ -80,3 +82,6 @@ At the end of each meaningful implementation cycle, provide:
 - Call out destructive or broad changes explicitly
 - Do not claim completion if related screens or states were not checked
 - For release-facing UI work, use `SMOKE_CHECKLIST.md` and distinguish between technical verification and human visual confirmation
+- Do not run `git init` unless Roman explicitly asks to initialize a new repository
+- Do not use `git reset --hard` as workflow recovery
+- If git behaves unexpectedly, stop and re-check repo root instead of improvising destructive recovery
