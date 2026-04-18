@@ -994,8 +994,7 @@ function openPassengerSheet(idx) {
   }
 
   // Show selection view
-  document.getElementById('sheet-view-select').style.display = 'flex';
-  document.getElementById('sheet-view-select').style.flexDirection = 'column';
+  document.getElementById('sheet-view-select').style.display = 'block';
   document.getElementById('pax-sheet-scroll').style.display = 'none';
   document.getElementById('sheet-footer-form').style.display = 'none';
   sheetInstance.scrollEl = document.getElementById('sheet-view-select');
@@ -1013,19 +1012,18 @@ function applySavedToSlot(saved) {
 
 // ─── Switch to form view ─────────────────────────────────────────────────────
 window.switchToForm = function() {
-  const pax = PAX_LIST[currentPaxIdx];
-  document.getElementById('sf-first').value       = pax.firstName || '';
-  document.getElementById('sf-last').value        = pax.lastName  || '';
-  document.getElementById('sf-dob').value         = pax.dob       || '';
-  document.getElementById('sf-doc').value         = pax.docNum    || '';
-  document.getElementById('sf-exp').value         = pax.docExp    || '';
-  document.getElementById('sf-citizenship').value = pax.citizenship || 'UZ';
-  setSheetGender(pax.gender || 'male');
+  // Always open empty — "Добавить пассажира" = new entry, not edit
+  document.getElementById('sf-first').value       = '';
+  document.getElementById('sf-last').value        = '';
+  document.getElementById('sf-dob').value         = '';
+  document.getElementById('sf-doc').value         = '';
+  document.getElementById('sf-exp').value         = '';
+  document.getElementById('sf-citizenship').value = 'UZ';
+  setSheetGender('male');
   clearSheetErrors();
 
   document.getElementById('sheet-view-select').style.display = 'none';
-  document.getElementById('pax-sheet-scroll').style.display  = 'flex';
-  document.getElementById('pax-sheet-scroll').style.flexDirection = 'column';
+  document.getElementById('pax-sheet-scroll').style.display  = 'block';
   document.getElementById('sheet-footer-form').style.display = 'block';
   sheetInstance.scrollEl = document.getElementById('pax-sheet-scroll');
   document.getElementById('pax-sheet-scroll').scrollTop = 0;
