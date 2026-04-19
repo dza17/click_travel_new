@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Click Travel — Профиль</title>
+<link rel="stylesheet" href="design-tokens.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  input, select, textarea { font-size: 16px; }
+  body {
+    font-family: var(--font);
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100dvh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color: transparent;
+  }
+  .glass { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  .ui-icon { width:1em; height:1em; display:inline-block; vertical-align:middle; flex-shrink:0; }
+  .section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--c-label);
+    margin-bottom: 10px; padding: 0 4px;
+  }
+
+  /* ── Field ── */
+  .field { position: relative; }
+  .field > label {
+    position: absolute; top: -8px; left: 16px;
+    padding: 0 6px; background: var(--c-bg);
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--c-accent);
+    z-index: 1; pointer-events: none;
+  }
+  .field input, .field select {
+    width: 100%; height: var(--field-h);
+    background: var(--c-bg-deep); border: 1px solid var(--c-border-md);
+    border-radius: 16px; padding: 0 16px;
+    color: #fff; font-family: var(--font); font-size: 16px; font-weight: 600;
+    appearance: none; -webkit-appearance: none; outline: none; transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--c-accent); }
+  .field input::placeholder { color: rgba(107,114,128,0.5); font-weight: 500; }
+  .field select option { background: var(--c-surface); color: #fff; }
+  .field.field--error > label { color: var(--c-error); }
+  .field.field--error input, .field.field--error select { border-color: rgba(239,68,68,0.55); }
+  .field-err { display: none; font-size: 10px; font-weight: 700; color: var(--c-error); margin-top: 4px; padding-left: 6px; }
+  .field.field--error .field-err { display: block; }
+
+  /* ── Field inside surface card ── */
+  .in-card.field > label { background: var(--c-surface); }
+
+  /* ── Phone wrap ── */
+  .phone-wrap {
+    display: flex; align-items: center; background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md); border-radius: 16px;
+    height: var(--field-h); overflow: hidden; transition: border-color 0.15s;
+  }
+  .phone-wrap:focus-within { border-color: var(--c-accent); }
+  .phone-prefix {
+    padding: 0 12px 0 16px; font-size: 15px; font-weight: 700; color: var(--c-muted);
+    border-right: 1px solid var(--c-border-hi); height: 100%;
+    display: flex; align-items: center; flex-shrink: 0; white-space: nowrap;
+  }
+  .phone-wrap input {
+    flex: 1; height: 100%; background: transparent; border: none;
+    padding: 0 16px; color: #fff; font-family: var(--font); font-size: 16px; font-weight: 600; outline: none;
+  }
+  .phone-wrap input::placeholder { color: rgba(107,114,128,0.5); }
+
+  /* ── Date field ── */
+  .date-wrap { position: relative; height: var(--field-h); }
+  .date-wrap input[type="text"] {
+    width: 100%; height: 100%; background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md); border-radius: 16px;
+    padding: 0 48px 0 16px; color: #fff; font-family: var(--font);
+    font-size: 16px; font-weight: 600; outline: none; transition: border-color 0.15s;
+  }
+  .date-wrap input[type="text"]:focus { border-color: var(--c-accent); }
+  .date-wrap input[type="text"]::placeholder { color: rgba(107,114,128,0.5); font-weight: 500; }
+  .date-cal-btn {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; padding: 6px;
+    color: var(--c-dim); display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .date-cal-btn:active { color: var(--c-accent); }
+  .date-native-input {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    width: 100%; height: 100%; border: none; background: transparent; padding: 0; z-index: 1;
+  }
+  .date-field-outer.field--error .date-wrap input[type="text"] { border-color: rgba(239,68,68,0.55); }
+  .date-field-outer.field--error > label { color: var(--c-error); }
+  .date-field-outer.field--error .field-err { display: block; }
+
+  /* ── Gender ── */
+  .gender-field-outer { position: relative; }
+  .gender-field-outer > label {
+    position: absolute; top: -8px; left: 16px; padding: 0 6px;
+    background: var(--c-surface); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-accent);
+    z-index: 1; pointer-events: none;
+  }
+  .gender-wrap {
+    height: var(--field-h); background: var(--c-bg-deep);
+    border: 1px solid var(--c-border-md); border-radius: 16px;
+    display: flex; padding: 5px; gap: 4px;
+  }
+  .gender-btn {
+    flex: 1; border: 1.5px solid transparent; border-radius: 12px;
+    font-family: var(--font); font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
+    background: transparent; color: var(--c-dim);
+  }
+  .gender-btn.active { background: rgba(59,130,246,0.15); color: #fff; border-color: var(--c-accent); }
+
+  /* ── Select chevron ── */
+  .select-wrap { position: relative; }
+  .select-wrap .sel-chev {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--c-dim); pointer-events: none;
+    width: 20px; height: 20px; fill: none; stroke: currentColor;
+    stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .field .select-wrap select { padding-right: 40px; }
+
+  /* ── Toggle ── */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--c-surface); border-radius: 16px; padding: 16px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .toggle-row:active { background: var(--c-surface-hi); }
+  .toggle {
+    width: 44px; height: 24px; border-radius: var(--r-pill);
+    position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle.on  { background: var(--c-accent); }
+  .toggle.off { background: rgba(107,114,128,0.25); }
+  .toggle-thumb {
+    position: absolute; top: 3px; width: 18px; height: 18px;
+    border-radius: 50%; background: #fff;
+    transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .toggle.on  .toggle-thumb { left: 23px; }
+  .toggle.off .toggle-thumb { left: 3px; }
+
+  /* ── Settings row ── */
+  .settings-row {
+    display: flex; align-items: center; padding: 14px 16px;
+    cursor: pointer; transition: background 0.12s;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    -webkit-tap-highlight-color: transparent; text-decoration: none; color: inherit;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row:active { background: rgba(255,255,255,0.04); }
+  .settings-row__icon {
+    width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; margin-right: 12px;
+  }
+  .settings-row__label { flex: 1; font-size: 14px; font-weight: 600; color: #fff; }
+  .settings-row__value { font-size: 13px; color: var(--c-muted); margin-right: 8px; }
+
+  /* ── Saved passenger card ── */
+  .saved-pax-card {
+    background: var(--c-surface); border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--r-card); padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    -webkit-tap-highlight-color: transparent; cursor: pointer; transition: background 0.15s;
+  }
+  .saved-pax-card:active { background: var(--c-surface-hi); }
+  .saved-pax-card__avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; flex-shrink: 0;
+  }
+  .saved-pax-card__info { flex: 1; min-width: 0; }
+  .saved-pax-card__name { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .saved-pax-card__meta { font-size: 11px; font-weight: 600; color: var(--c-muted); margin-top: 2px; }
+  .saved-pax-card__type {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.07em; border-radius: 6px; padding: 3px 8px; flex-shrink: 0;
+  }
+  .saved-pax-card__type--adult  { color: var(--c-accent);  border: 1px solid rgba(59,130,246,0.25); }
+  .saved-pax-card__type--child  { color: var(--c-warning); border: 1px solid rgba(245,158,11,0.25); }
+  .saved-pax-card__type--infant { color: var(--c-success); border: 1px solid rgba(34,197,94,0.25); }
+
+  /* ── Bottom Sheet ── */
+  .pax-sheet {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    max-width: 640px; margin: 0 auto;
+    background: var(--c-surface); border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+    box-shadow: var(--sheet-shadow); overflow: hidden;
+    display: none; flex-direction: column;
+    max-height: 92dvh; max-height: 92vh;
+  }
+  .sheet-handle {
+    width: 36px; height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.12); margin: 10px auto 0; flex-shrink: 0; cursor: grab;
+  }
+  .sheet-header {
+    display: flex; align-items: center; padding: 14px 16px 10px; flex-shrink: 0; gap: 10px;
+  }
+  .sheet-header__title { flex: 1; font-size: 17px; font-weight: 800; color: #fff; }
+  .sheet-header__close {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-left: auto; -webkit-tap-highlight-color: transparent;
+    color: var(--c-muted);
+  }
+  .sheet-scroll {
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 6px 16px 0; flex: 1; min-height: 0;
+  }
+  .sheet-scroll::-webkit-scrollbar { display: none; }
+  .sheet-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  .sheet-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0; background: var(--c-surface);
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .sheet-save-btn {
+    width: 100%; height: var(--btn-h); background: var(--c-accent); border: none;
+    border-radius: var(--r-pill); font-family: var(--font); font-size: 16px; font-weight: 800;
+    color: #fff; cursor: pointer; box-shadow: var(--btn-shadow);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    -webkit-tap-highlight-color: transparent; transition: transform 0.1s;
+  }
+  .sheet-save-btn:active { transform: scale(0.98); }
+
+  /* Sheet labels → static, no floating plate */
+  .pax-sheet .field > label,
+  .pax-sheet .date-field-outer > label,
+  .pax-sheet .gender-field-outer > label {
+    position: static !important; display: block; padding: 0 2px;
+    margin-bottom: 8px; background: transparent !important;
+    top: auto !important; left: auto !important;
+  }
+  .sheet-section {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--c-label); padding: 8px 0 12px;
+  }
+
+  /* Type selector pills */
+  .type-btn {
+    flex: 1; padding: 9px; border-radius: 12px;
+    font-family: var(--font); font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
+    background: transparent; color: var(--c-muted); border: 1.5px solid transparent;
+  }
+  .type-btn.active { background: rgba(59,130,246,0.15); color: #fff; border-color: var(--c-accent); }
+</style>
+</head>
+<body>
+
+<!-- ── SVG sprite ── -->
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="i-arrow-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20a7.5 7.5 0 0115 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-add" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M3 10h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13.73 21a2 2 0 01-3.46 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8 8.1 8.1 0 00-5.7 2.3L4 8.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4v4.7h4.7M12 8v4l2.8 1.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-credit-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M1 10h22" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="16 17 21 12 16 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="12" x2="9" y2="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- ── HEADER ── -->
+<header class="glass"
+        style="position:fixed;top:0;width:100%;z-index:50;
+               height:var(--header-h);display:flex;align-items:center;padding:0 8px;
+               border-bottom:1px solid rgba(255,255,255,0.04);">
+  <button onclick="history.back()"
+          style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+                 border:none;background:none;cursor:pointer;border-radius:50%;
+                 -webkit-tap-highlight-color:transparent;flex-shrink:0;"
+          onpointerdown="this.style.background='rgba(255,255,255,0.08)'"
+          onpointerup="this.style.background='none'"
+          onpointercancel="this.style.background='none'">
+    <svg class="ui-icon" style="font-size:24px;color:var(--c-accent);"><use href="#i-arrow-back"></use></svg>
+  </button>
+  <div style="margin-left:4px;flex:1;">
+    <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;">Мой профиль</div>
+  </div>
+  <button onclick="openNavMenu()"
+          style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+                 border:none;background:none;cursor:pointer;flex-shrink:0;
+                 -webkit-tap-highlight-color:transparent;"
+          onpointerdown="this.style.opacity='0.6'"
+          onpointerup="this.style.opacity='1'"
+          onpointercancel="this.style.opacity='1'">
+    <div style="width:30px;height:30px;border-radius:7px;
+                background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.28);
+                transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+                pointer-events:none;">
+      <img src="img/travel_logo.png" alt=""
+           style="width:18px;height:18px;object-fit:contain;transform:rotate(-45deg);pointer-events:none;">
+    </div>
+  </button>
+</header>
+
+<!-- ══════════════════════════════════════════
+     VIEW: UNAUTHENTICATED
+     ══════════════════════════════════════════ -->
+<div id="view-login"
+     style="padding:var(--content-top) 16px 32px;max-width:640px;margin:0 auto;display:none;">
+
+  <div style="margin-top:40px;text-align:center;">
+    <div style="width:72px;height:72px;border-radius:50%;
+                background:rgba(59,130,246,0.10);border:1.5px solid rgba(59,130,246,0.22);
+                display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+      <svg class="ui-icon" style="font-size:36px;color:var(--c-accent);"><use href="#i-person"></use></svg>
+    </div>
+    <h1 style="font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;">Войдите в аккаунт</h1>
+    <p style="font-size:13px;color:var(--c-muted);line-height:1.5;max-width:280px;margin:0 auto 32px;">
+      Сохраняйте пассажиров, получайте историю поездок и бронируйте быстрее
+    </p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:18px;">
+    <div class="field">
+      <label>Имя (необязательно)</label>
+      <input id="login-name" type="text" placeholder="Ваше имя" autocomplete="given-name"/>
+    </div>
+
+    <div style="position:relative;">
+      <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                    background:var(--c-bg);font-size:10px;font-weight:700;
+                    text-transform:uppercase;letter-spacing:0.1em;
+                    color:var(--c-accent);z-index:1;pointer-events:none;">Телефон</label>
+      <div class="phone-wrap">
+        <span class="phone-prefix">+998</span>
+        <input id="login-phone" type="tel" placeholder="90 123 45 67" inputmode="numeric" autocomplete="tel"/>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="doLogin()"
+          style="width:100%;height:var(--btn-h);background:var(--c-accent);border:none;
+                 border-radius:var(--r-pill);font-family:var(--font);font-size:16px;font-weight:800;
+                 color:#fff;cursor:pointer;box-shadow:var(--btn-shadow);margin-top:28px;
+                 -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
+          onpointerdown="this.style.transform='scale(0.98)'"
+          onpointerup="this.style.transform='scale(1)'"
+          onpointercancel="this.style.transform='scale(1)'">
+    Войти
+  </button>
+
+  <p style="font-size:11px;color:var(--c-dim);text-align:center;margin-top:16px;line-height:1.5;">
+    Демо-режим: данные хранятся на вашем устройстве
+  </p>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW: AUTHENTICATED
+     ══════════════════════════════════════════ -->
+<div id="view-profile"
+     style="padding:var(--content-top) 16px 0;max-width:640px;margin:0 auto;display:none;">
+
+  <!-- Hero card -->
+  <div style="background:var(--c-surface);border-radius:var(--r-card);padding:16px;
+              margin-top:16px;border:1px solid rgba(255,255,255,0.05);
+              display:flex;align-items:center;gap:14px;">
+    <div id="prof-avatar"
+         style="width:52px;height:52px;border-radius:50%;flex-shrink:0;
+                background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.25);
+                display:flex;align-items:center;justify-content:center;
+                font-size:20px;font-weight:800;color:var(--c-accent);">
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div id="prof-display-name" style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;"></div>
+      <div id="prof-display-phone" style="font-size:12px;color:var(--c-muted);margin-top:3px;"></div>
+    </div>
+  </div>
+
+  <!-- Saved passengers -->
+  <div style="margin-top:28px;">
+    <div class="section-label">Сохранённые пассажиры</div>
+    <div id="saved-pax-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+    <button onclick="openAddPaxSheet()"
+            style="width:100%;background:var(--c-bg-deep);
+                   border:1.5px dashed var(--c-border-md);border-radius:var(--r-card);
+                   padding:14px 16px;display:flex;align-items:center;gap:12px;
+                   cursor:pointer;-webkit-tap-highlight-color:transparent;
+                   transition:border-color 0.15s;margin-top:8px;"
+            onpointerdown="this.style.borderColor='var(--c-accent)'"
+            onpointerup="this.style.borderColor='var(--c-border-md)'"
+            onpointercancel="this.style.borderColor='var(--c-border-md)'">
+      <svg class="ui-icon" style="font-size:20px;color:var(--c-accent);"><use href="#i-add"></use></svg>
+      <span style="font-size:14px;font-weight:700;color:var(--c-accent);">Добавить пассажира</span>
+    </button>
+  </div>
+
+  <!-- Account settings -->
+  <div style="margin-top:28px;">
+    <div class="section-label">Данные аккаунта</div>
+    <div style="background:var(--c-surface);border-radius:var(--r-card);
+                padding:20px 16px;border:1px solid rgba(255,255,255,0.05);
+                display:flex;flex-direction:column;gap:18px;">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field in-card">
+          <label>Имя</label>
+          <input id="acc-first" type="text" placeholder="Имя" autocomplete="given-name"/>
+        </div>
+        <div class="field in-card">
+          <label>Фамилия</label>
+          <input id="acc-last" type="text" placeholder="Фамилия" autocomplete="family-name"/>
+        </div>
+      </div>
+
+      <div class="field in-card">
+        <label>Email</label>
+        <input id="acc-email" type="email" placeholder="email@example.com" autocomplete="email"/>
+      </div>
+
+      <div style="position:relative;">
+        <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                      background:var(--c-surface);font-size:10px;font-weight:700;
+                      text-transform:uppercase;letter-spacing:0.1em;
+                      color:var(--c-accent);z-index:1;pointer-events:none;">Телефон</label>
+        <div class="phone-wrap">
+          <span class="phone-prefix">+998</span>
+          <input id="acc-phone" type="tel" placeholder="90 123 45 67" autocomplete="tel"/>
+        </div>
+      </div>
+
+      <div class="field in-card">
+        <label>Регион</label>
+        <div class="select-wrap">
+          <select id="acc-region">
+            <option value="UZ">Узбекистан</option>
+            <option value="RU">Россия</option>
+            <option value="KZ">Казахстан</option>
+            <option value="KG">Кыргызстан</option>
+            <option value="TJ">Таджикистан</option>
+            <option value="TR">Турция</option>
+            <option value="AE">ОАЭ</option>
+          </select>
+          <svg class="sel-chev" viewBox="0 0 24 24"><use href="#i-chevron-down"></use></svg>
+        </div>
+      </div>
+
+      <!-- Currency: UZS only, locked -->
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+                    color:var(--c-label);margin-bottom:10px;padding:0 2px;">Валюта отображения</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;
+                      background:rgba(59,130,246,0.10);border:1.5px solid rgba(59,130,246,0.35);
+                      border-radius:var(--r-pill);padding:7px 14px;">
+            <svg class="ui-icon" style="font-size:14px;color:var(--c-accent);"><use href="#i-check"></use></svg>
+            <span style="font-size:14px;font-weight:700;color:#fff;">UZS</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;opacity:0.4;
+                      background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+                      border-radius:var(--r-pill);padding:7px 14px;">
+            <svg class="ui-icon" style="font-size:14px;color:var(--c-dim);"><use href="#i-lock"></use></svg>
+            <span style="font-size:14px;font-weight:700;color:var(--c-dim);">USD</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;opacity:0.4;
+                      background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+                      border-radius:var(--r-pill);padding:7px 14px;">
+            <svg class="ui-icon" style="font-size:14px;color:var(--c-dim);"><use href="#i-lock"></use></svg>
+            <span style="font-size:14px;font-weight:700;color:var(--c-dim);">RUB</span>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--c-dim);margin-top:8px;padding:0 2px;">Другие валюты появятся в ближайшее время</p>
+      </div>
+
+    </div>
+
+    <button onclick="saveAccountData()"
+            id="acc-save-btn"
+            style="width:100%;height:var(--btn-h);background:var(--c-accent);border:none;
+                   border-radius:var(--r-pill);font-family:var(--font);font-size:16px;font-weight:800;
+                   color:#fff;cursor:pointer;box-shadow:var(--btn-shadow);margin-top:14px;
+                   -webkit-tap-highlight-color:transparent;transition:transform 0.1s;"
+            onpointerdown="this.style.transform='scale(0.98)'"
+            onpointerup="this.style.transform='scale(1)'"
+            onpointercancel="this.style.transform='scale(1)'">
+      Сохранить изменения
+    </button>
+  </div>
+
+  <!-- Notifications -->
+  <div style="margin-top:28px;">
+    <div class="section-label">Уведомления</div>
+    <div class="toggle-row" onclick="toggleNotif()">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(245,158,11,0.10);
+                    display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg class="ui-icon" style="font-size:18px;color:var(--c-warning);"><use href="#i-bell"></use></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#fff;">Уведомления о рейсах</div>
+          <div style="font-size:11px;color:var(--c-dim);margin-top:2px;">Изменения расписания и напоминания</div>
+        </div>
+      </div>
+      <div class="toggle off" id="notif-toggle">
+        <div class="toggle-thumb"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trips & Payments -->
+  <div style="margin-top:28px;">
+    <div class="section-label">Поездки и оплата</div>
+    <div style="background:var(--c-surface);border-radius:var(--r-card);
+                border:1px solid rgba(255,255,255,0.05);overflow:hidden;">
+
+      <a href="#" class="settings-row">
+        <div class="settings-row__icon" style="background:rgba(59,130,246,0.10);">
+          <svg class="ui-icon" style="font-size:18px;color:var(--c-accent);"><use href="#i-history"></use></svg>
+        </div>
+        <span class="settings-row__label">История заказов</span>
+        <span class="settings-row__value">—</span>
+        <svg class="ui-icon" style="font-size:18px;color:var(--c-dimmer);"><use href="#i-chevron-right"></use></svg>
+      </a>
+
+      <a href="#" class="settings-row">
+        <div class="settings-row__icon" style="background:rgba(34,197,94,0.08);">
+          <svg class="ui-icon" style="font-size:18px;color:var(--c-success);"><use href="#i-credit-card"></use></svg>
+        </div>
+        <span class="settings-row__label">Способы оплаты</span>
+        <span class="settings-row__value">—</span>
+        <svg class="ui-icon" style="font-size:18px;color:var(--c-dimmer);"><use href="#i-chevron-right"></use></svg>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <button onclick="doLogout()"
+          style="width:100%;height:48px;background:rgba(239,68,68,0.08);
+                 border:1px solid rgba(239,68,68,0.18);border-radius:var(--r-pill);
+                 font-family:var(--font);font-size:15px;font-weight:700;
+                 color:var(--c-error);cursor:pointer;margin-top:20px;margin-bottom:32px;
+                 display:flex;align-items:center;justify-content:center;gap:8px;
+                 -webkit-tap-highlight-color:transparent;transition:background 0.15s;"
+          onpointerdown="this.style.background='rgba(239,68,68,0.14)'"
+          onpointerup="this.style.background='rgba(239,68,68,0.08)'"
+          onpointercancel="this.style.background='rgba(239,68,68,0.08)'">
+    <svg class="ui-icon" style="font-size:18px;"><use href="#i-logout"></use></svg>
+    Выйти из аккаунта
+  </button>
+
+</div><!-- /view-profile -->
+
+<!-- ══════════════════════════════════════════
+     PASSENGER EDIT SHEET
+     ══════════════════════════════════════════ -->
+<div class="pax-sheet" id="pp-sheet">
+  <div class="sheet-handle" id="pp-sheet-handle"></div>
+
+  <div class="sheet-header">
+    <div style="flex:1;min-width:0;">
+      <div class="sheet-header__title" id="pp-sheet-title">Добавить пассажира</div>
+    </div>
+    <button class="sheet-header__close" id="pp-close-btn" type="button">
+      <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;">
+        <use href="#i-close"></use>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Type selector -->
+  <div style="padding:0 16px 12px;flex-shrink:0;">
+    <div style="display:flex;background:#111827;border-radius:14px;padding:4px;gap:4px;">
+      <button class="type-btn active" data-type="adult"  onclick="setEditType('adult')">Взрослый</button>
+      <button class="type-btn"        data-type="child"  onclick="setEditType('child')">Ребёнок</button>
+      <button class="type-btn"        data-type="infant" onclick="setEditType('infant')">Младенец</button>
+    </div>
+  </div>
+
+  <!-- Scrollable form -->
+  <div class="sheet-scroll" id="pp-sheet-scroll">
+    <div style="display:flex;flex-direction:column;gap:16px;padding-bottom:8px;">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field" id="pp-first-field">
+          <label>Имя</label>
+          <input id="pp-first" type="text" placeholder="IVAN"
+                 autocomplete="given-name" autocorrect="off" spellcheck="false"
+                 style="text-transform:uppercase;letter-spacing:0.04em;"/>
+          <span class="field-err" id="pp-first-err">Только лат. буквы</span>
+        </div>
+        <div class="field" id="pp-last-field">
+          <label>Фамилия</label>
+          <input id="pp-last" type="text" placeholder="IVANOV"
+                 autocomplete="family-name" autocorrect="off" spellcheck="false"
+                 style="text-transform:uppercase;letter-spacing:0.04em;"/>
+          <span class="field-err" id="pp-last-err">Только лат. буквы</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="position:relative;" id="pp-dob-outer" class="date-field-outer">
+          <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                        background:var(--c-surface);font-size:10px;font-weight:700;
+                        text-transform:uppercase;letter-spacing:0.1em;
+                        color:var(--c-accent);z-index:1;pointer-events:none;">Дата рожд.</label>
+          <div class="date-wrap">
+            <input type="text" id="pp-dob" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
+            <label class="date-cal-btn">
+              <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;pointer-events:none;"><use href="#i-calendar"></use></svg>
+              <input type="date" id="pp-dob-native" class="date-native-input"/>
+            </label>
+          </div>
+          <span class="field-err" id="pp-dob-err">Некорректная дата</span>
+        </div>
+        <div class="gender-field-outer">
+          <label>Пол</label>
+          <div class="gender-wrap">
+            <button class="gender-btn active" id="pp-gender-male"   type="button" onclick="setPpGender('male')">Муж</button>
+            <button class="gender-btn"        id="pp-gender-female" type="button" onclick="setPpGender('female')">Жен</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-section" style="padding-bottom:0;">Документ</div>
+
+      <div class="field" id="pp-cit-field">
+        <label>Гражданство</label>
+        <div style="position:relative;">
+          <select id="pp-citizenship"
+                  style="width:100%;height:var(--field-h);background:var(--c-bg-deep);
+                         border:1px solid var(--c-border-md);border-radius:16px;
+                         padding:0 40px 0 16px;color:#fff;font-family:var(--font);
+                         font-size:16px;font-weight:600;appearance:none;
+                         -webkit-appearance:none;outline:none;transition:border-color 0.15s;">
+            <option value="UZ">Узбекистан</option>
+            <option value="RU">Россия</option>
+            <option value="KZ">Казахстан</option>
+            <option value="KG">Кыргызстан</option>
+            <option value="TJ">Таджикистан</option>
+            <option value="TR">Турция</option>
+            <option value="AE">ОАЭ</option>
+            <option value="US">США</option>
+            <option value="GB">Великобритания</option>
+            <option value="DE">Германия</option>
+            <option value="other">Другое</option>
+          </select>
+          <svg style="position:absolute;right:14px;top:50%;transform:translateY(-50%);
+                      width:20px;height:20px;fill:none;stroke:var(--c-dim);stroke-width:2.2;
+                      stroke-linecap:round;pointer-events:none;" viewBox="0 0 24 24">
+            <use href="#i-chevron-down"></use>
+          </svg>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field" id="pp-doc-field">
+          <label>Номер</label>
+          <input id="pp-doc" type="text" placeholder="AA 1234567"
+                 autocomplete="off" autocorrect="off" spellcheck="false"
+                 style="text-transform:uppercase;letter-spacing:0.05em;"/>
+          <span class="field-err" id="pp-doc-err">5–20 символов</span>
+        </div>
+        <div style="position:relative;" id="pp-exp-outer" class="date-field-outer">
+          <label style="position:absolute;top:-8px;left:16px;padding:0 6px;
+                        background:var(--c-surface);font-size:10px;font-weight:700;
+                        text-transform:uppercase;letter-spacing:0.1em;
+                        color:var(--c-accent);z-index:1;pointer-events:none;">Срок действ.</label>
+          <div class="date-wrap">
+            <input type="text" id="pp-exp" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10" autocomplete="off"/>
+            <label class="date-cal-btn">
+              <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;pointer-events:none;"><use href="#i-calendar"></use></svg>
+              <input type="date" id="pp-exp-native" class="date-native-input"/>
+            </label>
+          </div>
+          <span class="field-err" id="pp-exp-err">Некорректная дата</span>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /sheet-scroll -->
+
+  <div class="sheet-footer">
+    <button id="pp-delete-btn"
+            style="display:none;width:100%;height:42px;background:rgba(239,68,68,0.08);
+                   border:1px solid rgba(239,68,68,0.18);border-radius:var(--r-pill);
+                   font-family:var(--font);font-size:14px;font-weight:700;
+                   color:var(--c-error);cursor:pointer;margin-bottom:10px;
+                   align-items:center;justify-content:center;gap:6px;
+                   -webkit-tap-highlight-color:transparent;transition:background 0.15s;"
+            onpointerdown="this.style.background='rgba(239,68,68,0.14)'"
+            onpointerup="this.style.background='rgba(239,68,68,0.08)'"
+            onpointercancel="this.style.background='rgba(239,68,68,0.08)'"
+            onclick="deleteCurrentPax()">
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex-shrink:0;"><use href="#i-trash"></use></svg>
+      Удалить пассажира
+    </button>
+    <button class="sheet-save-btn" onclick="saveProfPax()">Сохранить</button>
+  </div>
+</div>
+
+<script src="js/bottom-sheet.js"></script>
+<script src="js/nav-menu.js"></script>
+<script>
+// ─── Storage helpers ──────────────────────────────────────────────────────────
+function getUser()     { try { return JSON.parse(localStorage.getItem('ct_user')||'null'); }             catch(e){return null;} }
+function setUser(u)    { try { localStorage.setItem('ct_user', JSON.stringify(u)); }                     catch(e){} }
+function getSavedPax() { try { var a=JSON.parse(localStorage.getItem('ct_saved_passengers')||'null'); return Array.isArray(a)?a:null; } catch(e){return null;} }
+function setSavedPax(a){ try { localStorage.setItem('ct_saved_passengers', JSON.stringify(a)); }         catch(e){} }
+
+var SEED_PAX = [
+  { id:'s1', firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
+  { id:'s2', firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
+  { id:'s3', firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
+];
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+var ppSheet;
+var currentEditIdx = -1;
+var editType = 'adult';
+
+(function init() {
+  initSheets();
+
+  ppSheet = new BottomSheet({
+    el: document.getElementById('pp-sheet'),
+    scrollEl: document.getElementById('pp-sheet-scroll'),
+  });
+  document.getElementById('pp-close-btn').addEventListener('click', function(){ ppSheet.close(); });
+
+  var user = getUser();
+  if (user && user.authenticated) {
+    showProfile(user);
+  } else {
+    showLogin();
+  }
+})();
+
+function showLogin() {
+  document.getElementById('view-login').style.display = 'block';
+  document.getElementById('view-profile').style.display = 'none';
+}
+
+function showProfile(user) {
+  document.getElementById('view-login').style.display = 'none';
+  document.getElementById('view-profile').style.display = 'block';
+
+  if (!getSavedPax()) setSavedPax(SEED_PAX.map(function(p){ return Object.assign({},p); }));
+
+  var name = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Профиль';
+  var initials = ((user.firstName||'?').charAt(0) + (user.lastName||'').charAt(0)).toUpperCase() || '?';
+  document.getElementById('prof-avatar').textContent = initials;
+  document.getElementById('prof-display-name').textContent = name;
+  document.getElementById('prof-display-phone').textContent = user.phone ? ('+998 ' + user.phone) : (user.email || '');
+
+  document.getElementById('acc-first').value  = user.firstName || '';
+  document.getElementById('acc-last').value   = user.lastName  || '';
+  document.getElementById('acc-email').value  = user.email     || '';
+  document.getElementById('acc-phone').value  = user.phone     || '';
+  if (user.region) document.getElementById('acc-region').value = user.region;
+
+  var toggle = document.getElementById('notif-toggle');
+  var on = !!user.notifications;
+  toggle.classList.toggle('on',  on);
+  toggle.classList.toggle('off', !on);
+
+  renderSavedPax();
+}
+
+// ─── Login / Logout ───────────────────────────────────────────────────────────
+window.doLogin = function() {
+  var rawName  = document.getElementById('login-name').value.trim();
+  var rawPhone = document.getElementById('login-phone').value.replace(/\D/g,'');
+  var user = {
+    authenticated: true,
+    firstName: rawName || 'Путешественник',
+    lastName: '',
+    phone: rawPhone,
+    email: '',
+    region: 'UZ',
+    currency: 'UZS',
+    notifications: false,
+  };
+  setUser(user);
+  if (!getSavedPax()) setSavedPax(SEED_PAX.map(function(p){ return Object.assign({},p); }));
+  showProfile(user);
+};
+
+window.doLogout = function() {
+  if (!confirm('Выйти из аккаунта?')) return;
+  try { localStorage.removeItem('ct_user'); } catch(e){}
+  showLogin();
+};
+
+// ─── Save account data ────────────────────────────────────────────────────────
+window.saveAccountData = function() {
+  var user = getUser() || {};
+  user.authenticated = true;
+  user.firstName = document.getElementById('acc-first').value.trim();
+  user.lastName  = document.getElementById('acc-last').value.trim();
+  user.email     = document.getElementById('acc-email').value.trim();
+  user.phone     = document.getElementById('acc-phone').value.replace(/\D/g,'');
+  user.region    = document.getElementById('acc-region').value;
+  user.currency  = 'UZS';
+  setUser(user);
+
+  var btn = document.getElementById('acc-save-btn');
+  var orig = btn.textContent;
+  btn.textContent = '✓ Сохранено';
+  setTimeout(function(){ btn.textContent = orig; }, 1800);
+
+  var name = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Профиль';
+  var initials = ((user.firstName||'?').charAt(0) + (user.lastName||'').charAt(0)).toUpperCase() || '?';
+  document.getElementById('prof-avatar').textContent = initials;
+  document.getElementById('prof-display-name').textContent = name;
+  document.getElementById('prof-display-phone').textContent = user.phone ? ('+998 ' + user.phone) : (user.email || '');
+};
+
+// ─── Notifications toggle ─────────────────────────────────────────────────────
+window.toggleNotif = function() {
+  var toggle = document.getElementById('notif-toggle');
+  var isOn = toggle.classList.contains('on');
+  toggle.classList.toggle('on',  !isOn);
+  toggle.classList.toggle('off',  isOn);
+  var user = getUser() || {};
+  user.notifications = !isOn;
+  setUser(user);
+};
+
+// ─── Saved passengers ─────────────────────────────────────────────────────────
+var TYPE_LABELS  = { adult:'Взрослый', child:'Ребёнок', infant:'Младенец' };
+var avatarStyle  = {
+  adult:  { bg:'rgba(59,130,246,0.12)', border:'rgba(59,130,246,0.25)', color:'var(--c-accent)'  },
+  child:  { bg:'rgba(245,158,11,0.10)', border:'rgba(245,158,11,0.25)', color:'var(--c-warning)' },
+  infant: { bg:'rgba(34,197,94,0.08)',  border:'rgba(34,197,94,0.22)',  color:'var(--c-success)' },
+};
+
+function renderSavedPax() {
+  var list = document.getElementById('saved-pax-list');
+  list.innerHTML = '';
+  var arr = getSavedPax() || [];
+  if (!arr.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--c-dim);font-size:13px;font-weight:500;">Нет сохранённых пассажиров</div>';
+    return;
+  }
+  arr.forEach(function(pax, idx) {
+    list.appendChild(buildSavedCard(pax, idx));
+  });
+}
+
+function buildSavedCard(pax, idx) {
+  var type = pax.type || 'adult';
+  var av = avatarStyle[type] || avatarStyle.adult;
+  var initials = ((pax.firstName||'?').charAt(0) + (pax.lastName||'').charAt(0)).toUpperCase();
+  var typeLabel = TYPE_LABELS[type] || 'Взрослый';
+
+  var card = document.createElement('div');
+  card.className = 'saved-pax-card';
+  card.onclick = function(){ openEditPaxSheet(idx); };
+  card.innerHTML =
+    '<div class="saved-pax-card__avatar" style="background:'+av.bg+';border:1.5px solid '+av.border+';color:'+av.color+';">'+initials+'</div>'+
+    '<div class="saved-pax-card__info">'+
+      '<div class="saved-pax-card__name">'+pax.lastName+' '+pax.firstName+'</div>'+
+      '<div class="saved-pax-card__meta">Паспорт · '+(pax.docNum||'—')+' · '+(pax.dob||'—')+'</div>'+
+    '</div>'+
+    '<span class="saved-pax-card__type saved-pax-card__type--'+type+'">'+typeLabel+'</span>'+
+    '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:var(--c-dimmer);stroke-width:2;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round;">'+
+      '<use href="#i-chevron-right"></use>'+
+    '</svg>';
+  return card;
+}
+
+// ─── Passenger sheet ──────────────────────────────────────────────────────────
+window.openAddPaxSheet = function() {
+  currentEditIdx = -1;
+  editType = 'adult';
+  document.getElementById('pp-sheet-title').textContent = 'Добавить пассажира';
+  document.getElementById('pp-delete-btn').style.display = 'none';
+  resetPpForm();
+  setEditType('adult');
+  ppSheet.open();
+};
+
+function openEditPaxSheet(idx) {
+  var arr = getSavedPax() || [];
+  var pax = arr[idx];
+  if (!pax) return;
+  currentEditIdx = idx;
+  editType = pax.type || 'adult';
+
+  document.getElementById('pp-sheet-title').textContent = 'Изменить пассажира';
+  document.getElementById('pp-delete-btn').style.display = 'flex';
+
+  setEditType(editType);
+  document.getElementById('pp-first').value       = pax.firstName   || '';
+  document.getElementById('pp-last').value        = pax.lastName    || '';
+  document.getElementById('pp-dob').value         = pax.dob         || '';
+  document.getElementById('pp-doc').value         = pax.docNum      || '';
+  document.getElementById('pp-exp').value         = pax.docExp      || '';
+  document.getElementById('pp-citizenship').value = pax.citizenship || 'UZ';
+  setPpGender(pax.gender || 'male');
+  clearPpErrors();
+  ppSheet.open();
+}
+
+function resetPpForm() {
+  ['pp-first','pp-last','pp-dob','pp-doc','pp-exp'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('pp-dob-native').value  = '';
+  document.getElementById('pp-exp-native').value  = '';
+  document.getElementById('pp-citizenship').value = 'UZ';
+  setPpGender('male');
+  clearPpErrors();
+}
+
+window.setEditType = function(type) {
+  editType = type;
+  document.querySelectorAll('#pp-sheet .type-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+};
+
+window.setPpGender = function(val) {
+  document.getElementById('pp-gender-male').classList.toggle('active',   val==='male');
+  document.getElementById('pp-gender-female').classList.toggle('active', val==='female');
+};
+
+// ─── Validation ───────────────────────────────────────────────────────────────
+var RE_LATIN = /^[A-Za-z][A-Za-z\s\-']*$/;
+var RE_DATE  = /^\d{2}\.\d{2}\.\d{4}$/;
+var RE_CYRIL = /[а-яёА-ЯЁ]/;
+
+function isValidDate(s) {
+  if (!RE_DATE.test(s)) return false;
+  var p = s.split('.').map(Number);
+  var d = new Date(p[2], p[1]-1, p[0]);
+  return d.getFullYear()===p[2] && d.getMonth()===p[1]-1 && d.getDate()===p[0];
+}
+function isValidDoc(v) {
+  var c = v.trim();
+  return !RE_CYRIL.test(c) && c.length>=5 && c.length<=20 && /^[A-Za-z0-9][A-Za-z0-9\s\-]{3,18}[A-Za-z0-9]$/.test(c);
+}
+function ppFieldErr(fid, eid, e) {
+  var f=document.getElementById(fid), er=document.getElementById(eid);
+  if(f) f.classList.toggle('field--error',e);
+  if(er) er.style.display=e?'block':'none';
+}
+function ppDateErr(oid, eid, e) {
+  var o=document.getElementById(oid), er=document.getElementById(eid);
+  if(o) o.classList.toggle('field--error',e);
+  if(er) er.style.display=e?'block':'none';
+}
+function clearPpErrors() {
+  ['pp-first-field','pp-last-field','pp-cit-field','pp-doc-field'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.classList.remove('field--error');
+  });
+  ['pp-first-err','pp-last-err','pp-dob-err','pp-doc-err','pp-exp-err'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  ['pp-dob-outer','pp-exp-outer'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.classList.remove('field--error');
+  });
+}
+
+// ─── Save / Delete ────────────────────────────────────────────────────────────
+window.saveProfPax = function() {
+  var firstName   = document.getElementById('pp-first').value.trim().toUpperCase();
+  var lastName    = document.getElementById('pp-last').value.trim().toUpperCase();
+  var dob         = document.getElementById('pp-dob').value.trim();
+  var docNum      = document.getElementById('pp-doc').value.trim().toUpperCase();
+  var docExp      = document.getElementById('pp-exp').value.trim();
+  var citizenship = document.getElementById('pp-citizenship').value;
+  var gender      = document.getElementById('pp-gender-male').classList.contains('active') ? 'male' : 'female';
+
+  var err = false;
+  if (!firstName || !RE_LATIN.test(firstName)) { ppFieldErr('pp-first-field','pp-first-err',true); err=true; }
+  if (!lastName  || !RE_LATIN.test(lastName))  { ppFieldErr('pp-last-field', 'pp-last-err', true); err=true; }
+  if (!dob       || !isValidDate(dob))          { ppDateErr('pp-dob-outer',  'pp-dob-err',  true); err=true; }
+  if (!docNum    || !isValidDoc(docNum))         { ppFieldErr('pp-doc-field', 'pp-doc-err',  true); err=true; }
+  if (!docExp    || !isValidDate(docExp))        { ppDateErr('pp-exp-outer',  'pp-exp-err',  true); err=true; }
+  if (err) return;
+
+  var arr = getSavedPax() || [];
+  var entry = {
+    id: currentEditIdx>=0 ? (arr[currentEditIdx]&&arr[currentEditIdx].id||String(Date.now())) : String(Date.now()),
+    firstName: firstName, lastName: lastName, gender: gender,
+    dob: dob, citizenship: citizenship, docNum: docNum, docExp: docExp,
+    type: editType,
+  };
+
+  if (currentEditIdx >= 0) {
+    arr[currentEditIdx] = entry;
+  } else {
+    arr.push(entry);
+  }
+  setSavedPax(arr);
+  renderSavedPax();
+  ppSheet.close();
+};
+
+window.deleteCurrentPax = function() {
+  if (currentEditIdx < 0) return;
+  if (!confirm('Удалить пассажира?')) return;
+  var arr = getSavedPax() || [];
+  arr.splice(currentEditIdx, 1);
+  setSavedPax(arr);
+  renderSavedPax();
+  ppSheet.close();
+};
+
+// ─── Date mask ────────────────────────────────────────────────────────────────
+function bindDateMask(textId, nativeId) {
+  var text=document.getElementById(textId), native=document.getElementById(nativeId), prev=0;
+  text.addEventListener('input', function(){
+    var raw=this.value.replace(/\D/g,''), del=raw.length<prev;
+    if (!del) {
+      if (raw.length===1 && parseInt(raw[0])>3) raw='0'+raw;
+      if (raw.length===3 && parseInt(raw[2])>1) raw=raw.slice(0,2)+'0'+raw[2];
+    }
+    raw=raw.slice(0,8); prev=raw.length;
+    var out=raw;
+    if (raw.length>4) out=raw.slice(0,2)+'.'+raw.slice(2,4)+'.'+raw.slice(4);
+    else if (raw.length>2) out=raw.slice(0,2)+'.'+raw.slice(2);
+    this.value=out;
+    native.value = raw.length===8 ? raw.slice(4)+'-'+raw.slice(2,4)+'-'+raw.slice(0,2) : '';
+  });
+  native.addEventListener('change', function(){
+    if (!this.value) return;
+    var p=this.value.split('-');
+    text.value=p[2]+'.'+p[1]+'.'+p[0]; prev=8;
+  });
+  native.addEventListener('focus', function(){
+    var o=this.closest('.date-field-outer');
+    if (o) setTimeout(function(){o.scrollIntoView({behavior:'smooth',block:'start'});},80);
+  });
+}
+
+bindDateMask('pp-dob','pp-dob-native');
+bindDateMask('pp-exp','pp-exp-native');
+
+document.getElementById('pp-first').addEventListener('blur', function(){ var v=this.value.trim(); if(v) ppFieldErr('pp-first-field','pp-first-err',!RE_LATIN.test(v)); });
+document.getElementById('pp-last').addEventListener('blur',  function(){ var v=this.value.trim(); if(v) ppFieldErr('pp-last-field', 'pp-last-err', !RE_LATIN.test(v)); });
+document.getElementById('pp-dob').addEventListener('blur',   function(){ var v=this.value.trim(); if(v) ppDateErr('pp-dob-outer',  'pp-dob-err',  !isValidDate(v)); });
+document.getElementById('pp-doc').addEventListener('blur',   function(){ var v=this.value.trim(); if(v) ppFieldErr('pp-doc-field', 'pp-doc-err',  !isValidDoc(v)); });
+document.getElementById('pp-exp').addEventListener('blur',   function(){ var v=this.value.trim(); if(v) ppDateErr('pp-exp-outer',  'pp-exp-err',  !isValidDate(v)); });
+</script>
+</body>
+</html>

@@ -4,19 +4,54 @@
       search: '<path d="M10.5 10.5m-5.5 0a5.5 5.5 0 1 0 11 0a5.5 5.5 0 1 0 -11 0"></path><path d="M15 15l4.5 4.5"></path>',
       confirmation_number: '<path d="M5 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z"></path><path d="M9 9h.01M9 15h.01"></path>',
       person: '<path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z"></path><path d="M4.5 20a7.5 7.5 0 0 1 15 0"></path>',
-      settings: '<path d="M12 8.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34a1.7 1.7 0 0 0-1 1.55V22a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55a1.7 1.7 0 0 0-1.87.34l-.06.06A2 2 0 1 1 4.32 17l.06-.06a1.7 1.7 0 0 0 .34-1.87a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1a1.7 1.7 0 0 0-.34-1.87l-.06-.06A2 2 0 1 1 7.07 4.3l.06.06a1.7 1.7 0 0 0 1.87.34h.01A1.7 1.7 0 0 0 10 3.16V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55a1.7 1.7 0 0 0 1.87-.34l.06-.06A2 2 0 1 1 19.76 7l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"></path>',
+      person_login: '<path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z"></path><path d="M4.5 20a7.5 7.5 0 0 1 9.5-7.2M17 16h6m-3-3l3 3-3 3"></path>',
       support_agent: '<path d="M4 12a8 8 0 0 1 16 0v4"></path><path d="M4 16h3v3H4zM17 16h3v3h-3z"></path><path d="M9 18a3 3 0 0 0 6 0"></path>',
     };
     return '<svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;display:inline-block;vertical-align:middle;flex-shrink:0;color:#3B82F6;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">' + (map[name] || '') + '</svg>';
   }
 
-  var ITEMS = [
-    { icon: 'search',              label: 'Новый поиск',    href: 'index.html' },
-    { icon: 'confirmation_number', label: 'Мои брони',      href: '#' },
-    { icon: 'person',              label: 'Профиль',        href: '#' },
-    { icon: 'settings',            label: 'Настройки',      href: '#' },
-    { icon: 'support_agent',       label: '24/7 Поддержка', href: '#' },
-  ];
+  function getItems() {
+    var auth = false;
+    try {
+      var u = JSON.parse(localStorage.getItem('ct_user') || 'null');
+      auth = !!(u && u.authenticated);
+    } catch (e) {}
+
+    if (auth) {
+      return [
+        { icon: 'search',              label: 'Новый поиск',     href: 'index.html' },
+        { icon: 'confirmation_number', label: 'Мои брони',       href: '#' },
+        { icon: 'person',              label: 'Профиль',         href: 'profile.html' },
+        { icon: 'support_agent',       label: '24/7 Поддержка',  href: '#' },
+      ];
+    } else {
+      return [
+        { icon: 'search',        label: 'Новый поиск',      href: 'index.html' },
+        { icon: 'person_login',  label: 'Профиль / Войти',  href: 'profile.html' },
+        { icon: 'support_agent', label: '24/7 Поддержка',   href: '#' },
+      ];
+    }
+  }
+
+  function buildRows(listEl) {
+    listEl.innerHTML = '';
+    getItems().forEach(function (item) {
+      var row = document.createElement('a');
+      row.href = item.href;
+      row.setAttribute('style', [
+        'display:flex;align-items:center;gap:16px;',
+        'padding:15px 24px;text-decoration:none;',
+        'color:#dfe2f2;-webkit-tap-highlight-color:transparent;',
+        'font-family:Manrope,sans-serif;font-size:16px;font-weight:600;',
+        'transition:background 0.12s;',
+      ].join(''));
+      row.onpointerdown = function () { this.style.background = 'rgba(255,255,255,0.05)'; };
+      row.onpointerup   = function () { this.style.background = ''; };
+      row.onpointercancel = function () { this.style.background = ''; };
+      row.innerHTML = iconSvg(item.icon) + item.label;
+      listEl.appendChild(row);
+    });
+  }
 
   function inject() {
     var overlay = document.createElement('div');
@@ -48,25 +83,8 @@
     handle.innerHTML = '<div style="width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:9999px;"></div>';
 
     var list = document.createElement('div');
+    list.id = 'nav-menu-list';
     list.setAttribute('style', 'padding:4px 0 8px;');
-
-    ITEMS.forEach(function (item) {
-      var row = document.createElement('a');
-      row.href = item.href;
-      row.setAttribute('style', [
-        'display:flex;align-items:center;gap:16px;',
-        'padding:15px 24px;text-decoration:none;',
-        'color:#dfe2f2;-webkit-tap-highlight-color:transparent;',
-        'font-family:Manrope,sans-serif;font-size:16px;font-weight:600;',
-        'transition:background 0.12s;',
-      ].join(''));
-      row.onpointerdown = function () { this.style.background = 'rgba(255,255,255,0.05)'; };
-      row.onpointerup   = function () { this.style.background = ''; };
-      row.onpointercancel = function () { this.style.background = ''; };
-      row.innerHTML =
-        iconSvg(item.icon) + item.label;
-      list.appendChild(row);
-    });
 
     sheet.appendChild(handle);
     sheet.appendChild(list);
@@ -76,6 +94,9 @@
   }
 
   window.openNavMenu = function () {
+    var listEl = document.getElementById('nav-menu-list');
+    if (listEl) buildRows(listEl);
+
     var overlay = document.getElementById('nav-menu-overlay');
     overlay.style.display = 'flex';
     requestAnimationFrame(function () {

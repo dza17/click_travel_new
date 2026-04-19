@@ -534,6 +534,16 @@
   <!-- ── PASSENGER LIST ── -->
   <div style="margin-top:24px;">
     <div class="section-label">Пассажиры</div>
+    <!-- Login CTA — shown only when unauthenticated -->
+    <div id="pax-login-cta" style="display:none;margin-bottom:12px;">
+      <a href="profile.html"
+         style="display:inline-flex;align-items:center;gap:6px;
+                background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.15);
+                border-radius:999px;padding:7px 14px;text-decoration:none;
+                font-family:var(--font);font-size:12px;font-weight:700;color:var(--c-accent);">
+        Войти, если уже есть аккаунт
+      </a>
+    </div>
     <div id="pax-list" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 
@@ -764,7 +774,7 @@
       </div>
 
       <!-- Сохранить данные о пассажире -->
-      <div class="toggle-row" onclick="toggleSwitch('sf-save-pax')"
+      <div id="sf-save-toggle-row" class="toggle-row" onclick="toggleSwitch('sf-save-pax')"
            style="background:var(--c-bg-deep);border:1px solid var(--c-border-md);">
         <div>
           <div style="font-size:14px;font-weight:600;color:#fff;">Сохранить данные о пассажире</div>
@@ -872,6 +882,13 @@ function emptyPax(type) {
 
   renderPaxList();
 
+  // Auth-aware UI
+  const auth = isAuth();
+  const loginCta = document.getElementById('pax-login-cta');
+  const saveToggleRow = document.getElementById('sf-save-toggle-row');
+  if (loginCta) loginCta.style.display = auth ? 'none' : 'block';
+  if (saveToggleRow) saveToggleRow.style.display = auth ? 'flex' : 'none';
+
   // Init bottom sheet engine (scrollEl starts on selection view)
   initSheets();
   sheetInstance = new BottomSheet({
@@ -938,12 +955,23 @@ function buildPaxCard(pax, idx) {
   return card;
 }
 
-// ─── Mock saved passengers ───────────────────────────────────────────────────
-const MOCK_SAVED = [
-  { firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
-  { firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
-  { firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
+// ─── Auth + saved-passenger helpers ──────────────────────────────────────────
+function isAuth() {
+  try { var u=JSON.parse(localStorage.getItem('ct_user')||'null'); return !!(u&&u.authenticated); } catch(e){return false;}
+}
+function getSavedPaxStorage() {
+  try { var a=JSON.parse(localStorage.getItem('ct_saved_passengers')||'null'); return Array.isArray(a)?a:null; } catch(e){return null;}
+}
+function persistSavedPax(arr) {
+  try { localStorage.setItem('ct_saved_passengers', JSON.stringify(arr)); } catch(e){}
+}
+
+const MOCK_SEED = [
+  { id:'s1', firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
+  { id:'s2', firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
+  { id:'s3', firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
 ];
+let MOCK_SAVED = getSavedPaxStorage() || MOCK_SEED.slice();
 
 const typeColorMap  = { adult: 'var(--c-accent)', child: 'var(--c-warning)', infant: 'var(--c-success)' };
 const typeBorderMap = { adult:'rgba(59,130,246,0.25)', child:'rgba(245,158,11,0.25)', infant:'rgba(34,197,94,0.25)' };
@@ -961,6 +989,13 @@ function setSheetHeader(idx) {
 function openPassengerSheet(idx) {
   currentPaxIdx = idx;
   setSheetHeader(idx);
+
+  // Unauthenticated: skip saved-passenger selection, go straight to empty form
+  if (!isAuth()) {
+    window.switchToForm();
+    sheetInstance.open();
+    return;
+  }
 
   // Build filtered saved list
   const matching = MOCK_SAVED.filter(s => s.type === PAX_LIST[idx].type);
@@ -1236,11 +1271,14 @@ window.savePassenger = function() {
     firstName, lastName, gender, dob, citizenship, docNum, docExp,
   };
 
-  // Add to mock saved list if not already there
+  // Update in-memory saved list; persist to localStorage if authenticated + toggle on
+  const savePaxToggle = document.getElementById('sf-save-pax');
+  const shouldPersist = isAuth() && savePaxToggle && savePaxToggle.classList.contains('on');
   if (!MOCK_SAVED.some(s => s.docNum === docNum)) {
-    MOCK_SAVED.push({ firstName, lastName, gender, dob, citizenship, docNum, docExp,
+    MOCK_SAVED.push({ id: String(Date.now()), firstName, lastName, gender, dob, citizenship, docNum, docExp,
                       type: PAX_LIST[currentPaxIdx].type });
   }
+  if (shouldPersist) persistSavedPax(MOCK_SAVED);
 
   renderPaxList();
   try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
