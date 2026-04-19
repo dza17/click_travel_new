@@ -710,16 +710,24 @@
 <script src="js/nav-menu.js"></script>
 <script>
 // ─── Storage helpers ──────────────────────────────────────────────────────────
-function getUser()     { try { return JSON.parse(localStorage.getItem('ct_user')||'null'); }             catch(e){return null;} }
-function setUser(u)    { try { localStorage.setItem('ct_user', JSON.stringify(u)); }                     catch(e){} }
-function getSavedPax() { try { var a=JSON.parse(localStorage.getItem('ct_saved_passengers')||'null'); return Array.isArray(a)?a:null; } catch(e){return null;} }
-function setSavedPax(a){ try { localStorage.setItem('ct_saved_passengers', JSON.stringify(a)); }         catch(e){} }
+// Saved passengers are scoped inside ct_user to prevent cross-user leakage on logout.
+function getUser()  { try { return JSON.parse(localStorage.getItem('ct_user')||'null'); } catch(e){return null;} }
+function setUser(u) { try { localStorage.setItem('ct_user', JSON.stringify(u)); }          catch(e){} }
 
-var SEED_PAX = [
-  { id:'s1', firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
-  { id:'s2', firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
-  { id:'s3', firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
-];
+function getSavedPax() {
+  try {
+    var u=JSON.parse(localStorage.getItem('ct_user')||'null');
+    return (u&&u.authenticated&&Array.isArray(u.savedPassengers)) ? u.savedPassengers : null;
+  } catch(e){ return null; }
+}
+function setSavedPax(arr) {
+  try {
+    var u=JSON.parse(localStorage.getItem('ct_user')||'null');
+    if (!u||!u.authenticated) return;
+    u.savedPassengers=arr;
+    localStorage.setItem('ct_user', JSON.stringify(u));
+  } catch(e){}
+}
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 var ppSheet;
@@ -751,8 +759,6 @@ function showLogin() {
 function showProfile(user) {
   document.getElementById('view-login').style.display = 'none';
   document.getElementById('view-profile').style.display = 'block';
-
-  if (!getSavedPax()) setSavedPax(SEED_PAX.map(function(p){ return Object.assign({},p); }));
 
   var name = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Профиль';
   var initials = ((user.firstName||'?').charAt(0) + (user.lastName||'').charAt(0)).toUpperCase() || '?';
@@ -787,15 +793,18 @@ window.doLogin = function() {
     region: 'UZ',
     currency: 'UZS',
     notifications: false,
+    savedPassengers: [],
   };
   setUser(user);
-  if (!getSavedPax()) setSavedPax(SEED_PAX.map(function(p){ return Object.assign({},p); }));
   showProfile(user);
 };
 
 window.doLogout = function() {
   if (!confirm('Выйти из аккаунта?')) return;
-  try { localStorage.removeItem('ct_user'); } catch(e){}
+  try {
+    localStorage.removeItem('ct_user');
+    localStorage.removeItem('ct_saved_passengers'); // remove legacy key if present
+  } catch(e){}
   showLogin();
 };
 

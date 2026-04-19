@@ -960,18 +960,22 @@ function isAuth() {
   try { var u=JSON.parse(localStorage.getItem('ct_user')||'null'); return !!(u&&u.authenticated); } catch(e){return false;}
 }
 function getSavedPaxStorage() {
-  try { var a=JSON.parse(localStorage.getItem('ct_saved_passengers')||'null'); return Array.isArray(a)?a:null; } catch(e){return null;}
+  try {
+    var u=JSON.parse(localStorage.getItem('ct_user')||'null');
+    return (u&&u.authenticated&&Array.isArray(u.savedPassengers)) ? u.savedPassengers : null;
+  } catch(e){ return null; }
 }
 function persistSavedPax(arr) {
-  try { localStorage.setItem('ct_saved_passengers', JSON.stringify(arr)); } catch(e){}
+  try {
+    var u=JSON.parse(localStorage.getItem('ct_user')||'null');
+    if (!u||!u.authenticated) return;
+    u.savedPassengers=arr;
+    localStorage.setItem('ct_user', JSON.stringify(u));
+  } catch(e){}
 }
 
-const MOCK_SEED = [
-  { id:'s1', firstName:'ISLOM',   lastName:'KARIMOV',  gender:'male',   dob:'12.03.1990', citizenship:'UZ', docNum:'AA1234567', docExp:'12.03.2030', type:'adult'  },
-  { id:'s2', firstName:'ZULFIYA', lastName:'KARIMOVA', gender:'female', dob:'05.08.1993', citizenship:'UZ', docNum:'AA7654321', docExp:'05.08.2033', type:'adult'  },
-  { id:'s3', firstName:'AMIR',    lastName:'KARIMOV',  gender:'male',   dob:'17.11.2015', citizenship:'UZ', docNum:'AB9876543', docExp:'17.11.2028', type:'child'  },
-];
-let MOCK_SAVED = getSavedPaxStorage() || MOCK_SEED.slice();
+// Authenticated users load their own saved passengers; unauthenticated get no saved state.
+let MOCK_SAVED = isAuth() ? (getSavedPaxStorage() || []) : [];
 
 const typeColorMap  = { adult: 'var(--c-accent)', child: 'var(--c-warning)', infant: 'var(--c-success)' };
 const typeBorderMap = { adult:'rgba(59,130,246,0.25)', child:'rgba(245,158,11,0.25)', infant:'rgba(34,197,94,0.25)' };
@@ -1271,14 +1275,16 @@ window.savePassenger = function() {
     firstName, lastName, gender, dob, citizenship, docNum, docExp,
   };
 
-  // Update in-memory saved list; persist to localStorage if authenticated + toggle on
+  // Save to passenger profile only for authenticated users with toggle on.
+  // Unauthenticated: booking slot (PAX_LIST) is already updated above — no saved-passenger mutation.
   const savePaxToggle = document.getElementById('sf-save-pax');
-  const shouldPersist = isAuth() && savePaxToggle && savePaxToggle.classList.contains('on');
-  if (!MOCK_SAVED.some(s => s.docNum === docNum)) {
-    MOCK_SAVED.push({ id: String(Date.now()), firstName, lastName, gender, dob, citizenship, docNum, docExp,
-                      type: PAX_LIST[currentPaxIdx].type });
+  if (isAuth() && savePaxToggle && savePaxToggle.classList.contains('on')) {
+    if (!MOCK_SAVED.some(s => s.docNum === docNum)) {
+      MOCK_SAVED.push({ id: String(Date.now()), firstName, lastName, gender, dob, citizenship, docNum, docExp,
+                        type: PAX_LIST[currentPaxIdx].type });
+    }
+    persistSavedPax(MOCK_SAVED);
   }
-  if (shouldPersist) persistSavedPax(MOCK_SAVED);
 
   renderPaxList();
   try { sessionStorage.setItem('ct_pax_list_draft', JSON.stringify(PAX_LIST)); } catch(e) {}
