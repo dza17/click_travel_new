@@ -142,9 +142,18 @@ The following files are the durable project memory:
 - `SESSION_LOG.md`
 - `TECH_DEBT.md`
 - `DEPLOY.md`
+- `DEPLOY_VERIFY.md`
+- `PROCESS_INCIDENTS.md`
 - `REVIEW_PROTOCOL.md`
 
 These files should be enough to restore the working model after restart.
+
+## Domain Policy
+
+- The only canonical production domain for this project is `clicktravel.click`
+- Do not treat `painai.online` as a valid alias for this project
+- Do not add `www.clicktravel.click` unless Roman explicitly requests it
+- For deploy verification, confirm canonical host behavior on `clicktravel.click`, not just generic HTTP 200
 
 ## Reset Recovery
 
@@ -193,3 +202,13 @@ Each debt item should include at least:
 - impact
 - effort
 - trigger to address
+
+## Process Incident Logging
+
+If execution quality fails in an operational way, record it in `PROCESS_INCIDENTS.md`.
+
+Examples:
+- wrong-branch commit
+- work in the wrong repo root
+- unsafe git recovery attempt
+- deploy finished without content verification

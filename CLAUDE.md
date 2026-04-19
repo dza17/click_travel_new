@@ -28,6 +28,8 @@ Also read the global memory file configured in `~/.claude/CLAUDE.md`.
 
 - Work only in a feature branch unless Roman explicitly instructs otherwise
 - Do not push to `main`
+- Before every commit, explicitly verify the current branch
+- If the current branch is `main` or `master`, stop and switch back to the intended feature branch before committing
 - Prefer small, atomic commits
 - Run the most relevant checks available in the repo
 - If UI changes, validate all directly affected screens, not just one file
@@ -85,3 +87,5 @@ At the end of each meaningful implementation cycle, provide:
 - Do not run `git init` unless Roman explicitly asks to initialize a new repository
 - Do not use `git reset --hard` as workflow recovery
 - If git behaves unexpectedly, stop and re-check repo root instead of improvising destructive recovery
+- Treat `clicktravel.click` as the only canonical domain for this project unless Roman explicitly requests a domain change
+- Do not reintroduce `painai.online`, `www.clicktravel.click`, or other aliases into Apache, docs, or code comments without explicit approval

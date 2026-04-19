@@ -1,6 +1,6 @@
 /**
  * bottom-sheet.js — Native-feel bottom sheet engine
- * painai.online / click_travel_new
+ * clicktravel.click / click_travel_new
  */
 ;(function (global) {
   'use strict';

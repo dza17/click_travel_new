@@ -33,6 +33,7 @@ A release candidate is safest when:
 - Confirm there are no stale selectors or removed class references left behind
 - Confirm initialization order is valid for new overlays, sheets, menus, or injected components
 - Confirm no obvious conflict with existing shared UI patterns
+- Confirm deploy/docs references still point to the canonical domain `clicktravel.click` if the task touches release-facing config or documentation
 
 ### Results Screen Specific
 

@@ -1,6 +1,6 @@
 /**
  * sheets.js — Direction, Calendar, Passengers sheet implementations
- * painai.online / click_travel_new
+ * clicktravel.click / click_travel_new
  */
 ;(function () {
   'use strict';

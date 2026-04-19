@@ -2,6 +2,15 @@
 
 ## Entries
 
+- Date: 2026-04-19
+  Task: Canonical domain switch from `painai.online` to `clicktravel.click`
+  Agent: ChatGPT/Codex
+  Branch: main
+  Commit:
+  Status: completed on server and in docs
+  Checks: DNS for `clicktravel.click` resolves to `85.193.86.237`; Apache vhost switched to `clicktravel.click`; Let’s Encrypt certificate issued for `clicktravel.click`; `apachectl configtest` OK; `http://clicktravel.click` redirects to canonical HTTPS; `https://clicktravel.click` returns `200`; `painai.online` DNS removed
+  Notes: project now treats `clicktravel.click` as the only canonical domain; `painai.online` is intentionally detached for possible future reuse
+
 - Date: 2026-04-18
   Task: Refactor passenger_details.html — dynamic passenger list + bottom-sheet forms + date masks + validation
   Agent: Claude Code
