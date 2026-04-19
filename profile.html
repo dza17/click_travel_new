@@ -711,8 +711,21 @@
 <script>
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 // Saved passengers are scoped inside ct_user to prevent cross-user leakage on logout.
+// ct_users_store keeps a per-phone snapshot so returning users restore their own data.
 function getUser()  { try { return JSON.parse(localStorage.getItem('ct_user')||'null'); } catch(e){return null;} }
 function setUser(u) { try { localStorage.setItem('ct_user', JSON.stringify(u)); }          catch(e){} }
+
+function getUserStore() {
+  try { return JSON.parse(localStorage.getItem('ct_users_store')||'{}'); } catch(e){ return {}; }
+}
+function saveToUserStore(u) {
+  if (!u || !u.phone) return;
+  try {
+    var store = getUserStore();
+    store[u.phone] = u;
+    localStorage.setItem('ct_users_store', JSON.stringify(store));
+  } catch(e){}
+}
 
 function getSavedPax() {
   try {
@@ -726,6 +739,7 @@ function setSavedPax(arr) {
     if (!u||!u.authenticated) return;
     u.savedPassengers=arr;
     localStorage.setItem('ct_user', JSON.stringify(u));
+    saveToUserStore(u);
   } catch(e){}
 }
 
@@ -784,7 +798,8 @@ function showProfile(user) {
 window.doLogin = function() {
   var rawName  = document.getElementById('login-name').value.trim();
   var rawPhone = document.getElementById('login-phone').value.replace(/\D/g,'');
-  var user = {
+  var store    = getUserStore();
+  var user = store[rawPhone] || {
     authenticated: true,
     firstName: rawName || 'Путешественник',
     lastName: '',
@@ -795,13 +810,19 @@ window.doLogin = function() {
     notifications: false,
     savedPassengers: [],
   };
+  user.authenticated = true;
+  // Update name only if provided and user is new (store entry had no name yet)
+  if (rawName && !store[rawPhone]) user.firstName = rawName;
   setUser(user);
+  saveToUserStore(user);
   showProfile(user);
 };
 
 window.doLogout = function() {
   if (!confirm('Выйти из аккаунта?')) return;
   try {
+    var u = getUser();
+    if (u) saveToUserStore(u); // snapshot before clearing
     localStorage.removeItem('ct_user');
     localStorage.removeItem('ct_saved_passengers'); // remove legacy key if present
   } catch(e){}
@@ -819,6 +840,7 @@ window.saveAccountData = function() {
   user.region    = document.getElementById('acc-region').value;
   user.currency  = 'UZS';
   setUser(user);
+  saveToUserStore(user);
 
   var btn = document.getElementById('acc-save-btn');
   var orig = btn.textContent;
@@ -841,6 +863,7 @@ window.toggleNotif = function() {
   var user = getUser() || {};
   user.notifications = !isOn;
   setUser(user);
+  saveToUserStore(user);
 };
 
 // ─── Saved passengers ─────────────────────────────────────────────────────────
