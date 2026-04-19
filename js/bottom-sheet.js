@@ -103,6 +103,8 @@
       this._velY     = 0;
       this._lastY    = 0;
       this._lastT    = 0;
+      this._vv       = global.visualViewport || null;
+      this._boundVv  = this._handleViewportChange.bind(this);
 
       // Initial hidden state
       this.el.style.transform  = 'translateY(100%)';
@@ -125,6 +127,7 @@
       this._open = true;
 
       this.el.style.display = 'flex';
+      this._applyViewportLayout();
       this.el.getBoundingClientRect(); // force reflow
 
       requestAnimationFrame(() => {
@@ -135,6 +138,10 @@
       Overlay.show(this);
       ScrollLock.lock();
       document.addEventListener('keydown', this._kd);
+      if (this._vv) {
+        this._vv.addEventListener('resize', this._boundVv);
+        this._vv.addEventListener('scroll', this._boundVv);
+      }
 
       // Auto-focus first text input after animation
       setTimeout(() => {
@@ -155,6 +162,11 @@
       Overlay.hide();
       ScrollLock.unlock();
       document.removeEventListener('keydown', this._kd);
+      if (this._vv) {
+        this._vv.removeEventListener('resize', this._boundVv);
+        this._vv.removeEventListener('scroll', this._boundVv);
+      }
+      this._clearViewportLayout();
 
       setTimeout(() => { if (!this._open) this.el.style.display = 'none'; }, 280);
 
@@ -230,6 +242,39 @@
         this._tr('spring');
         this.el.style.transform = 'translateY(0)';
         Overlay.setAlpha(1);
+      }
+    }
+
+    _handleViewportChange() {
+      if (!this._open) return;
+      this._applyViewportLayout();
+    }
+
+    _applyViewportLayout() {
+      if (!this._vv) return;
+
+      const vv = this._vv;
+      const viewportHeight = Math.max(0, Math.round(vv.height));
+      const keyboardInset = Math.max(0, Math.round(global.innerHeight - vv.height - vv.offsetTop));
+
+      this.el.style.height = `${viewportHeight}px`;
+      this.el.style.maxHeight = `${viewportHeight}px`;
+
+      if (this.scrollEl) {
+        const currentBase = this.scrollEl.dataset.basePadBottom
+          || global.getComputedStyle(this.scrollEl).paddingBottom
+          || '0px';
+        if (!this.scrollEl.dataset.basePadBottom) this.scrollEl.dataset.basePadBottom = currentBase;
+        const base = parseFloat(currentBase) || 0;
+        this.scrollEl.style.paddingBottom = `${Math.round(base + keyboardInset + 16)}px`;
+      }
+    }
+
+    _clearViewportLayout() {
+      this.el.style.height = '';
+      this.el.style.maxHeight = '';
+      if (this.scrollEl && this.scrollEl.dataset.basePadBottom) {
+        this.scrollEl.style.paddingBottom = this.scrollEl.dataset.basePadBottom;
       }
     }
 
