@@ -46,6 +46,10 @@ This repository is a static front-end prototype for the Click Travel booking flo
   Reason: maintain one visual language across the flow
   Tradeoff: local one-off styles can erode consistency if not reviewed carefully
 
+- Prefer inline SVG for user-facing UI icons on critical screens
+  Reason: avoids first-load icon-font flash where icon names briefly render as text on cold Safari loads
+  Tradeoff: icons require slightly more markup or shared helpers than font-based symbols
+
 - Prefer modular front-end decomposition over microservices
   Reason: token efficiency and implementation safety improve when tasks touch a few small files instead of large HTML files with mixed markup/CSS/JS
   Tradeoff: requires gradual extraction of screen logic into stable JS modules and shared helpers
@@ -63,6 +67,10 @@ This repository is a static front-end prototype for the Click Travel booking flo
 - Prototype-to-product drift
   Impact: future implementation becomes harder to translate into a real application
   Mitigation: capture reusable decisions explicitly in docs before complexity grows
+
+- Icon-font flash on cold loads
+  Impact: users may briefly see icon names instead of icons on first uncached render
+  Mitigation: prefer inline SVG for critical UI icons and avoid introducing new user-facing icon-font dependencies on primary flows
 
 ## Future Changes
 

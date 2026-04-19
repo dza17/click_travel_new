@@ -3,6 +3,15 @@
 ## Entries
 
 - Date: 2026-04-19
+  Task: Fullscreen bottom-sheet polish + replace primary icon-font usage with inline SVG on `index/results`
+  Agent: ChatGPT/Codex
+  Branch: main
+  Commit: 640c422, 542413d, 6b97241
+  Status: completed, pushed, deployed
+  Checks: shared direction/calendar sheets keep full-height; sheets lift above keyboard on iPhone Safari; primary `index/results` UI icons no longer depend on `Material Symbols`; production server fast-forwarded to latest commit; `https://clicktravel.click` returns `200`
+  Notes: durable project rule added — prefer inline SVG for critical user-facing icons to avoid cold-load text flash on uncached Safari sessions
+
+- Date: 2026-04-19
   Task: Canonical domain switch from `painai.online` to `clicktravel.click`
   Agent: ChatGPT/Codex
   Branch: main

@@ -34,6 +34,7 @@ A release candidate is safest when:
 - Confirm initialization order is valid for new overlays, sheets, menus, or injected components
 - Confirm no obvious conflict with existing shared UI patterns
 - Confirm deploy/docs references still point to the canonical domain `clicktravel.click` if the task touches release-facing config or documentation
+- Confirm critical icons on affected screens do not flash as text labels on a cold uncached load if icon rendering was changed
 
 ### Results Screen Specific
 
@@ -89,6 +90,7 @@ For UI-only prototype changes, Human visual check may be short, but it should st
 - apply
 - reset/toggle off
 - layout sanity
+- first cold-load polish for critical UI assets when fonts/icons changed
 
 ## Recording Result
 

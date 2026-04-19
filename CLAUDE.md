@@ -77,6 +77,9 @@ At the end of each meaningful implementation cycle, provide:
 - Reuse current design tokens and existing JS patterns where possible
 - Avoid one-off styling unless there is a clear reason
 - Think in user flows, not isolated pages
+- For critical user-facing icons, prefer inline SVG over icon fonts
+- Do not introduce new `Material Symbols` dependencies on primary flows if the same icon can be rendered as SVG
+- If a task affects cold-load first paint, explicitly check for icon/text flash on uncached mobile Safari loads
 
 ## Safety Rules
 
