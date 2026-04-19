@@ -234,9 +234,12 @@
                onpointerdown="this.style.opacity='0.65'"
                onpointerup="this.style.opacity='1'"
                onpointercancel="this.style.opacity='1'">
-            <span class="material-symbols-outlined"
-                  style="font-size:18px;color:#374151;margin-right:12px;flex-shrink:0;
-                         font-variation-settings:'FILL' 0,'wght' 300;">flight_takeoff</span>
+            <svg viewBox="0 0 24 24"
+                 aria-hidden="true"
+                 style="width:18px;height:18px;color:#374151;margin-right:12px;flex-shrink:0;">
+              <path d="M2 19h20" fill="none" stroke="currentColor" stroke-width="2"></path>
+              <path d="M3 16l7.5-2 3.4-8.4c.3-.8 1.4-1 2-.3.3.3.4.8.2 1.2L14.5 12l5.2-1.4c.5-.1 1 .1 1.2.6.2.5 0 1.1-.5 1.4L16 15l1.8 3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
             <div style="flex:1;min-width:0;">
               <div style="font-size:14px;font-weight:600;color:#e2e8f0;
                           display:flex;align-items:baseline;gap:6px;">

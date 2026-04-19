@@ -13,6 +13,19 @@
   'use strict';
 
   // ── HTML templates ──────────────────────────────────────────────────────────
+  function iconSvg(name, style) {
+    const svgStyle = style || '';
+    const map = {
+      close: '<path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+      luggage: '<path d="M9 7V5a3 3 0 016 0v2M7 7h10a2 2 0 012 2v8a3 3 0 01-3 3H8a3 3 0 01-3-3V9a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+      flight_takeoff: '<path d="M2 19h20" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 16l7.5-2 3.4-8.4c.3-.8 1.4-1 2-.3.3.3.4.8.2 1.2L14.5 12l5.2-1.4c.5-.1 1 .1 1.2.6.2.5 0 1.1-.5 1.4L16 15l1.8 3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+      chevron_right: '<path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+      restart_alt: '<path d="M4 10V4h6M20 14v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 10a8 8 0 00-14-4M4 14a8 8 0 0014 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      arrow_back: '<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+      check: '<path d="M8 12.3l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+    };
+    return `<svg viewBox="0 0 24 24" aria-hidden="true" style="width:1em;height:1em;display:inline-block;vertical-align:middle;flex-shrink:0;${svgStyle}">${map[name] || ''}</svg>`;
+  }
 
   function buildHTML() {
     return `
@@ -33,7 +46,7 @@
             style="width:36px;height:36px;background:rgba(255,255,255,0.08);border:none;
                    border-radius:50%;cursor:pointer;display:flex;align-items:center;
                    justify-content:center;-webkit-tap-highlight-color:transparent;">
-      <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;">close</span>
+      ${iconSvg('close', 'color:#9CA3AF;font-size:20px;')}
     </button>
   </header>
 
@@ -110,7 +123,7 @@
                 padding:16px;background:#121826;border-radius:14px;margin-bottom:24px;
                 border:1px solid rgba(255,255,255,0.05);">
       <div style="display:flex;align-items:center;gap:12px;">
-        <span class="material-symbols-outlined" style="color:#3B82F6;font-size:22px;">luggage</span>
+        ${iconSvg('luggage', 'color:#3B82F6;font-size:22px;')}
         <span style="font-size:14px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Багаж включён</span>
       </div>
       <div id="baggage-toggle" onclick="window._filtersSheet.toggleBaggage()"
@@ -132,13 +145,13 @@
          onpointerup="this.style.background='#121826'"
          onpointercancel="this.style.background='#121826'">
       <div style="display:flex;align-items:center;gap:12px;">
-        <span class="material-symbols-outlined" style="color:#6B7280;font-size:22px;">flight_takeoff</span>
+        ${iconSvg('flight_takeoff', 'color:#6B7280;font-size:22px;')}
         <span style="font-size:14px;font-weight:600;color:#fff;font-family:Manrope,sans-serif;">Авиакомпании</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
         <span id="airlines-label"
               style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6B7280;">Все</span>
-        <span class="material-symbols-outlined" style="color:#6B7280;font-size:20px;">chevron_right</span>
+        ${iconSvg('chevron_right', 'color:#6B7280;font-size:20px;')}
       </div>
     </div>
 
@@ -152,7 +165,7 @@
                      background:transparent;border:none;cursor:pointer;flex-shrink:0;
                      font-family:Manrope,sans-serif;font-size:13px;font-weight:700;
                      color:#6B7280;-webkit-tap-highlight-color:transparent;transition:color 0.15s;">
-        <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
+        ${iconSvg('restart_alt', 'font-size:18px;')}
         Сбросить
       </button>
       <button id="filters-apply-btn"
@@ -185,7 +198,7 @@
             style="width:36px;height:36px;background:rgba(255,255,255,0.08);border:none;
                    border-radius:50%;cursor:pointer;display:flex;align-items:center;
                    justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;">
-      <span class="material-symbols-outlined" style="color:#9CA3AF;font-size:20px;">arrow_back</span>
+      ${iconSvg('arrow_back', 'color:#9CA3AF;font-size:20px;')}
     </button>
     <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:#fff;margin:0;flex:1;padding-left:8px;">
       Авиакомпании
@@ -413,7 +426,7 @@
           <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;pointer-events:none;
                       border:2px solid ${on?'#3B82F6':'#374151'};background:${on?'#3B82F6':'transparent'};
                       display:flex;align-items:center;justify-content:center;transition:all 0.15s;">
-            ${on?'<span class="material-symbols-outlined" style="font-size:14px;color:#fff;font-variation-settings:\'FILL\' 1;pointer-events:none;">check</span>':''}
+            ${on?iconSvg('check', 'font-size:14px;color:#fff;pointer-events:none;'):''}
           </div>`;
         row.addEventListener('click', () => {
           if (selected.has(a.code)) selected.delete(a.code); else selected.add(a.code);
