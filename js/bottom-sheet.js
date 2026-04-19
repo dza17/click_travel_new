@@ -257,6 +257,7 @@
       const viewportHeight = Math.max(0, Math.round(vv.height));
       const keyboardInset = Math.max(0, Math.round(global.innerHeight - vv.height - vv.offsetTop));
 
+      this.el.style.bottom = `${keyboardInset}px`;
       this.el.style.height = `${viewportHeight}px`;
       this.el.style.maxHeight = `${viewportHeight}px`;
 
@@ -271,6 +272,7 @@
     }
 
     _clearViewportLayout() {
+      this.el.style.bottom = '';
       this.el.style.height = '';
       this.el.style.maxHeight = '';
       if (this.scrollEl && this.scrollEl.dataset.basePadBottom) {
