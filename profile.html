@@ -831,7 +831,8 @@ window.doLogout = function() {
 
 // ─── Save account data ────────────────────────────────────────────────────────
 window.saveAccountData = function() {
-  var user = getUser() || {};
+  var user    = getUser() || {};
+  var oldPhone = user.phone || null;
   user.authenticated = true;
   user.firstName = document.getElementById('acc-first').value.trim();
   user.lastName  = document.getElementById('acc-last').value.trim();
@@ -840,6 +841,9 @@ window.saveAccountData = function() {
   user.region    = document.getElementById('acc-region').value;
   user.currency  = 'UZS';
   setUser(user);
+  if (oldPhone && oldPhone !== user.phone) {
+    try { var store = getUserStore(); delete store[oldPhone]; localStorage.setItem('ct_users_store', JSON.stringify(store)); } catch(e){}
+  }
   saveToUserStore(user);
 
   var btn = document.getElementById('acc-save-btn');
